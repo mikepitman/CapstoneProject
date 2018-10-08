@@ -22,13 +22,13 @@ import java.util.UUID;
 import pitman.co.za.readerforreddit.MainActivity;
 
 // reddit client ID: CGG1OAPhpEmzgw
-public class QuerySubredditsAsyncTask extends AsyncTask<String, Void, String> {
+public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Void, String> {
 
     private MainActivity mMainActivity;
-    private static String LOG_TAG = QuerySubredditsAsyncTask.class.getCanonicalName();
+    private static String LOG_TAG = QuerySubscribedSubredditsListAsyncTask.class.getCanonicalName();
 
     // Set mMainActivity for callback
-    public QuerySubredditsAsyncTask(MainActivity mainActivity) {
+    public QuerySubscribedSubredditsListAsyncTask(MainActivity mainActivity) {
         this.mMainActivity = mainActivity;
     }
 

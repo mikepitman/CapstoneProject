@@ -25,3 +25,11 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    roomVersion = '1.1.1'
+//    butterknifeVersion = '8.8.1'
+//    espressoVersion = '3.0.2'
+    archLifecycleVersion = '1.1.1'
+    androidSupportVersion = '27.1.1'
+}
