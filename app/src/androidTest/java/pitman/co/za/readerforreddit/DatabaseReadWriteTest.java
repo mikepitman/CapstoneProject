@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
+import pitman.co.za.readerforreddit.domainObjects.SubmissionComment;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDao;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDatabase;
@@ -23,7 +24,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Source example for this unit test:
  * https://developer.android.com/training/data-storage/room/testing-db
- * path /src/androidTest/java is the correct path - compile issues encountered with test under /src/test/
  */
 @RunWith(AndroidJUnit4.class)
 public class DatabaseReadWriteTest {
@@ -53,6 +53,17 @@ public class DatabaseReadWriteTest {
         assertThat(retrievedSubmission.getAuthor(), equalTo(submission.getAuthor()));
     }
 
+    @Test
+    public void saveCommentAndRetrieve() throws Exception {
+        SubmissionComment comment = generateComment();
+        mSubmissionDao.saveComment(comment);
+
+//        SubmissionComment retrievedComment = mSubmissionDao.getCommentsForSubredditSubmission("submissionId");
+        SubmissionComment retrievedComment = mSubmissionDao.getFirstComment("submissionId");
+        assertThat(retrievedComment.getCommentAuthor(), equalTo(comment.getCommentAuthor()));
+        assertThat(retrievedComment.getComment(), equalTo(comment.getComment()));
+    }
+
     private SubredditSubmission generateSubmission() {
         return new SubredditSubmission(
                 "redditId",
@@ -62,6 +73,17 @@ public class DatabaseReadWriteTest {
                 100,
                 true,
                 "thumbnail");
+    }
+
+    private SubmissionComment generateComment() {
+        return new SubmissionComment(
+                "submissionId",
+                "1",
+                0,
+                "Neil Armstrong",
+                "One small step for a man",
+                10,
+                "2018-01-01");
     }
 }
 

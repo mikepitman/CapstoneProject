@@ -29,8 +29,8 @@ public class SubredditSubmission implements Parcelable {
     public SubredditSubmission() {
     }
 
-    public SubredditSubmission(String redditId,
-                               String subreddit,
+    public SubredditSubmission(@NonNull String redditId,
+                               @NonNull String subreddit,
                                String author,
                                String title,
                                Integer commentCount,

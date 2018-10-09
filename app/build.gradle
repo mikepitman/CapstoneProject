@@ -41,6 +41,8 @@ dependencies {
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
+
+    implementation 'joda-time:joda-time:2.10'
 //////////////
 
     testImplementation 'junit:junit:4.12'

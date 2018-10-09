@@ -19,7 +19,7 @@ public interface SubredditSubmissionDao {
     void saveSubmission(SubredditSubmission subredditSubmission);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveComment(List<SubmissionComment> comments);
+    void saveComment(SubmissionComment comment);
 
     @Transaction
     @Query("select * from subreddit_submission order by subreddit, commentCount")
@@ -28,10 +28,13 @@ public interface SubredditSubmissionDao {
     @Query("select * from subreddit_submission where redditId = :redditId")
     SubredditSubmission getSubredditSubmission(String redditId);
 
-    // todo: complete this as required
-//    @Query("select * from SubmissionComment where SubredditSubmission = :parentSubmission")
-//    List<SubmissionComment> getSubmissionComments(String subredditSubmission);
+    @Query("select * from submission_comment where submissionId = :submissionId")
+    LiveData<List<SubmissionComment>> getCommentsForSubredditSubmission(String submissionId);
 
-//    @Query("select * from recipe_step where parentRecipe = :parentRecipe order by id")
-//    List<RecipeStep> getRecipeSteps(String parentRecipe);
+    @Query("select * from submission_comment where submissionId = :submissionId order by submissionId desc limit 1")
+    SubmissionComment getFirstComment(String submissionId);
+
+    // todo: delete all subreddit_submission objects not in set of newly retrieved subredditSubmissions
+    // todo: delete all submission_comment objects not linked to subreddit submissions (based on ID) in set or newly retrieved subredditSubmissions
+    // todo: alternatively, drop all objects and insert new ones every time there's new data?
 }
