@@ -3,12 +3,14 @@ package pitman.co.za.readerforreddit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import pitman.co.za.readerforreddit.reddit.QuerySubscribedSubredditsListAsyncTask;
+import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks {
 
@@ -24,14 +26,51 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(getLayoutResId());
 
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "Nokia7plus");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        new QuerySubscribedSubredditsListAsyncTask(this).execute();
+        Bundle firebaseBundle = new Bundle();
+        firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "Nokia7plus");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
+
+        if (fragment == null) {
+            fragment = new MainActivityFragment();
+
+            Bundle fragmentBundle = new Bundle();
+//            fragmentBundle.putBoolean("isTablet", mIsTablet);
+            fragment.setArguments(fragmentBundle);
+
+            fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
+        }
+
+//        // Fragment for displaying subreddit cards
+//        new QuerySubscribedSubredditsListAsyncTask(this).execute();
+    }
+
+    @Override
+    public void onSubredditSelected(SubredditSubmission subredditSubmission) {
+        // create intent for new activity, to display the posts of the selected subreddit
+        Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
+
+        Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
+        viewSubredditIntent.putExtra("selectedSubreddit", subredditSubmission.getSubreddit());
+        startActivity(viewSubredditIntent);
+
+        // Once recipe is selected, update the widget with ingredients for the newly selected recipe
+        // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
+//        Intent updateWidgetIntent = new Intent(this, RecipeWidgetProvider.class);
+//        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+//
+//        SharedPreferences sharedPreferences = this.getSharedPreferences("pitman.co.za.bakingapp", Context.MODE_PRIVATE);
+//        sharedPreferences.edit().putString("selectedRecipe", recipe.getName()).apply();
+//
+//        this.sendBroadcast(updateWidgetIntent);
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -29,7 +29,11 @@ public class SubredditSubmissionViewModel extends AndroidViewModel {
         return mAllSubredditSubmissions;
     }
 
-    // todo: this should maye get its own ViewModel
+    public LiveData<List<SubredditSubmission>> getAllSubmissionsForSubreddit(String subreddit) {
+        return mRepository.getSubmissionsForSubreddit(subreddit);
+    }
+
+    // todo: this should maybe get its own ViewModel
     public LiveData<List<SubmissionComment>> getSubmissionComments(SubredditSubmission subredditSubmission) {
         return mRepository.getSubmissionComments(subredditSubmission);
     }

@@ -19,36 +19,53 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import pitman.co.za.readerforreddit.MainActivity;
+import pitman.co.za.readerforreddit.MainActivityFragment;
+import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
 // reddit client ID: CGG1OAPhpEmzgw
-public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Void, String> {
+public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Void, List<Listing<Submission>>> {
 
-    private MainActivity mMainActivity;
+    private MainActivityFragment mMainActivityFragment;
     private static String LOG_TAG = QuerySubscribedSubredditsListAsyncTask.class.getCanonicalName();
 
     // Set mMainActivity for callback
-    public QuerySubscribedSubredditsListAsyncTask(MainActivity mainActivity) {
-        this.mMainActivity = mainActivity;
+    public QuerySubscribedSubredditsListAsyncTask(MainActivityFragment mainActivityFragment) {
+        this.mMainActivityFragment = mainActivityFragment;
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(List<Listing<Submission>> result) {
         super.onPostExecute(result);
 
-        Log.d(LOG_TAG, "message");
+        Log.d(LOG_TAG, "writing returned data to room database");
+        ArrayList<SubredditSubmission> subredditSubmissions = new ArrayList<>();
+        for (Listing<Submission> submissionListing : result) {
+            for (Submission submission : submissionListing) {
+                SubredditSubmission subredditSubmission = new SubredditSubmission(
+                        submission.getId(),
+                        submission.getSubreddit(),
+                        submission.getAuthor(),
+                        submission.getTitle(),
+                        submission.getScore(),
+                        submission.getCommentCount(),
+                        submission.hasThumbnail(),
+                        submission.getThumbnail());
+                subredditSubmissions.add(subredditSubmission);
+            }
+        }
+        mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);
     }
 
     /* Seems it's not possible to have a single query for multiple subreddits, where n posts are retrieved for each subreddit in accordance with
-    * criteria, from the API, and using the JRAW wrapper
-    * eg if given 3 subreddits and limit of 5 posts sorted by 'top', it'll be the top 5 posts out of all 3 subreddits, rather than 5 from each
-    * eg if given 3 subreddits and limit of 5 posts sorted by 'new', it'll be the 5 newest posts from all 3 subreddits, rather than 5 from each
-    * Top-rated posts seem most pertinent for the app and avoiding bias towards high-traffic subreddits is desirable.
-    * In absence of option for single query returning n sorted posts for each of x subreddits, x queries will be sent for n sorted posts
-    * */
+     * criteria, from the API, and using the JRAW wrapper
+     * eg if given 3 subreddits and limit of 5 posts sorted by 'top', it'll be the top 5 posts out of all 3 subreddits, rather than 5 from each
+     * eg if given 3 subreddits and limit of 5 posts sorted by 'new', it'll be the 5 newest posts from all 3 subreddits, rather than 5 from each
+     * Top-rated posts seem most pertinent for the app and avoiding bias towards high-traffic subreddits is desirable.
+     * In absence of option for single query returning n sorted posts for each of x subreddits, x queries will be sent for n sorted posts
+     * */
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected List<Listing<Submission>> doInBackground(String... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
         UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
@@ -69,11 +86,10 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Vo
 
         Log.d(LOG_TAG, "Number of entries in polledSubredditData: " + polledSubredditData.size());
         for (Listing<Submission> listing : polledSubredditData) {
-            Log.d(LOG_TAG, "size: " + listing.size());
-            Log.d(LOG_TAG, "Subreddit: " + listing.get(0).getSubreddit());
+            Log.d(LOG_TAG, "size: " + listing.size() + ";  Subreddit: " + listing.get(0).getSubreddit());
         }
 
-        return null;
+        return polledSubredditData;
     }
 
     private Listing<Submission> pollSubreddit(RedditClient redditClient, String subredditName, int limit) {

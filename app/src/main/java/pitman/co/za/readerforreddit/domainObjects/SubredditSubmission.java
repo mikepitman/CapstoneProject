@@ -20,6 +20,7 @@ public class SubredditSubmission implements Parcelable {
     private String subreddit;
     private String author;
     private String title;
+    private Integer submissionScore;
     private Integer commentCount;
 
     private boolean hasThumbnail;
@@ -33,6 +34,7 @@ public class SubredditSubmission implements Parcelable {
                                @NonNull String subreddit,
                                String author,
                                String title,
+                               Integer submissionScore,
                                Integer commentCount,
                                boolean hasThumbnail,
                                String thumbnail) {
@@ -40,6 +42,7 @@ public class SubredditSubmission implements Parcelable {
         this.subreddit = subreddit;
         this.author = author;
         this.title = title;
+        this.submissionScore = submissionScore;
         this.commentCount = commentCount;
         this.hasThumbnail = hasThumbnail;
         this.thumbnail = thumbnail;
@@ -61,6 +64,10 @@ public class SubredditSubmission implements Parcelable {
 
     public String getTitle() {
         return title;
+    }
+
+    public Integer getSubmissionScore() {
+        return submissionScore;
     }
 
     public Integer getCommentCount() {
@@ -86,6 +93,7 @@ public class SubredditSubmission implements Parcelable {
         parcel.writeString(this.subreddit);
         parcel.writeString(this.author);
         parcel.writeString(this.title);
+        parcel.writeInt(this.submissionScore);
         parcel.writeInt(this.commentCount);
         parcel.writeInt(this.hasThumbnail ? 1 : 0);
         parcel.writeString(this.thumbnail);
@@ -96,6 +104,7 @@ public class SubredditSubmission implements Parcelable {
         this.subreddit = in.readString();
         this.author = in.readString();
         this.title = in.readString();
+        this.submissionScore = in.readInt();
         this.commentCount = in.readInt();
         this.hasThumbnail = (in.readInt() == 1);
         this.thumbnail = in.readString();

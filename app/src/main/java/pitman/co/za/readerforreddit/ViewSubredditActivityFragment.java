@@ -3,6 +3,7 @@ package pitman.co.za.readerforreddit;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,26 +19,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
-import pitman.co.za.readerforreddit.reddit.QuerySubscribedSubredditsListAsyncTask;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 
-public class MainActivityFragment extends Fragment {
+public class ViewSubredditActivityFragment extends Fragment {
 
-    private static String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private static String LOG_TAG = ViewSubredditActivityFragment.class.getSimpleName();
     private Callbacks mCallbacks;
+    private String mSelectedSubreddit;
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
-    private static SubredditSubmissionCardAdapter mAdapter;
+    private static ViewSubredditActivityFragment.SubredditSubmissionCardAdapter mAdapter;
 
-//// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
-        void onSubredditSelected(SubredditSubmission subredditSubmission);
+        void onSubmissionSelected(SubredditSubmission subredditSubmission);
     }
 
     public void onAttach(Activity activity) {
@@ -54,7 +54,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putBoolean("recipesUpdated", recipesUpdated);
+        outState.putString("selectedSubreddit", mSelectedSubreddit);
         // todo: save relevant state
     }
 
@@ -63,37 +63,27 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
 
-        // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
-        mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
-        mSubredditsViewModel.getAllSubredditSubmissions().observe(this, new Observer<List<SubredditSubmission>>() {
-            @Override
-            public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
-                mAdapter.swapData(parseTopSubredditSubmissions(subreddits));
-            }
-        });
-        List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions().getValue());
-        mAdapter = new SubredditSubmissionCardAdapter(topSubredditSubmissions);
-    }
+        if (savedInstanceState != null) {
+            mSelectedSubreddit = savedInstanceState.getString("selectedSubreddit");
+            Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
 
-    // Collect the top-scored submissions for each subreddit for display on 'home screen' from list of all returned subreddit submissions
-    private List<SubredditSubmission> parseTopSubredditSubmissions(List<SubredditSubmission> subredditSubmissions) {
-        List<SubredditSubmission> topSubredditSubmissions = new ArrayList<>();
-        if (subredditSubmissions != null) {     // NPE results if code is executed before the asyncTask returns
-        Set<String> subredditsParsed = new HashSet<>();
-        SubredditSubmission topSubmissionForSubreddit = null;
-            for (SubredditSubmission submission : subredditSubmissions) {
-                if (!subredditsParsed.contains(submission.getSubreddit())) {
-                    subredditsParsed.add(submission.getSubreddit());
-                    topSubmissionForSubreddit = submission;
-                    topSubredditSubmissions.add(topSubmissionForSubreddit);
-                } else {
-                    if (submission.getSubmissionScore() > topSubmissionForSubreddit.getSubmissionScore()) {
-                        topSubmissionForSubreddit = submission;
-                    }
-                }
+        } else {
+            Intent intent = getActivity().getIntent();
+            if ((intent != null)) {
+                mSelectedSubreddit = intent.getStringExtra("selectedSubreddit");
+                Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddit);
             }
         }
-        return topSubredditSubmissions;
+
+        // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
+        mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
+        mSubredditsViewModel.getAllSubmissionsForSubreddit(mSelectedSubreddit).observe(this, new Observer<List<SubredditSubmission>>() {
+            @Override
+            public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
+                mAdapter.swapData(subreddits);
+            }
+        });
+        mAdapter = new SubredditSubmissionCardAdapter(mSubredditsViewModel.getAllSubmissionsForSubreddit(mSelectedSubreddit).getValue());
     }
 
     @Override
@@ -101,10 +91,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "3. onCreateView()");
 
-        if (savedInstanceState != null) {
-//            recipesUpdated = savedInstanceState.getBoolean("recipesUpdated");
-//            todo: restore state
-        }
+
 
         // Get bundle arguments from MainActivity
 //        boolean isTablet = false;
@@ -113,21 +100,12 @@ public class MainActivityFragment extends Fragment {
 //            isTablet = arguments.getBoolean("isTablet");
 //        }
 
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mSubredditSubmissionRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
+        View view = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
+        mSubredditSubmissionRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
 
-        // Fragment for displaying subreddit cards
-        new QuerySubscribedSubredditsListAsyncTask(this).execute();
-
         return view;
-    }
-
-    public void generateSubredditSubmissionsAdapterWithData(ArrayList<SubredditSubmission> retrievedSubredditSubmissions) {
-        if (retrievedSubredditSubmissions != null) {
-            mSubredditsViewModel.insert(retrievedSubredditSubmissions);
-        }
     }
 
     private class SubredditSubmissionCardAdapter extends RecyclerView.Adapter<SubmissionCardViewHolder> {
@@ -197,7 +175,7 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            mCallbacks.onSubredditSelected(mSubredditSubmission);
+            mCallbacks.onSubmissionSelected(mSubredditSubmission);
         }
 
         public void bindSubredditSubmission(SubredditSubmission subredditSubmission) {
@@ -215,32 +193,5 @@ public class MainActivityFragment extends Fragment {
                 this.subredditPostThumbnailImageView.setVisibility(View.GONE);
             }
         }
-    }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// Activity lifecycle methods for debugging/understanding/etc //////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onResume () {
-        super.onResume();
-        Log.d(LOG_TAG, "onResume()");
-    }
-
-    @Override
-    public void onPause () {
-        super.onPause();
-        Log.d(LOG_TAG, "onPause()");
-    }
-
-    @Override
-    public void onStop () {
-        super.onStop();
-        Log.d(LOG_TAG, "onStop()");
-    }
-
-    @Override
-    public void onDestroy () {
-        super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
     }
 }

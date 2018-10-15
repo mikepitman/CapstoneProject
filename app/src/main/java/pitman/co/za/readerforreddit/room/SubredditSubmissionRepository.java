@@ -19,6 +19,7 @@ public class SubredditSubmissionRepository {
     private static String LOG_TAG = SubredditSubmissionRepository.class.getSimpleName();
     private SubredditSubmissionDao mSubredditSubmissionDao;
     private LiveData<List<SubredditSubmission>> mAllSubredditSubmissions;
+    private LiveData<List<SubredditSubmission>> mSubmissionsForSubreddit;
     private LiveData<List<SubmissionComment>> mSubmissionComments;
 
     SubredditSubmissionRepository(Application application) {
@@ -30,6 +31,11 @@ public class SubredditSubmissionRepository {
     // Stored recipes are static, but list may have recipes added as new recipes added to json listing
     LiveData<List<SubredditSubmission>> getAllSubredditSubmissions() {
         return mAllSubredditSubmissions;
+    }
+
+    LiveData<List<SubredditSubmission>> getSubmissionsForSubreddit(String subreddit) {
+        mSubmissionsForSubreddit = mSubredditSubmissionDao.getSubmissionsForSubreddit(subreddit);
+        return mSubmissionsForSubreddit;
     }
 
     public LiveData<List<SubmissionComment>> getSubmissionComments(final SubredditSubmission subredditSubmission) {

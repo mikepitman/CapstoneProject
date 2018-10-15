@@ -15,7 +15,7 @@ import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
  * Copied from codelabs - link below
  * https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#6
  * */
-@Database(entities = {SubredditSubmission.class, SubmissionComment.class}, version = 1)
+@Database(entities = {SubredditSubmission.class, SubmissionComment.class}, version = 2)
 public abstract class SubredditSubmissionDatabase extends RoomDatabase {
 
     public abstract SubredditSubmissionDao mSubredditSubmissionDao();
