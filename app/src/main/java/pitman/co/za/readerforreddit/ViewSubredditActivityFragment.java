@@ -3,7 +3,6 @@ package pitman.co.za.readerforreddit;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +28,7 @@ public class ViewSubredditActivityFragment extends Fragment {
 
     private static String LOG_TAG = ViewSubredditActivityFragment.class.getSimpleName();
     private Callbacks mCallbacks;
+    private View rootView;
     private String mSelectedSubreddit;
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
@@ -53,9 +53,8 @@ public class ViewSubredditActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString("selectedSubreddit", mSelectedSubreddit);
-        // todo: save relevant state
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -68,9 +67,9 @@ public class ViewSubredditActivityFragment extends Fragment {
             Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
 
         } else {
-            Intent intent = getActivity().getIntent();
-            if ((intent != null)) {
-                mSelectedSubreddit = intent.getStringExtra("selectedSubreddit");
+            if (this.getArguments() != null) {
+                Bundle bundle = this.getArguments();
+                mSelectedSubreddit = bundle.getString("selectedSubreddit");
                 Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddit);
             }
         }
@@ -92,7 +91,6 @@ public class ViewSubredditActivityFragment extends Fragment {
         Log.d(LOG_TAG, "3. onCreateView()");
 
 
-
         // Get bundle arguments from MainActivity
 //        boolean isTablet = false;
 //        Bundle arguments = this.getArguments();
@@ -100,12 +98,12 @@ public class ViewSubredditActivityFragment extends Fragment {
 //            isTablet = arguments.getBoolean("isTablet");
 //        }
 
-        View view = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
-        mSubredditSubmissionRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
+        rootView = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
+        mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
 
-        return view;
+        return rootView;
     }
 
     private class SubredditSubmissionCardAdapter extends RecyclerView.Adapter<SubmissionCardViewHolder> {

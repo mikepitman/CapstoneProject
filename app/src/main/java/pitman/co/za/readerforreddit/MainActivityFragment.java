@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +119,7 @@ public class MainActivityFragment extends Fragment {
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
 
-        // Fragment for displaying subreddit cards
+        // Launch asyncTask to retrieve top submissions from selected subreddits
         new QuerySubscribedSubredditsListAsyncTask(this).execute();
 
         return view;
@@ -203,9 +204,14 @@ public class MainActivityFragment extends Fragment {
         public void bindSubredditSubmission(SubredditSubmission subredditSubmission) {
             this.mSubredditSubmission = subredditSubmission;
             this.subredditPostScoreTextView.setText(String.format(Locale.getDefault(), "%d", mSubredditSubmission.getSubmissionScore()));
+
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
+            this.subredditPostTitleTextView.setMaxLines(3);
+            this.subredditPostTitleTextView.setEllipsize(TextUtils.TruncateAt.END);
+
             String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
             this.subredditPostSubredditTextView.setText(formattedSubreddit);
+
             this.subredditPostAuthorTextView.setText(mSubredditSubmission.getAuthor());
 
             if (!mSubredditSubmission.isHasThumbnail()) {

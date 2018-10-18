@@ -16,10 +16,10 @@ import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 public interface SubredditSubmissionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveSubmission(SubredditSubmission subredditSubmission);
+    void saveSubmissions(SubredditSubmission[] subredditSubmission);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveComment(SubmissionComment comment);
+    void saveComments(SubmissionComment[] comments);
 
     @Transaction
     @Query("select * from subreddit_submission order by subreddit, commentCount")

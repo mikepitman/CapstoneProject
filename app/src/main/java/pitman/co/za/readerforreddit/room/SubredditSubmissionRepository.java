@@ -42,29 +42,28 @@ public class SubredditSubmissionRepository {
         /* Example used for off-thread retrieval of ingredients and steps for a selected recipe
          * https://medium.freecodecamp.org/room-sqlite-beginner-tutorial-2e725e47bfab
          */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mSubmissionComments = mSubredditSubmissionDao.getCommentsForSubredditSubmission(subredditSubmission.getRedditId());
-            }
-        }).start();
+        mSubmissionComments = mSubredditSubmissionDao.getCommentsForSubredditSubmission(subredditSubmission.getRedditId());
         return mSubmissionComments;
     }
 
     // todo: would be better to pass list<> than create a new asyncTask for each element in list
     public void insert(List<SubredditSubmission> subredditSubmissions) {
-        for (SubredditSubmission submission : subredditSubmissions) {
-            new insertSubredditSubmissionsAsyncTask(mSubredditSubmissionDao).execute(submission);
-        }
+//        for (SubredditSubmission submission : subredditSubmissions) {
+//            new insertSubredditSubmissionsAsyncTask(mSubredditSubmissionDao).execute(submission);
+//        }
+        new insertSubredditSubmissionsAsyncTask(mSubredditSubmissionDao).
+                execute(subredditSubmissions.toArray(new SubredditSubmission[subredditSubmissions.size()]));
     }
 
     public void insertComments(List<SubmissionComment> submissionComments) {
-        for (SubmissionComment comment : submissionComments) {
-            new insertSubmissionCommentAsyncTask(mSubredditSubmissionDao).execute(comment);
-        }
+//        for (SubmissionComment comment : submissionComments) {
+//            new insertSubmissionCommentAsyncTask(mSubredditSubmissionDao).execute(comment);
+        new insertSubmissionCommentAsyncTask(mSubredditSubmissionDao).
+                execute(submissionComments.toArray(new SubmissionComment[submissionComments.size()]));
+//        }
     }
 
-    private static class insertSubredditSubmissionsAsyncTask extends AsyncTask<SubredditSubmission, Void, Void> {
+    private static class insertSubredditSubmissionsAsyncTask extends AsyncTask<SubredditSubmission[], Void, Void> {
         private SubredditSubmissionDao mAsyncTaskDao;
 
         insertSubredditSubmissionsAsyncTask(SubredditSubmissionDao dao) {
@@ -72,13 +71,13 @@ public class SubredditSubmissionRepository {
         }
 
         @Override
-        protected Void doInBackground(final SubredditSubmission... params) throws SQLiteConstraintException {
-            mAsyncTaskDao.saveSubmission(params[0]);
+        protected Void doInBackground(final SubredditSubmission[]... params) throws SQLiteConstraintException {
+            mAsyncTaskDao.saveSubmissions(params[0]);
             return null;
         }
     }
 
-    private static class insertSubmissionCommentAsyncTask extends AsyncTask<SubmissionComment, Void, Void> {
+    private static class insertSubmissionCommentAsyncTask extends AsyncTask<SubmissionComment[], Void, Void> {
         private SubredditSubmissionDao mAsyncTaskDao;
 
         insertSubmissionCommentAsyncTask(SubredditSubmissionDao dao) {
@@ -86,8 +85,8 @@ public class SubredditSubmissionRepository {
         }
 
         @Override
-        protected Void doInBackground(final SubmissionComment... params) throws SQLiteConstraintException {
-            mAsyncTaskDao.saveComment(params[0]);
+        protected Void doInBackground(final SubmissionComment[]... params) throws SQLiteConstraintException {
+            mAsyncTaskDao.saveComments(params[0]);
             return null;
         }
     }

@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="6dp"
+    android:fitsSystemWindows="true"
     card_view:cardCornerRadius="4dp">
 
     <!-- Screen 1 - 'front page' -->
@@ -20,15 +21,16 @@
 
         <LinearLayout
             android:id="@+id/subreddit_post_score_vert_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
             android:gravity="center_vertical|start"
             android:orientation="vertical">
             <!-- Up arrow -->
             <TextView
                 android:id="@+id/subreddit_post_score"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="fill_parent"
+                android:background="@color/colorPrimary"/>
             <!-- Down arrow -->
         </LinearLayout>
 

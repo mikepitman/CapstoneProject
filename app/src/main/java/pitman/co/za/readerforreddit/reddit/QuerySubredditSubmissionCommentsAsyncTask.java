@@ -7,33 +7,39 @@ import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
 import net.dean.jraw.http.UserAgent;
+import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.oauth.Credentials;
 import net.dean.jraw.oauth.OAuthHelper;
+import net.dean.jraw.tree.CommentNode;
 import net.dean.jraw.tree.RootCommentNode;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
-import pitman.co.za.readerforreddit.MainActivity;
+import pitman.co.za.readerforreddit.ViewSubmissionActivityFragment;
+import pitman.co.za.readerforreddit.domainObjects.SubmissionComment;
 
-public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String, Void, String> {
+public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String, Void, ArrayList<SubmissionComment>> {
 
-    private MainActivity mMainActivity;
+    private ViewSubmissionActivityFragment mViewSubmissionActivityFragment;
     private static String LOG_TAG = QuerySubredditSubmissionCommentsAsyncTask.class.getCanonicalName();
 
     // Set mMainActivity for callback
-    public QuerySubredditSubmissionCommentsAsyncTask(MainActivity mainActivity) {
-        this.mMainActivity = mainActivity;
+    public QuerySubredditSubmissionCommentsAsyncTask(ViewSubmissionActivityFragment viewSubmissionActivityFragment) {
+        this.mViewSubmissionActivityFragment = viewSubmissionActivityFragment;
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(ArrayList<SubmissionComment> result) {
         super.onPostExecute(result);
 
-        Log.d(LOG_TAG, "message");
+        Log.d(LOG_TAG, "number of comments: " + result.size());
+        mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
     }
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected ArrayList<SubmissionComment> doInBackground(String... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
         UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
@@ -41,10 +47,47 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
         Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
-        RootCommentNode root = redditClient.submission(strings[0]).comments();
+        String submissionId = strings[0];
+        RootCommentNode rootCommentNode = redditClient.submission(submissionId).comments();
 
-        root.walkTree().iterator();
+        return unpackCommentNode(rootCommentNode, submissionId);
+    }
 
-        return "string";
+    private ArrayList<SubmissionComment> unpackCommentNode(RootCommentNode rootNode, String submissionId) {
+
+        ArrayList<SubmissionComment> commentsList = new ArrayList<>();
+
+        // https://mattbdean.gitbooks.io/jraw/cookbook.html
+        Iterator<CommentNode<PublicContribution<?>>> it = rootNode.walkTree().iterator();
+        int commentCounter = 0;
+
+        while (it.hasNext()) {
+            // A PublicContribution is either a Submission or a Comment.
+            CommentNode<?> commentNode = it.next();
+            PublicContribution<?> commentNodeSubject = commentNode.getSubject();
+
+            // Do something with each Submission/Comment
+            if (commentNodeSubject.getBody() != null) {
+                SubmissionComment comment = new SubmissionComment(
+                        submissionId,
+                        commentCounter,
+                        commentNode.getDepth(),
+                        commentNodeSubject.getAuthor(),
+                        commentNodeSubject.getBody(),
+                        commentNodeSubject.getScore(),
+                        commentNodeSubject.getCreated().toString());
+                commentsList.add(comment);
+//                Log.d(LOG_TAG,
+//                        comment.getSubmissionId() + "  " +
+//                                comment.getCommentNumber() + "  " +
+//                                comment.getCommentAuthor() + "  " +
+//                                comment.getComment() + "  " +
+//                                comment.getCommentDepth() + "  " +
+//                                comment.getCommentScore());
+                commentCounter++;
+            }
+
+        }
+        return commentsList;
     }
 }

@@ -23,7 +23,7 @@ public class SubmissionComment implements Parcelable {
     @NonNull
     private String submissionId;
     @NonNull
-    private String commentNumber;
+    private int commentNumber;
     private int commentDepth;
     private String commentAuthor;
     private String comment;
@@ -35,8 +35,7 @@ public class SubmissionComment implements Parcelable {
         return submissionId;
     }
 
-    @NonNull
-    public String getCommentNumber() {
+    public int getCommentNumber() {
         return commentNumber;
     }
 
@@ -71,7 +70,7 @@ public class SubmissionComment implements Parcelable {
     }
 
     public SubmissionComment(@NonNull String submissionId,
-                             @NonNull String commentNumber,
+                             int commentNumber,
                              int commentDepth,
                              String commentAuthor,
                              String comment,
@@ -94,7 +93,7 @@ public class SubmissionComment implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(this.submissionId);
-        parcel.writeString(this.commentNumber);
+        parcel.writeInt(this.commentNumber);
         parcel.writeInt(this.commentDepth);
         parcel.writeString(this.commentAuthor);
         parcel.writeString(this.comment);
@@ -104,7 +103,7 @@ public class SubmissionComment implements Parcelable {
 
     public SubmissionComment(Parcel in) {
         this.submissionId = in.readString();
-        this.commentNumber = in.readString();
+        this.commentNumber = in.readInt();
         this.commentDepth = in.readInt();
         this.commentAuthor = in.readString();
         this.comment = in.readString();
