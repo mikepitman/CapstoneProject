@@ -16,12 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
@@ -31,12 +33,13 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 public class MainActivityFragment extends Fragment {
 
     private static String LOG_TAG = MainActivityFragment.class.getSimpleName();
+    private static UtilityCode sUtilityCode;
     private Callbacks mCallbacks;
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
     private static SubredditSubmissionCardAdapter mAdapter;
 
-//// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
         void onSubredditSelected(SubredditSubmission subredditSubmission);
     }
@@ -63,6 +66,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
+        sUtilityCode = new UtilityCode();
 
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
         mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
@@ -80,8 +84,8 @@ public class MainActivityFragment extends Fragment {
     private List<SubredditSubmission> parseTopSubredditSubmissions(List<SubredditSubmission> subredditSubmissions) {
         List<SubredditSubmission> topSubredditSubmissions = new ArrayList<>();
         if (subredditSubmissions != null) {     // NPE results if code is executed before the asyncTask returns
-        Set<String> subredditsParsed = new HashSet<>();
-        SubredditSubmission topSubmissionForSubreddit = null;
+            Set<String> subredditsParsed = new HashSet<>();
+            SubredditSubmission topSubmissionForSubreddit = null;
             for (SubredditSubmission submission : subredditSubmissions) {
                 if (!subredditsParsed.contains(submission.getSubreddit())) {
                     subredditsParsed.add(submission.getSubreddit());
@@ -185,6 +189,7 @@ public class MainActivityFragment extends Fragment {
         private TextView subredditPostSubredditTextView;
         private TextView subredditPostAuthorTextView;
         private ImageView subredditPostThumbnailImageView;
+        private LinearLayout subredditThumbnailLayout;
 
         SubmissionCardViewHolder(View itemView) {
             super(itemView);
@@ -193,7 +198,8 @@ public class MainActivityFragment extends Fragment {
             subredditPostTitleTextView = (TextView) itemView.findViewById(R.id.subreddit_post_title);
             subredditPostSubredditTextView = (TextView) itemView.findViewById(R.id.subreddit_post_subreddit);
             subredditPostAuthorTextView = (TextView) itemView.findViewById(R.id.subreddit_post_author);
-            subredditPostThumbnailImageView = (ImageView) itemView.findViewById(R.id.recipe_image);
+            subredditPostThumbnailImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
+            subredditThumbnailLayout = (LinearLayout) itemView.findViewById(R.id.subreddit_thumbnail_vert_layout);
         }
 
         @Override
@@ -203,7 +209,11 @@ public class MainActivityFragment extends Fragment {
 
         public void bindSubredditSubmission(SubredditSubmission subredditSubmission) {
             this.mSubredditSubmission = subredditSubmission;
-            this.subredditPostScoreTextView.setText(String.format(Locale.getDefault(), "%d", mSubredditSubmission.getSubmissionScore()));
+
+            if (mSubredditSubmission.getSubmissionScore() != null) {
+                this.subredditPostScoreTextView.setText(
+                        sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
+            }
 
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
             this.subredditPostTitleTextView.setMaxLines(3);
@@ -212,12 +222,18 @@ public class MainActivityFragment extends Fragment {
             String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
             this.subredditPostSubredditTextView.setText(formattedSubreddit);
 
-            this.subredditPostAuthorTextView.setText(mSubredditSubmission.getAuthor());
+            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
+            this.subredditPostAuthorTextView.setText(formattedAuthor);
 
-            if (!mSubredditSubmission.isHasThumbnail()) {
+            if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());
-                this.subredditPostThumbnailImageView.setImageURI(imageUri);
+                Picasso.get().load(imageUri).into(this.subredditPostThumbnailImageView);
             } else {
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        0f);
+                subredditThumbnailLayout.setLayoutParams(param);
                 this.subredditPostThumbnailImageView.setVisibility(View.GONE);
             }
         }
@@ -227,25 +243,25 @@ public class MainActivityFragment extends Fragment {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onResume () {
+    public void onResume() {
         super.onResume();
         Log.d(LOG_TAG, "onResume()");
     }
 
     @Override
-    public void onPause () {
+    public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, "onPause()");
     }
 
     @Override
-    public void onStop () {
+    public void onStop() {
         super.onStop();
         Log.d(LOG_TAG, "onStop()");
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy()");
     }

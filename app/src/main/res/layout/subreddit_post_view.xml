@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
-    android:id="@+id/card_view"
+    android:id="@+id/subreddit_post_card_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -11,7 +11,9 @@
     card_view:cardCornerRadius="4dp">
 
     <!-- Screen 1 - 'front page' -->
-    <android.support.design.widget.CoordinatorLayout
+    <!--<android.support.design.widget.CoordinatorLayout-->
+    <LinearLayout
+
         android:id="@+id/subreddit_post_horiz_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,62 +23,71 @@
 
         <LinearLayout
             android:id="@+id/subreddit_post_score_vert_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:gravity="center_vertical|start"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:background="@color/theme_primary_light"
+            android:gravity="center"
+            android:orientation="vertical"
+            >
             <!-- Up arrow -->
             <TextView
                 android:id="@+id/subreddit_post_score"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="@color/colorPrimary"/>
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:background="@color/ltgray"
+                android:gravity="center_vertical"
+                android:textAlignment="center"/>
             <!-- Down arrow -->
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/subreddit_post_details_vert_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/subreddit_post_score_vert_layout"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+
+            android:layout_weight="6"
             android:gravity="center_horizontal"
             android:orientation="vertical">
+
             <!-- layout_toEndOf allows order of linearLayouts to reverse for RTL locales
                  https://developer.android.com/about/versions/android-4.2#RTL -->
             <TextView
-                android:id="@+id/subreddit_post_title"
-                android:layout_width="wrap_content"
+                android:id="@+id/subreddit_post_subreddit"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"/>
 
             <TextView
-                android:id="@+id/subreddit_post_subreddit"
-                android:layout_width="wrap_content"
+                android:id="@+id/subreddit_post_title"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>
 
             <TextView
                 android:id="@+id/subreddit_post_author"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"/>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/subreddit_thumbnail_vert_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/subreddit_post_details_vert_layout"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="2"
             android:gravity="center_vertical|end"
             android:orientation="vertical">
-            <!-- image thumbnail (if there is one) -->
+
             <ImageView
-                android:id="@+id/recipe_image"
-                android:layout_width="wrap_content"
+                android:id="@+id/thumbnail"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
                 android:contentDescription="@string/subreddit_submission_thumbnail"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitCenter"/>
+
         </LinearLayout>
-    </android.support.design.widget.CoordinatorLayout>
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

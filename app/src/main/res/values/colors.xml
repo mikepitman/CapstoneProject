@@ -3,4 +3,19 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="theme_primary">#2196F3</color>  <!-- Blue 50 -> 500 -->
+    <color name="theme_primary_dark">#1565C0</color>  <!-- Blue 50 -> 800 -->
+    <color name="theme_primary_light">#BBDEFB</color>  <!-- Blue 50 -> 100 -->
+    <color name="theme_accent">#C5E1A5</color>  <!-- Light Green 50 -> 200 -->
+
+    <color name="text_primary_color">@color/white</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="offWhite">#e0e3e3</color>
+    <color name="black">#000000</color>  <!-- Use this for background behind cards -->
+    <color name="offBlack">#131414</color>  <!-- Use this for background of cards -->
+
+    <color name="ltgray">#90A4AE</color>  <!-- Blue Gray 50 -> 300 -->
+    <color name="dkgray">#546E7A</color>  <!-- Blue Gray 50 -> 600 -->
 </resources>

@@ -15,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
@@ -27,12 +29,13 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 public class ViewSubredditActivityFragment extends Fragment {
 
     private static String LOG_TAG = ViewSubredditActivityFragment.class.getSimpleName();
+    private static UtilityCode sUtilityCode;
     private Callbacks mCallbacks;
     private View rootView;
     private String mSelectedSubreddit;
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
-    private static ViewSubredditActivityFragment.SubredditSubmissionCardAdapter mAdapter;
+    private static SubredditSubmissionCardAdapter mAdapter;
 
 
     //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +64,7 @@ public class ViewSubredditActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
+        sUtilityCode = new UtilityCode();
 
         if (savedInstanceState != null) {
             mSelectedSubreddit = savedInstanceState.getString("selectedSubreddit");
@@ -160,6 +164,7 @@ public class ViewSubredditActivityFragment extends Fragment {
         private TextView subredditPostSubredditTextView;
         private TextView subredditPostAuthorTextView;
         private ImageView subredditPostThumbnailImageView;
+        private LinearLayout subredditThumbnailLayout;
 
         SubmissionCardViewHolder(View itemView) {
             super(itemView);
@@ -168,7 +173,8 @@ public class ViewSubredditActivityFragment extends Fragment {
             subredditPostTitleTextView = (TextView) itemView.findViewById(R.id.subreddit_post_title);
             subredditPostSubredditTextView = (TextView) itemView.findViewById(R.id.subreddit_post_subreddit);
             subredditPostAuthorTextView = (TextView) itemView.findViewById(R.id.subreddit_post_author);
-            subredditPostThumbnailImageView = (ImageView) itemView.findViewById(R.id.recipe_image);
+            subredditPostThumbnailImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
+            subredditThumbnailLayout = (LinearLayout) itemView.findViewById(R.id.subreddit_thumbnail_vert_layout);
         }
 
         @Override
@@ -178,16 +184,26 @@ public class ViewSubredditActivityFragment extends Fragment {
 
         public void bindSubredditSubmission(SubredditSubmission subredditSubmission) {
             this.mSubredditSubmission = subredditSubmission;
-            this.subredditPostScoreTextView.setText(String.format(Locale.getDefault(), "%d", mSubredditSubmission.getSubmissionScore()));
+
+            this.subredditPostScoreTextView.setText(
+                    sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
+
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
             String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
             this.subredditPostSubredditTextView.setText(formattedSubreddit);
-            this.subredditPostAuthorTextView.setText(mSubredditSubmission.getAuthor());
 
-            if (!mSubredditSubmission.isHasThumbnail()) {
+            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
+            this.subredditPostAuthorTextView.setText(formattedAuthor);
+
+            if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());
-                this.subredditPostThumbnailImageView.setImageURI(imageUri);
+                Picasso.get().load(imageUri).into(this.subredditPostThumbnailImageView);
             } else {
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        0f);
+                subredditThumbnailLayout.setLayoutParams(param);
                 this.subredditPostThumbnailImageView.setVisibility(View.GONE);
             }
         }
