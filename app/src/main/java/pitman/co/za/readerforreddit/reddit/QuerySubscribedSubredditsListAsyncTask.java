@@ -23,7 +23,7 @@ import pitman.co.za.readerforreddit.MainActivityFragment;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
 // reddit client ID: CGG1OAPhpEmzgw
-public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Void, List<Listing<Submission>>> {
+public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<String>, Void, List<Listing<Submission>>> {
 
     private MainActivityFragment mMainActivityFragment;
     private static String LOG_TAG = QuerySubscribedSubredditsListAsyncTask.class.getCanonicalName();
@@ -65,7 +65,7 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Vo
      * */
 
     @Override
-    protected List<Listing<Submission>> doInBackground(String... strings) {
+    protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
         UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
@@ -73,12 +73,12 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<String, Vo
         Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
-        ArrayList<String> subreddits = new ArrayList<>();
-        subreddits.add("Nokia7Plus");
-        subreddits.add("gifs");
-        subreddits.add("Android");
-        subreddits.add("science");
-
+        ArrayList<String> subreddits = strings[0];
+//        subreddits.add("Nokia7Plus");
+//        subreddits.add("gifs");
+//        subreddits.add("Android");
+//        subreddits.add("science");
+//
         List<Listing<Submission>> polledSubredditData = new ArrayList<>();
         for (String subreddit : subreddits) {
             polledSubredditData.add(pollSubreddit(redditClient, subreddit, 5));

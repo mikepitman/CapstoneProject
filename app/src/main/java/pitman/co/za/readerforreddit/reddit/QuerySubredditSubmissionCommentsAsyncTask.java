@@ -77,13 +77,6 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
                         commentNodeSubject.getScore(),
                         commentNodeSubject.getCreated().toString());
                 commentsList.add(comment);
-//                Log.d(LOG_TAG,
-//                        comment.getSubmissionId() + "  " +
-//                                comment.getCommentNumber() + "  " +
-//                                comment.getCommentAuthor() + "  " +
-//                                comment.getComment() + "  " +
-//                                comment.getCommentDepth() + "  " +
-//                                comment.getCommentScore());
                 commentCounter++;
             }
 

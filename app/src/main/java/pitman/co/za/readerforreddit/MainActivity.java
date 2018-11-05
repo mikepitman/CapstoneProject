@@ -1,14 +1,21 @@
 package pitman.co.za.readerforreddit;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
@@ -16,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private FirebaseAnalytics mFirebaseAnalytics;
+    private Set<String> mSelectedSubreddits;
 
     @LayoutRes
     protected int getLayoutResId() {
@@ -36,22 +44,56 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
+        SharedPreferences preferences = this.getPreferences(Context.MODE_PRIVATE);
+        if (preferences != null) {
+            mSelectedSubreddits = preferences.getStringSet("subreddits", null);
+            if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
+                // launch intent for action to select subreddits
+                Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);
+                startActivity(updateSubredditSelectionIntent);
+            } else {
+                FragmentManager fm = getSupportFragmentManager();
+                Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
 
-        if (fragment == null) {
-            fragment = new MainActivityFragment();
+                if (fragment == null) {
+                    fragment = new MainActivityFragment();
 
-            Bundle fragmentBundle = new Bundle();
+                    Bundle fragmentBundle = new Bundle();
 //            fragmentBundle.putBoolean("isTablet", mIsTablet);
-            fragment.setArguments(fragmentBundle);
+                    fragmentBundle.putStringArrayList("selectedSubreddits", new ArrayList<>(mSelectedSubreddits));
+                    fragment.setArguments(fragmentBundle);
 
-            fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
+                    fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
+                }
+
+            }
         }
 
 //        // Fragment for displaying subreddit cards
 //        new QuerySubscribedSubredditsListAsyncTask(this).execute();
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Initialise menu, and launch activity for changing the selection of subreddits
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_select_subreddits, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.select_subreddits:
+                Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);
+                startActivity(updateSubredditSelectionIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onSubredditSelected(SubredditSubmission subredditSubmission) {
@@ -84,25 +126,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
     @Override
-    public void onResume () {
+    public void onResume() {
         super.onResume();
         Log.d(LOG_TAG, "onResume()");
     }
 
     @Override
-    public void onPause () {
+    public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, "onPause()");
     }
 
     @Override
-    public void onStop () {
+    public void onStop() {
         super.onStop();
         Log.d(LOG_TAG, "onStop()");
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy()");
     }

@@ -1,5 +1,6 @@
 package pitman.co.za.readerforreddit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,13 +23,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import pitman.co.za.readerforreddit.reddit.QuerySubredditExistenceAsyncTask;
+import pitman.co.za.readerforreddit.reddit.SubredditExistenceQueryResult;
+
 public class SelectSubredditsActivityFragment extends Fragment {
 
     private static String LOG_TAG = SelectSubredditsActivityFragment.class.getSimpleName();
     private static SelectedSubredditCardAdapter mAdapter;
     private RecyclerView mSelectedSubredditsRecyclerView;
     private View rootView;
+    private EditText mEditTextView;
     private Set<String> selectedSubreddits;
+    private String submittedSubreddit;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -37,41 +47,30 @@ public class SelectSubredditsActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
 
-        if (savedInstanceState != null) {
+//        if (savedInstanceState != null) {
 //            mSelectedSubreddits = savedInstanceState.getString("selectedSubreddit");
 //            Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
 
-        } else {
-            if (this.getArguments() != null) {
-                Bundle bundle = this.getArguments();
+//        } else {
+//            if (this.getArguments() != null) {
+//                Bundle bundle = this.getArguments();
 //                mSelectedSubreddits = bundle.getString("selectedSubreddit");
 //                Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddits);
-            }
-        }
-
-        // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
-//        mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
-//        mSubredditsViewModel.getAllSubmissionsForSubreddit(mSelectedSubreddits).observe(this, new Observer<List<SubredditSubmission>>() {
-//            @Override
-//            public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
-//                mAdapter.swapData(subreddits);
 //            }
-//        });
-//        mAdapter = new ViewSubredditActivityFragment.SelectedSubredditCardAdapter(mSubredditsViewModel.getAllSubmissionsForSubreddit(mSelectedSubreddits).getValue());
-        SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+//        }
+
+        SharedPreferences preferences = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE);
         if (preferences != null) {
             selectedSubreddits = preferences.getStringSet("subreddits", null);
             Log.d(LOG_TAG, "preferences retrieved");
-        } else {
-            selectedSubreddits = new HashSet<>();
-            Log.d(LOG_TAG, "generating list of preferences");
-            selectedSubreddits.add("r/Android");
+            if (selectedSubreddits == null) {
+                selectedSubreddits = new HashSet<>();
+                Log.d(LOG_TAG, "generating list of preferences");
+                selectedSubreddits.add("r/Android");
+            }
         }
 
         mAdapter = new SelectedSubredditCardAdapter(new ArrayList<>(selectedSubreddits));
-
-        // todo: save set of values to sharedpreferences
-//        preference = preferences.getString(context.getString(R.string.sort_param_key), context.getString(R.string.sort_param_default));
     }
 
     @Override
@@ -79,20 +78,84 @@ public class SelectSubredditsActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "3. onCreateView()");
 
-
-        // Get bundle arguments from MainActivity
-//        boolean isTablet = false;
-//        Bundle arguments = this.getArguments();
-//        if (arguments != null) {
-//            isTablet = arguments.getBoolean("isTablet");
-//        }
-
         rootView = inflater.inflate(R.layout.fragment_select_subreddits, container, false);
         mSelectedSubredditsRecyclerView = (RecyclerView) rootView.findViewById(R.id.selected_subreddits_recycler_view);
         mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
 
+        mEditTextView = (EditText) rootView.findViewById(R.id.add_subreddit_text_input);
+        Button submitSubredditButton = (Button) rootView.findViewById(R.id.add_subreddit_submit_button);
+        submitSubredditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verifySubredditAddition(v);
+            }
+        });
+
         return rootView;
+    }
+
+    public void verifySubredditAddition(View view) {
+        submittedSubreddit = mEditTextView.getText().toString();
+        Log.d(LOG_TAG, "button to add subreddit clicked: " + submittedSubreddit);
+
+        if ((submittedSubreddit.length() < 2 ) || !submittedSubreddit.substring(0, 1).equals("r/")) {
+            submittedSubreddit = "r/" + submittedSubreddit;
+        }
+
+        // length must be longer than 3 (excl '/r') and less than 20
+        if (submittedSubreddit.length() < 5 || submittedSubreddit.length() > 20) {
+            // todo: toast about length
+            Log.d(LOG_TAG, "too short or long");
+        }
+
+        if (!selectedSubreddits.contains(submittedSubreddit)) {
+            Log.d(LOG_TAG, "sending subreddit to query existence");
+            new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit.substring(2));
+        } else {
+            // snackbar to indicate the subreddit is in the list already
+            Log.d(LOG_TAG, "the list already contains this");
+        }
+    }
+
+    public void subredditVerified(SubredditExistenceQueryResult queryResult) {
+        if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
+            // todo: toast that subreddit is NSFW
+            Log.d(LOG_TAG, "subreddit NSFW: " + submittedSubreddit);
+            clearUserInputView();
+        } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
+            // todo: toast that subreddit is nonexistent
+            Log.d(LOG_TAG, "subreddit nonexistent: " + submittedSubreddit);
+            clearUserInputView();
+        } else {
+            selectedSubreddits.add(submittedSubreddit);
+            updateSharedPrefs();
+        }
+    }
+
+    private void clearUserInputView() {
+        mEditTextView.setText("");
+        submittedSubreddit = "";
+
+        // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+    }
+
+    public void removeSubredditFromList(String subredditName) {
+        Log.d(LOG_TAG, "Button clicked to remove subreddit");
+        selectedSubreddits.remove(subredditName);
+        updateSharedPrefs();
+    }
+
+    private void updateSharedPrefs() {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putStringSet("subreddits", selectedSubreddits);
+        editor.apply();
+
+        mAdapter.swapData(new ArrayList<>(selectedSubreddits));
+        clearUserInputView();
     }
 
     private class SelectedSubredditCardAdapter extends RecyclerView.Adapter<SelectedSubredditCardViewHolder> {
@@ -115,13 +178,13 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         @Override
         public SelectedSubredditCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View subredditNameView = LayoutInflater.from(parent.getContext()).inflate(R.layout.subreddit_post_view, parent, false);
+            View subredditNameView = LayoutInflater.from(parent.getContext()).inflate(R.layout.selected_subreddit_cardview, parent, false);
             return new SelectedSubredditCardViewHolder(subredditNameView);
         }
 
         @Override
         public void onBindViewHolder(SelectedSubredditCardViewHolder holder, int position) {
-            holder.subredditNameTextView.setText(mSelectedSubreddits.get(position));
+            holder.bindSubredditName(mSelectedSubreddits.get(position));
         }
 
         @Override
@@ -141,20 +204,29 @@ public class SelectSubredditsActivityFragment extends Fragment {
         }
     }
 
-    private class SelectedSubredditCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class SelectedSubredditCardViewHolder extends RecyclerView.ViewHolder {
 
+        private String subredditName;
         private TextView subredditNameTextView;
-        // might need to have a button declared, to click and remove a selected subreddit from the list
+        private ImageButton removeSubredditButton;
 
         SelectedSubredditCardViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
             subredditNameTextView = (TextView) itemView.findViewById(R.id.selected_subreddit_name);
+            removeSubredditButton = (ImageButton) itemView.findViewById(R.id.remove_selected_subreddit_button);
+
+            removeSubredditButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeSubredditFromList(subredditName);
+                }
+            });
         }
 
-        @Override
-        public void onClick(View view) {
-//            mCallbacks.onSubmissionSelected(mSubredditSubmission);
+        public void bindSubredditName(String subredditName) {
+            this.subredditName = subredditName;
+            this.subredditNameTextView.setText(subredditName);
+
         }
     }
 }

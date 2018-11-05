@@ -1,20 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
+                                             android:layout_height="match_parent"
+                                             tools:layout_editor_absoluteY="25dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <!-- Text input for selecting new subreddit -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/add_subreddit_text_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:inputType="text"/>
+
+            <Button
+                android:id="@+id/add_subreddit_submit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+
+                android:contentDescription="@string/add_subreddit_description"
+                android:text="@string/add_subreddit_button"/>
+            <!--android:onClick="verifySubredditAddition"-->
+
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/selected_subreddits_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <!-- Selected subreddits -->
 
         </android.support.v7.widget.RecyclerView>
 

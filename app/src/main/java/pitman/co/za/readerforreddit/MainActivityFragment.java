@@ -38,8 +38,9 @@ public class MainActivityFragment extends Fragment {
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
     private static SubredditSubmissionCardAdapter mAdapter;
+    private ArrayList<String> selectedSubreddits;
 
-    //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
         void onSubredditSelected(SubredditSubmission subredditSubmission);
     }
@@ -78,6 +79,11 @@ public class MainActivityFragment extends Fragment {
         });
         List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions().getValue());
         mAdapter = new SubredditSubmissionCardAdapter(topSubredditSubmissions);
+
+        Bundle activityArguments = this.getArguments();
+        if (activityArguments != null) {
+            selectedSubreddits = activityArguments.getStringArrayList("selectedSubreddits");
+        }
     }
 
     // Collect the top-scored submissions for each subreddit for display on 'home screen' from list of all returned subreddit submissions
@@ -124,7 +130,7 @@ public class MainActivityFragment extends Fragment {
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
 
         // Launch asyncTask to retrieve top submissions from selected subreddits
-        new QuerySubscribedSubredditsListAsyncTask(this).execute();
+        new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
 
         return view;
     }
