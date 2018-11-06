@@ -20,11 +20,11 @@ public class SubredditSubmissionViewModel extends AndroidViewModel {
     public SubredditSubmissionViewModel(Application application) {
         super(application);
         mRepository = new SubredditSubmissionRepository(application);
-        mAllSubredditSubmissions = mRepository.getAllSubredditSubmissions();
+//        mAllSubredditSubmissions = mRepository.getAllSubredditSubmissions();
     }
 
-    public LiveData<List<SubredditSubmission>> getAllSubredditSubmissions() {
-        mAllSubredditSubmissions = mRepository.getAllSubredditSubmissions();
+    public LiveData<List<SubredditSubmission>> getAllSubredditSubmissions(ArrayList<String> subreddits) {
+        mAllSubredditSubmissions = mRepository.getAllSubredditSubmissions(subreddits);
         return mAllSubredditSubmissions;
     }
 
@@ -42,6 +42,10 @@ public class SubredditSubmissionViewModel extends AndroidViewModel {
 
     public void insertComments(ArrayList<SubmissionComment> submissionComments) {
         mRepository.insertComments(submissionComments);
+    }
+
+    public void deleteSubreddit(String subreddit) {
+        mRepository.deleteSubreddit(subreddit);
     }
 
     public void setSelectedSubredditSubmission(SubredditSubmission subredditSubmission) {

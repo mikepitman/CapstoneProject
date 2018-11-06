@@ -4,7 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pitman.co.za.readerforreddit.domainObjects.SubmissionComment;
@@ -25,15 +27,17 @@ public class SubredditSubmissionRepository {
     SubredditSubmissionRepository(Application application) {
         SubredditSubmissionDatabase db = SubredditSubmissionDatabase.getDatabase(application);
         mSubredditSubmissionDao = db.mSubredditSubmissionDao();
-        mAllSubredditSubmissions = mSubredditSubmissionDao.getSubredditSubmissions();
+//        mAllSubredditSubmissions = mSubredditSubmissionDao.getSubredditSubmissions();
     }
 
     // Stored recipes are static, but list may have recipes added as new recipes added to json listing
-    LiveData<List<SubredditSubmission>> getAllSubredditSubmissions() {
-        return mAllSubredditSubmissions;
+    LiveData<List<SubredditSubmission>> getAllSubredditSubmissions(ArrayList<String> subreddits) {
+//        return mAllSubredditSubmissions;
+        return mSubredditSubmissionDao.getSubredditSubmissions(subreddits.toArray(new String[subreddits.size()]));
     }
 
     LiveData<List<SubredditSubmission>> getSubmissionsForSubreddit(String subreddit) {
+        Log.d(LOG_TAG, "subreddit being queried: " + subreddit);
         mSubmissionsForSubreddit = mSubredditSubmissionDao.getSubmissionsForSubreddit(subreddit);
         return mSubmissionsForSubreddit;
     }
@@ -46,23 +50,29 @@ public class SubredditSubmissionRepository {
         return mSubmissionComments;
     }
 
-    // todo: would be better to pass list<> than create a new asyncTask for each element in list
     public void insert(List<SubredditSubmission> subredditSubmissions) {
-//        for (SubredditSubmission submission : subredditSubmissions) {
-//            new insertSubredditSubmissionsAsyncTask(mSubredditSubmissionDao).execute(submission);
-//        }
+        // delete subreddit submissions, to avoid stale subreddits hanging around
+
         new insertSubredditSubmissionsAsyncTask(mSubredditSubmissionDao).
                 execute(subredditSubmissions.toArray(new SubredditSubmission[subredditSubmissions.size()]));
     }
 
     public void insertComments(List<SubmissionComment> submissionComments) {
-//        for (SubmissionComment comment : submissionComments) {
-//            new insertSubmissionCommentAsyncTask(mSubredditSubmissionDao).execute(comment);
+        // delete subreddit submission comments, to avoid comment from stale subreddits hanging around
         new insertSubmissionCommentAsyncTask(mSubredditSubmissionDao).
                 execute(submissionComments.toArray(new SubmissionComment[submissionComments.size()]));
-//        }
     }
 
+    public void deleteSubreddit(String subreddit) {
+//        if (subreddit.length() > 2 && subreddit.substring(0,1).contains("/r")) {
+//            subreddit = subreddit.substring(2);
+//        }
+        Log.d(LOG_TAG, "deleting subreddit " + subreddit);
+
+        new deleteSubredditAsyncTask(mSubredditSubmissionDao).execute(subreddit);
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static class insertSubredditSubmissionsAsyncTask extends AsyncTask<SubredditSubmission[], Void, Void> {
         private SubredditSubmissionDao mAsyncTaskDao;
 
@@ -86,7 +96,20 @@ public class SubredditSubmissionRepository {
 
         @Override
         protected Void doInBackground(final SubmissionComment[]... params) throws SQLiteConstraintException {
+            mAsyncTaskDao.deleteComments();
             mAsyncTaskDao.saveComments(params[0]);
+            return null;
+        }
+    }
+
+    private static class deleteSubredditAsyncTask extends AsyncTask<String, Void, Void> {
+        private SubredditSubmissionDao mAsyncTaskDao;
+
+        deleteSubredditAsyncTask(SubredditSubmissionDao dao) { mAsyncTaskDao = dao; }
+
+        @Override
+        protected Void doInBackground(final String... params) throws SQLiteConstraintException {
+            mAsyncTaskDao.deleteSubreddit(params[0]);
             return null;
         }
     }

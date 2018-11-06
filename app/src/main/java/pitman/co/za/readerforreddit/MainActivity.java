@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SharedPreferences preferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
         if (preferences != null) {
             mSelectedSubreddits = preferences.getStringSet("subreddits", null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
@@ -65,12 +65,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
                     fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
                 }
-
             }
         }
-
-//        // Fragment for displaying subreddit cards
-//        new QuerySubscribedSubredditsListAsyncTask(this).execute();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

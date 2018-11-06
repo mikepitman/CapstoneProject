@@ -1,10 +1,13 @@
 package pitman.co.za.readerforreddit;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,12 +28,15 @@ import java.util.Set;
 
 import pitman.co.za.readerforreddit.reddit.QuerySubredditExistenceAsyncTask;
 import pitman.co.za.readerforreddit.reddit.SubredditExistenceQueryResult;
+import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 
 public class SelectSubredditsActivityFragment extends Fragment {
 
     private static String LOG_TAG = SelectSubredditsActivityFragment.class.getSimpleName();
     private static SelectedSubredditCardAdapter mAdapter;
     private RecyclerView mSelectedSubredditsRecyclerView;
+    private SubredditSubmissionViewModel mSubredditsViewModel;
+    private CoordinatorLayout mCoordinatorLayout;
     private View rootView;
     private EditText mEditTextView;
     private Set<String> selectedSubreddits;
@@ -59,18 +65,20 @@ public class SelectSubredditsActivityFragment extends Fragment {
 //            }
 //        }
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE);
+        SharedPreferences preferences = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
         if (preferences != null) {
             selectedSubreddits = preferences.getStringSet("subreddits", null);
             Log.d(LOG_TAG, "preferences retrieved");
             if (selectedSubreddits == null) {
                 selectedSubreddits = new HashSet<>();
                 Log.d(LOG_TAG, "generating list of preferences");
-                selectedSubreddits.add("r/Android");
+                selectedSubreddits.add("Android");
             }
         }
 
         mAdapter = new SelectedSubredditCardAdapter(new ArrayList<>(selectedSubreddits));
+
+        mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
     }
 
     @Override
@@ -79,9 +87,12 @@ public class SelectSubredditsActivityFragment extends Fragment {
         Log.d(LOG_TAG, "3. onCreateView()");
 
         rootView = inflater.inflate(R.layout.fragment_select_subreddits, container, false);
+
         mSelectedSubredditsRecyclerView = (RecyclerView) rootView.findViewById(R.id.selected_subreddits_recycler_view);
         mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
+
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_select_subreddits_coordinatorLayout);
 
         mEditTextView = (EditText) rootView.findViewById(R.id.add_subreddit_text_input);
         Button submitSubredditButton = (Button) rootView.findViewById(R.id.add_subreddit_submit_button);
@@ -99,33 +110,34 @@ public class SelectSubredditsActivityFragment extends Fragment {
         submittedSubreddit = mEditTextView.getText().toString();
         Log.d(LOG_TAG, "button to add subreddit clicked: " + submittedSubreddit);
 
-        if ((submittedSubreddit.length() < 2 ) || !submittedSubreddit.substring(0, 1).equals("r/")) {
-            submittedSubreddit = "r/" + submittedSubreddit;
+        if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0,1).equals("r/")) {
+            submittedSubreddit = submittedSubreddit.substring(2);
         }
 
         // length must be longer than 3 (excl '/r') and less than 20
-        if (submittedSubreddit.length() < 5 || submittedSubreddit.length() > 20) {
-            // todo: toast about length
-            Log.d(LOG_TAG, "too short or long");
-        }
+        if (submittedSubreddit.length() < 3 || submittedSubreddit.length() > 20) {
+//            Log.d(LOG_TAG, "too short or long");
+            Snackbar.make(mCoordinatorLayout, R.string.subreddit_incorrect_length, Snackbar.LENGTH_LONG).show();
 
-        if (!selectedSubreddits.contains(submittedSubreddit)) {
-            Log.d(LOG_TAG, "sending subreddit to query existence");
-            new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit.substring(2));
+        } else if (!selectedSubreddits.contains(submittedSubreddit)) {
+//            Log.d(LOG_TAG, "sending subreddit to query existence");
+            new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
+
         } else {
             // snackbar to indicate the subreddit is in the list already
-            Log.d(LOG_TAG, "the list already contains this");
+//            Log.d(LOG_TAG, "the list already contains this");
+            Snackbar.make(mCoordinatorLayout, R.string.subreddit_already_in_list, Snackbar.LENGTH_LONG).show();
         }
     }
 
     public void subredditVerified(SubredditExistenceQueryResult queryResult) {
         if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
-            // todo: toast that subreddit is NSFW
             Log.d(LOG_TAG, "subreddit NSFW: " + submittedSubreddit);
+            Snackbar.make(mCoordinatorLayout, R.string.subreddit_nsfw, Snackbar.LENGTH_LONG).show();
             clearUserInputView();
         } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
-            // todo: toast that subreddit is nonexistent
             Log.d(LOG_TAG, "subreddit nonexistent: " + submittedSubreddit);
+            Snackbar.make(mCoordinatorLayout, R.string.subreddit_nonexistent, Snackbar.LENGTH_LONG).show();
             clearUserInputView();
         } else {
             selectedSubreddits.add(submittedSubreddit);
@@ -143,15 +155,17 @@ public class SelectSubredditsActivityFragment extends Fragment {
     }
 
     public void removeSubredditFromList(String subredditName) {
-        Log.d(LOG_TAG, "Button clicked to remove subreddit");
+        Log.d(LOG_TAG, "Button clicked to remove subreddit " + subredditName);
+        mSubredditsViewModel.deleteSubreddit(subredditName);
         selectedSubreddits.remove(subredditName);
         updateSharedPrefs();
     }
 
     private void updateSharedPrefs() {
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putStringSet("subreddits", selectedSubreddits);
+//        editor.commit();
         editor.apply();
 
         mAdapter.swapData(new ArrayList<>(selectedSubreddits));
@@ -224,9 +238,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
         }
 
         public void bindSubredditName(String subredditName) {
+            String displayName = "r/" + subredditName;
             this.subredditName = subredditName;
-            this.subredditNameTextView.setText(subredditName);
-
+            this.subredditNameTextView.setText(displayName);
         }
     }
 }

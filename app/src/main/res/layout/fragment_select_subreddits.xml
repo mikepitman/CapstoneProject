@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent"
-                                             tools:layout_editor_absoluteY="25dp">
+<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                                             <!--xmlns:tools="http://schemas.android.com/tools"-->
+                                             <!--android:layout_width="match_parent"-->
+                                             <!--android:layout_height="match_parent"-->
+                                             <!--tools:layout_editor_absoluteY="25dp">-->
+
+<!--https://www.androidauthority.com/using-coordinatorlayout-android-apps-703720/-->
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/fragment_select_subreddits_coordinatorLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -46,4 +54,5 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>
+<!--</android.support.constraint.ConstraintLayout>-->

@@ -15,6 +15,12 @@ import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 @Dao
 public interface SubredditSubmissionDao {
 
+    @Query("delete from subreddit_submission where subreddit = :subreddit")
+    void deleteSubreddit(String subreddit);
+
+    @Query("delete from submission_comment")
+    void deleteComments();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveSubmissions(SubredditSubmission[] subredditSubmission);
 
@@ -22,8 +28,8 @@ public interface SubredditSubmissionDao {
     void saveComments(SubmissionComment[] comments);
 
     @Transaction
-    @Query("select * from subreddit_submission order by subreddit, commentCount")
-    LiveData<List<SubredditSubmission>> getSubredditSubmissions();
+    @Query("select * from subreddit_submission where subreddit in (:subreddits) order by subreddit, commentCount")
+    LiveData<List<SubredditSubmission>> getSubredditSubmissions(String[] subreddits);
 
     @Transaction
     @Query("select * from subreddit_submission where subreddit = :subreddit")

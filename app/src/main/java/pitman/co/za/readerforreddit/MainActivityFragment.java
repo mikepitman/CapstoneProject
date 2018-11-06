@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,8 @@ public class MainActivityFragment extends Fragment {
     private Callbacks mCallbacks;
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
+    private View rootView;
+    private CoordinatorLayout mCoordinatorLayout;
     private static SubredditSubmissionCardAdapter mAdapter;
     private ArrayList<String> selectedSubreddits;
 
@@ -69,21 +72,21 @@ public class MainActivityFragment extends Fragment {
         Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
 
+        Bundle activityArguments = this.getArguments();
+        if (activityArguments != null) {
+            selectedSubreddits = activityArguments.getStringArrayList("selectedSubreddits");
+        }
+
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
         mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
-        mSubredditsViewModel.getAllSubredditSubmissions().observe(this, new Observer<List<SubredditSubmission>>() {
+        mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).observe(this, new Observer<List<SubredditSubmission>>() {
             @Override
             public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
                 mAdapter.swapData(parseTopSubredditSubmissions(subreddits));
             }
         });
-        List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions().getValue());
+        List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).getValue());
         mAdapter = new SubredditSubmissionCardAdapter(topSubredditSubmissions);
-
-        Bundle activityArguments = this.getArguments();
-        if (activityArguments != null) {
-            selectedSubreddits = activityArguments.getStringArrayList("selectedSubreddits");
-        }
     }
 
     // Collect the top-scored submissions for each subreddit for display on 'home screen' from list of all returned subreddit submissions
@@ -124,15 +127,17 @@ public class MainActivityFragment extends Fragment {
 //            isTablet = arguments.getBoolean("isTablet");
 //        }
 
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mSubredditSubmissionRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
+
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_main_coordinatorLayout);
 
         // Launch asyncTask to retrieve top submissions from selected subreddits
         new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
 
-        return view;
+        return rootView;
     }
 
     public void generateSubredditSubmissionsAdapterWithData(ArrayList<SubredditSubmission> retrievedSubredditSubmissions) {
