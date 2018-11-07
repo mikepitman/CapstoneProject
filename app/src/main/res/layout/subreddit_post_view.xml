@@ -10,84 +10,84 @@
     android:fitsSystemWindows="true"
     card_view:cardCornerRadius="4dp">
 
-    <!-- Screen 1 - 'front page' -->
-    <!--<android.support.design.widget.CoordinatorLayout-->
+  <!-- Screen 1 - 'front page' -->
+  <!--<android.support.design.widget.CoordinatorLayout-->
+  <LinearLayout
+
+      android:id="@+id/subreddit_post_horiz_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="1dp"
+      android:layout_marginStart="1dp"
+      android:orientation="horizontal">
+
     <LinearLayout
-
-        android:id="@+id/subreddit_post_horiz_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="1dp"
-        android:layout_marginStart="1dp"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/subreddit_post_score_vert_layout"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@color/theme_primary_light"
-            android:gravity="center"
-            android:orientation="vertical"
-            >
-            <!-- Up arrow -->
-            <TextView
-                android:id="@+id/subreddit_post_score"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:background="@color/ltgray"
-                android:gravity="center_vertical"
-                android:textAlignment="center"/>
-            <!-- Down arrow -->
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/subreddit_post_details_vert_layout"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-
-            android:layout_weight="6"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <!-- layout_toEndOf allows order of linearLayouts to reverse for RTL locales
-                 https://developer.android.com/about/versions/android-4.2#RTL -->
-            <TextView
-                android:id="@+id/subreddit_post_subreddit"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"/>
-
-            <TextView
-                android:id="@+id/subreddit_post_title"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
-
-            <TextView
-                android:id="@+id/subreddit_post_author"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/subreddit_thumbnail_vert_layout"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="2"
-            android:gravity="center_vertical|end"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/thumbnail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
-                android:contentDescription="@string/subreddit_submission_thumbnail"
-                android:scaleType="fitCenter"/>
-
-        </LinearLayout>
+        android:id="@+id/subreddit_post_score_vert_layout"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/theme_primary_light"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+      <!-- Up arrow -->
+      <TextView
+          android:id="@+id/subreddit_post_score"
+          android:layout_width="fill_parent"
+          android:layout_height="match_parent"
+          android:background="@color/ltgray"
+          android:gravity="center_vertical"
+          android:textAlignment="center"/>
+      <!-- Down arrow -->
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/subreddit_post_details_vert_layout"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+
+        android:layout_weight="6"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+      <!-- layout_toEndOf allows order of linearLayouts to reverse for RTL locales
+           https://developer.android.com/about/versions/android-4.2#RTL -->
+      <TextView
+          android:id="@+id/subreddit_post_subreddit"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="top"/>
+
+      <TextView
+          android:id="@+id/subreddit_post_title"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"/>
+
+      <TextView
+          android:id="@+id/subreddit_post_author"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/subreddit_thumbnail_vert_layout"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2"
+        android:gravity="center_vertical|end"
+        android:orientation="vertical">
+
+      <ImageView
+          android:id="@+id/thumbnail"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical|end"
+          android:contentDescription="@string/subreddit_submission_thumbnail"
+          android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+  </LinearLayout>
 
 </android.support.v7.widget.CardView>

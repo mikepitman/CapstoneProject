@@ -23,23 +23,23 @@
     <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <activity
         android:name=".ViewSubredditActivity"
-        android:parentActivityName=".MainActivity">
-
+        android:parentActivityName=".MainActivity"
+        android:launchMode="singleTop">
       <!-- https://stackoverflow.com/questions/20819019/why-is-ondestroy-always-called-when-returning-to-parent-activity -->
+
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value="pitman.co.za.readerforreddit.MainActivity"/>
 
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
+      <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN"/>-->
+        <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+      <!--</intent-filter>-->
     </activity>
     <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <activity
         android:name=".ViewSubmissionActivity"
         android:parentActivityName=".ViewSubredditActivity">
-      <!-- https://stackoverflow.com/questions/20819019/why-is-ondestroy-always-called-when-returning-to-parent-activity -->
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value="pitman.co.za.readerforreddit.ViewSubredditActivity"/>
@@ -50,7 +50,6 @@
     <activity
         android:name=".SelectSubredditsActivity"
         android:parentActivityName=".MainActivity">
-      <!-- https://stackoverflow.com/questions/20819019/why-is-ondestroy-always-called-when-returning-to-parent-activity -->
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value="pitman.co.za.readerforreddit.MainActivity"/>

@@ -122,7 +122,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         } else if (!selectedSubreddits.contains(submittedSubreddit)) {
             new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
-
+            hideKeyboard();
         } else {
             showSnackbar(R.string.subreddit_already_in_list);
         }
@@ -151,7 +151,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private void clearUserInputView() {
         mEditTextView.setText("");
         submittedSubreddit = "";
+    }
 
+    private void hideKeyboard() {
         // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
