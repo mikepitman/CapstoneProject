@@ -53,11 +53,9 @@ public class SelectSubredditsActivity extends AppCompatActivity {//implements Ma
     public void onSubredditSelected(SubredditSubmission subredditSubmission) {
         // create intent for new activity, to display the posts of the selected subreddit
         Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
-
         Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
         viewSubredditIntent.putExtra("selectedSubreddit", subredditSubmission.getSubreddit());
         startActivity(viewSubredditIntent);
-
         // Once recipe is selected, update the widget with ingredients for the newly selected recipe
         // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
 //        Intent updateWidgetIntent = new Intent(this, RecipeWidgetProvider.class);
