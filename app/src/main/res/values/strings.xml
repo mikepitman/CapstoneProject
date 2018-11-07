@@ -9,6 +9,9 @@
     <string name="add_subreddit_button">Add</string>
     <string name="add_subreddit_description">Add to selection</string>
 
+    <!-- Strings used in SelectSubredditsActivityFragment -->
+    <string name="supply_default_subreddit">You don\'t have any selected subreddits yet, so check out r/Android!</string>
+    <string name="subreddit_includes_prefix">It\'s not necessary to include the \'r/\' prefix for subreddits!</string>
     <string name="subreddit_incorrect_length">Subreddit names must be longer than 3 and less than 20 characters!</string>
     <string name="subreddit_already_in_list">Subreddit already selected!</string>
     <string name="subreddit_nsfw">Subreddit is marked \'NSFW\'!</string>

@@ -73,6 +73,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
                 selectedSubreddits = new HashSet<>();
                 Log.d(LOG_TAG, "generating list of preferences");
                 selectedSubreddits.add("Android");
+                showSnackbar(R.string.supply_default_subreddit);
             }
         }
 
@@ -112,37 +113,39 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0,1).equals("r/")) {
             submittedSubreddit = submittedSubreddit.substring(2);
+            showSnackbar(R.string.subreddit_includes_prefix);
         }
 
         // length must be longer than 3 (excl '/r') and less than 20
         if (submittedSubreddit.length() < 3 || submittedSubreddit.length() > 20) {
-//            Log.d(LOG_TAG, "too short or long");
-            Snackbar.make(mCoordinatorLayout, R.string.subreddit_incorrect_length, Snackbar.LENGTH_LONG).show();
+            showSnackbar(R.string.subreddit_incorrect_length);
 
         } else if (!selectedSubreddits.contains(submittedSubreddit)) {
-//            Log.d(LOG_TAG, "sending subreddit to query existence");
             new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
 
         } else {
-            // snackbar to indicate the subreddit is in the list already
-//            Log.d(LOG_TAG, "the list already contains this");
-            Snackbar.make(mCoordinatorLayout, R.string.subreddit_already_in_list, Snackbar.LENGTH_LONG).show();
+            showSnackbar(R.string.subreddit_already_in_list);
         }
     }
 
     public void subredditVerified(SubredditExistenceQueryResult queryResult) {
         if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
             Log.d(LOG_TAG, "subreddit NSFW: " + submittedSubreddit);
-            Snackbar.make(mCoordinatorLayout, R.string.subreddit_nsfw, Snackbar.LENGTH_LONG).show();
+            showSnackbar(R.string.subreddit_nsfw);
             clearUserInputView();
         } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
             Log.d(LOG_TAG, "subreddit nonexistent: " + submittedSubreddit);
-            Snackbar.make(mCoordinatorLayout, R.string.subreddit_nonexistent, Snackbar.LENGTH_LONG).show();
+            showSnackbar(R.string.subreddit_nonexistent);
             clearUserInputView();
         } else {
             selectedSubreddits.add(submittedSubreddit);
             updateSharedPrefs();
         }
+    }
+
+    private void showSnackbar(int message) {
+        https://materialdoc.com/components/snackbars-and-toasts/#with-code
+        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
     private void clearUserInputView() {
