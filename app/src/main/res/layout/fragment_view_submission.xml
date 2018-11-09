@@ -1,37 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/toolbar_viewSubmission"
-    android:orientation="vertical">
+<FrameLayout android:id="@+id/view_submission_fragment_container"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_below="@id/toolbar_viewSubmission"
+             android:layout_marginTop="?android:attr/actionBarSize"
+             android:background="@color/black">
 
-    <TextView
-        android:id="@+id/submission_author"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/submission_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        android:id="@+id/submission_image"
+    <android.support.v7.widget.CardView
+        android:id="@+id/view_submission_card_view"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/remove_subreddit"/>
-    <!-- todo: update the above string, obv! -->
+        android:layout_margin="@dimen/card_layout_margin"
+        android:fitsSystemWindows="true"
+        card_view:cardBackgroundColor="@color/offBlack"
+        card_view:cardCornerRadius="@dimen/card_corner_radii">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/submission_comment_recyclerview"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width='wrap_content'
-        android:layout_height='match_parent'>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
-</LinearLayout>
+            <TextView
+                android:id="@+id/submission_author"
+                style="@style/submission_text.supplementary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/submission_title"
+                style="@style/submission_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/submission_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/remove_subreddit"/>
+            <!-- todo: update the above string, obv! -->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/submission_comment_recyclerview"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width='wrap_content'
+                android:layout_height='match_parent'>
+
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</FrameLayout>
 
     <!--<android.support.design.widget.FloatingActionButton-->
     <!--android:id="@+id/fab"-->

@@ -76,7 +76,6 @@ public class ViewSubmissionActivityFragment extends Fragment {
             }
         });
         mAdapter = new SubmissionCommentsAdapter(mSubmissionViewModel.getSubmissionComments(mSelectedSubmission).getValue());
-
     }
 
     @Override
@@ -119,7 +118,6 @@ public class ViewSubmissionActivityFragment extends Fragment {
     }
 
     /// todo: refactor the following for subreddit comments:
-
     private class SubmissionCommentsAdapter extends RecyclerView.Adapter<SubmissionCommentViewHolder> {
 
         private String LOG_TAG = SubmissionCommentViewHolder.class.getSimpleName();

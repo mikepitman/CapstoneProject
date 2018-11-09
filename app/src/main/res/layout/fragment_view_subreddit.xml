@@ -5,8 +5,8 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:layout_marginTop="?android:attr/actionBarSize"
-             android:background="@color/black"
-             android:layout_below="@id/toolbar_viewSubreddit">
+             android:layout_below="@id/toolbar_viewSubreddit"
+             android:background="@color/black">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_view_subreddit_card_recyclerview"

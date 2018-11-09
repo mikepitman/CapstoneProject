@@ -22,12 +22,16 @@
 
       <TextView
           android:id="@+id/comment_author"
+          style="@style/submission_text.supplementary"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="start"/>
+          android:layout_gravity="start"
+          android:paddingStart="@dimen/padding_none"
+          android:paddingEnd="@dimen/padding_none"/>
 
       <TextView
           android:id="@+id/comment_points"
+          style="@style/submission_text.supplementary"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="end"/>
@@ -35,8 +39,11 @@
 
     <TextView
         android:id="@+id/submission_comment"
+        style="@style/submission_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/padding_none"
+        android:paddingEnd="@dimen/padding_none"/>
 
   </LinearLayout>
 
