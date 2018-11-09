@@ -37,7 +37,6 @@
                 android:layout_weight="1"
                 android:clickable="true"
                 android:contentDescription="@string/add_subreddit_description"
-
                 android:focusable="true"
                 android:text="@string/add_subreddit_button"/>
 

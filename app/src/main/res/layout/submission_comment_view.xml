@@ -5,41 +5,37 @@
     android:layout_height="wrap_content">
 
   <LinearLayout
-      android:layout_width="wrap_content"
+      android:layout_width="fill_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal">
+      android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/comment_spacer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <!--<TextView-->
+        <!--android:id="@+id/comment_spacer"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="fill_parent"/>-->
 
     <LinearLayout
         android:id="@+id/comment_details_linear_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
       <TextView
           android:id="@+id/comment_author"
-          style="@style/submission_text.supplementary"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="start"
-          android:paddingStart="@dimen/padding_none"
-          android:paddingEnd="@dimen/padding_none"/>
+          style="@style/comment_text.supplementary"/>
 
       <TextView
           android:id="@+id/comment_points"
-          style="@style/submission_text.supplementary"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="end"/>
+          style="@style/comment_text.supplementary"/>
+
+        <TextView
+            android:id="@+id/comment_age"
+            style="@style/comment_text.supplementary"/>
     </LinearLayout>
 
     <TextView
         android:id="@+id/submission_comment"
-        style="@style/submission_text"
+        style="@style/comment_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/padding_none"

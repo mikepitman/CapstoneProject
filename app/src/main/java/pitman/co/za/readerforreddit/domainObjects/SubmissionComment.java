@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -60,9 +61,28 @@ public class SubmissionComment implements Parcelable {
     }
 
     @Ignore
-    public LocalDateTime getCommentDateTime() {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
-        return formatter.parseLocalDateTime(whenLogged);
+    public String getCommentAge() {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss zZZ YYYY");    // reddit timestamp format is painful!
+        LocalDateTime timestamp = formatter.parseLocalDateTime(whenLogged);
+        Period commentAge = Period.fieldDifference(timestamp, new LocalDateTime());
+
+        if (commentAge.getMonths() > 0) {
+            return String.format(commentAge.getMonths() + " month%s ago", commentAge.getMonths() > 1 ? "s" : "");
+
+        } else if (commentAge.getWeeks() > 0) {
+            return String.format(commentAge.getWeeks() + " week%s ago", commentAge.getWeeks() > 1 ? "s" : "");
+
+        } else if (commentAge.getDays() > 0) {
+            return String.format(commentAge.getDays() + " day%s ago", commentAge.getDays() > 1 ? "s" : "");
+
+        } else if (commentAge.getHours() > 0) {
+            return String.format(commentAge.getHours() + " hour%s ago", commentAge.getHours() > 1 ? "s" : "");
+
+        } else if (commentAge.getMinutes() > 0) {
+            return String.format(commentAge.getMinutes() + " minute%s ago", commentAge.getMinutes() > 1 ? "s" : "");
+        }
+
+        return "A while ago...";
     }
 
     @Ignore

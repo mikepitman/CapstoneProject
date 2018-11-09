@@ -102,7 +102,8 @@ public class ViewSubmissionActivityFragment extends Fragment {
         TextView titleTextView = (TextView) rootView.findViewById(R.id.submission_title);
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
 
-        authorTextView.setText(mSelectedSubmission.getAuthor());
+        String formattedAuthor = "u/" + mSelectedSubmission.getAuthor();
+        authorTextView.setText(formattedAuthor);
         titleTextView.setText(mSelectedSubmission.getTitle());
         if (mSelectedSubmission.isHasThumbnail()) {
             Uri imageUri = Uri.parse(mSelectedSubmission.getThumbnail());
@@ -167,25 +168,33 @@ public class ViewSubmissionActivityFragment extends Fragment {
     private class SubmissionCommentViewHolder extends RecyclerView.ViewHolder {
 
         private SubmissionComment mSubmissionComment;
-        private TextView commentSpacer;
+//        private TextView commentSpacer;
         private TextView commentAuthor;
         private TextView commentPoints;
+        private TextView commentAge;
         private TextView submissionComment;
 
         SubmissionCommentViewHolder(View itemView) {
             super(itemView);
-            commentSpacer = (TextView) itemView.findViewById(R.id.comment_spacer);
+//            commentSpacer = (TextView) itemView.findViewById(R.id.comment_spacer);
             commentAuthor = (TextView) itemView.findViewById(R.id.comment_author);
             commentPoints = (TextView) itemView.findViewById(R.id.comment_points);
+            commentAge = (TextView) itemView.findViewById(R.id.comment_age);
             submissionComment = (TextView) itemView.findViewById(R.id.submission_comment);
         }
 
         public void bindSubmissionComment(SubmissionComment submissionComment) {
             this.mSubmissionComment = submissionComment;
 
-            this.commentSpacer.setText("");
+//            this.commentSpacer.setText("");
+            String formattedCommentPoints = String.format(
+                    String.valueOf(mSubmissionComment.getCommentScore()) + " point%s",
+                    mSubmissionComment.getCommentScore() == 1 ? "" : "s");
+
             this.commentAuthor.setText(mSubmissionComment.getCommentAuthor());
-            this.commentPoints.setText(String.valueOf(mSubmissionComment.getCommentScore()));
+
+            this.commentPoints.setText(formattedCommentPoints);
+            this.commentAge.setText(mSubmissionComment.getCommentAge());
             this.submissionComment.setText(mSubmissionComment.getComment());
         }
     }

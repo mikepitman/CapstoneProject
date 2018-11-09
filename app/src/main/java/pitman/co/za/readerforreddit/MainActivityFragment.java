@@ -60,7 +60,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putBoolean("recipesUpdated", recipesUpdated);
         // todo: save relevant state
     }
 

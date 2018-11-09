@@ -29,4 +29,17 @@
     <item name="android:paddingEnd">@dimen/padding_startEnd_recessed</item>
 </style>
 
+<style name="comment_text">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+    <item name="android:textColor">@color/offWhite</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+</style>
+
+<style name="comment_text.supplementary">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Caption</item>
+    <item name="android:textColor">@color/furtherOffWhite</item>
+    <item name="android:paddingEnd">@dimen/padding_comment_supplementary</item>
+</style>
+
 </resources>
