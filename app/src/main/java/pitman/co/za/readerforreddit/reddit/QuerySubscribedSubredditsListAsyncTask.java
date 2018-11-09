@@ -7,8 +7,10 @@ import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
 import net.dean.jraw.http.UserAgent;
+import net.dean.jraw.models.EmbeddedMedia;
 import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.SubmissionPreview;
 import net.dean.jraw.models.SubredditSort;
 import net.dean.jraw.models.TimePeriod;
 import net.dean.jraw.oauth.Credentials;
@@ -37,7 +39,6 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
     protected void onPostExecute(List<Listing<Submission>> result) {
         super.onPostExecute(result);
 
-        Log.d(LOG_TAG, "writing returned data to room database");
         ArrayList<SubredditSubmission> subredditSubmissions = new ArrayList<>();
         for (Listing<Submission> submissionListing : result) {
             for (Submission submission : submissionListing) {
@@ -53,8 +54,30 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                         submission.getSelfText(),
                         submission.hasThumbnail(),
                         submission.getThumbnail());
+
+                SubmissionPreview preview = submission.getPreview();
+                if (preview != null && preview.getImages().size() > 0) {
+                    SubmissionPreview.Variation variation = preview.getImages().get(0).getSource();
+                    subredditSubmission.addPreview(
+                            variation.getUrl(),
+                            variation.getHeight(),
+                            variation.getWidth());
+                }
+
+                EmbeddedMedia media = submission.getEmbeddedMedia();
+                if (media != null && media.getRedditVideo() != null) {
+                    subredditSubmission.addRedditVideo(
+                            media.getRedditVideo().getFallbackUrl(),
+                            media.getRedditVideo().getHeight(),
+                            media.getRedditVideo().getWidth());
+                }
+
+                if ("link".equals(submission.getPostHint())) {
+                    subredditSubmission.setLinkUrl(submission.getUrl());
+                }
+
                 subredditSubmissions.add(subredditSubmission);
-                Log.d(LOG_TAG, "posthint: " + submission.getPostHint());
+                Log.d(LOG_TAG, "title: " + submission.getTitle() + "  posthint: " + submission.getPostHint());
             }
         }
         mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);
@@ -78,20 +101,16 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         ArrayList<String> subreddits = strings[0];
-//        subreddits.add("Nokia7Plus");
-//        subreddits.add("gifs");
-//        subreddits.add("Android");
-//        subreddits.add("science");
-//
+
         List<Listing<Submission>> polledSubredditData = new ArrayList<>();
         for (String subreddit : subreddits) {
             polledSubredditData.add(pollSubreddit(redditClient, subreddit, 5));
         }
 
-        Log.d(LOG_TAG, "Number of entries in polledSubredditData: " + polledSubredditData.size());
-        for (Listing<Submission> listing : polledSubredditData) {
-            Log.d(LOG_TAG, "size: " + listing.size() + ";  Subreddit: " + listing.get(0).getSubreddit());
-        }
+//        Log.d(LOG_TAG, "Number of entries in polledSubredditData: " + polledSubredditData.size());
+//        for (Listing<Submission> listing : polledSubredditData) {
+//            Log.d(LOG_TAG, "size: " + listing.size() + ";  Subreddit: " + listing.get(0).getSubreddit());
+//        }
 
         return polledSubredditData;
     }

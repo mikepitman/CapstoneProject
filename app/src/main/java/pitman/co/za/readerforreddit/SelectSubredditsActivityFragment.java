@@ -42,8 +42,8 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Set<String> selectedSubreddits;
     private String submittedSubreddit;
     private boolean isSubredditListEmpty = false;
-    private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
-    private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
+    private static final String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
+    private static final String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

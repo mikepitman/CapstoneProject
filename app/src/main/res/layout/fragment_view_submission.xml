@@ -22,8 +22,9 @@
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
+            <!-- set layout_height="match_parent" because of potential webview issues -->
 
             <TextView
                 android:id="@+id/submission_author"
@@ -45,9 +46,15 @@
             <ImageView
                 android:id="@+id/submission_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/remove_subreddit"/>
-            <!-- todo: update the above string, obv! -->
+                android:layout_height="wrap_content"/>
+                <!-- contentDescription set in ViewSubmissionActivityFragment -->
+
+            <WebView
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </WebView>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/submission_comment_recyclerview"

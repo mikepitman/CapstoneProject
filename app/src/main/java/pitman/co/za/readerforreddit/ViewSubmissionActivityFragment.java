@@ -108,17 +108,36 @@ public class ViewSubmissionActivityFragment extends Fragment {
         titleTextView.setText(mSelectedSubmission.getTitle());
 
 
-        if (mSelectedSubmission.isHasThumbnail()) {
-            Uri imageUri = Uri.parse(mSelectedSubmission.getThumbnail());
-            Picasso.get().load(imageUri).into(submissionImageView);
-        } else {
-            submissionImageView.setVisibility(View.INVISIBLE);
-        }
-
+        // Simplest type of submission - text only, no media - this special case is complete
         if (mSelectedSubmission.isSelfPost()) {
             selfPostTextView.setText(mSelectedSubmission.getSelfPost());
         } else {
             selfPostTextView.setVisibility(View.INVISIBLE);
+        }
+
+        // Picasso doesn't handle animated gifs at all :-)
+        String postHint = mSelectedSubmission.getPostHint();
+        // hosted:video --> video from reddit, url is in mSelectedSubmission.getVideoUrl
+        // rich:video --> video hosted elsewhere(?)
+        // link --> post basically contains just a link to share
+
+
+
+        // Video stream hosted by reddit
+        if (postHint.contains("video") && postHint.contains("hosted")) {
+
+
+            Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
+        }
+
+        if (!mSelectedSubmission.getPreviewUrl().isEmpty()) {
+            Uri imageUri = Uri.parse(mSelectedSubmission.getPreviewUrl());
+//            Picasso.get().load(imageUri).fit().centerInside().into(submissionImageView);
+            Picasso.get().load(imageUri).resize(mSelectedSubmission.getPreviewWidth(), mSelectedSubmission.getPreviewHeight()).into(submissionImageView);
+//            Picasso.get().load(imageUri).into(submissionImageView);
+            submissionImageView.setContentDescription(mSelectedSubmission.getTitle());
+        } else {
+            submissionImageView.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -31,6 +31,16 @@ public class SubredditSubmission implements Parcelable {
     private boolean hasThumbnail;
     private String thumbnail;
 
+    private String previewUrl;
+    private int previewHeight;
+    private int previewWidth;
+
+    private String videoUrl;
+    private int videoHeight;
+    private int videoWidth;
+
+    private String linkUrl;
+
     @Ignore
     public SubredditSubmission() {
     }
@@ -109,6 +119,75 @@ public class SubredditSubmission implements Parcelable {
         return thumbnail;
     }
 
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public int getPreviewHeight() {
+        return previewHeight;
+    }
+
+    public int getPreviewWidth() {
+        return previewWidth;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public int getVideoHeight() {
+        return videoHeight;
+    }
+
+    public int getVideoWidth() {
+        return videoWidth;
+    }
+
+    public String getLinkUrl() {
+        return linkUrl;
+    }
+
+    // these setters shouldn't be used, but rather the methods for setting all three values together
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public void setPreviewHeight(int previewHeight) {
+        this.previewHeight = previewHeight;
+    }
+
+    public void setPreviewWidth(int previewWidth) {
+        this.previewWidth = previewWidth;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public void setVideoHeight(int videoHeight) {
+        this.videoHeight = videoHeight;
+    }
+
+    public void setVideoWidth(int videoWidth) {
+        this.videoWidth = videoWidth;
+    }
+
+    public void addPreview(String url, int height, int width) {
+        this.previewUrl = url;
+        this.previewHeight = height;
+        this.previewWidth = width;
+    }
+
+    public void addRedditVideo(String url, int height, int width) {
+        this.videoUrl = url;
+        this.videoHeight = height;
+        this.videoWidth = width;
+    }
+
+    public void setLinkUrl(String url) {
+        this.linkUrl = url;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -127,6 +206,14 @@ public class SubredditSubmission implements Parcelable {
         parcel.writeString(this.selfPost);
         parcel.writeInt(this.hasThumbnail ? 1 : 0);
         parcel.writeString(this.thumbnail);
+
+        parcel.writeString(this.previewUrl);
+        parcel.writeInt(this.previewHeight);
+        parcel.writeInt(this.previewWidth);
+        parcel.writeString(this.videoUrl);
+        parcel.writeInt(this.videoHeight);
+        parcel.writeInt(this.videoWidth);
+        parcel.writeString(this.linkUrl);
     }
 
     public SubredditSubmission(Parcel in) {
@@ -141,6 +228,14 @@ public class SubredditSubmission implements Parcelable {
         this.selfPost = in.readString();
         this.hasThumbnail = (in.readInt() == 1);
         this.thumbnail = in.readString();
+
+        this.previewUrl = in.readString();
+        this.previewHeight = in.readInt();
+        this.previewWidth = in.readInt();
+        this.videoUrl = in.readString();
+        this.videoHeight = in.readInt();
+        this.videoWidth = in.readInt();
+        this.linkUrl = in.readString();
     }
 
     public static final Parcelable.Creator<SubredditSubmission> CREATOR = new Parcelable.Creator<SubredditSubmission>() {
