@@ -43,9 +43,7 @@ public class SubredditSubmissionRepository {
     }
 
     public LiveData<List<SubmissionComment>> getSubmissionComments(final SubredditSubmission subredditSubmission) {
-        /* Example used for off-thread retrieval of ingredients and steps for a selected recipe
-         * https://medium.freecodecamp.org/room-sqlite-beginner-tutorial-2e725e47bfab
-         */
+        /* https://medium.freecodecamp.org/room-sqlite-beginner-tutorial-2e725e47bfab */
         mSubmissionComments = mSubredditSubmissionDao.getCommentsForSubredditSubmission(subredditSubmission.getRedditId());
         return mSubmissionComments;
     }
@@ -64,9 +62,6 @@ public class SubredditSubmissionRepository {
     }
 
     public void deleteSubreddit(String subreddit) {
-//        if (subreddit.length() > 2 && subreddit.substring(0,1).contains("/r")) {
-//            subreddit = subreddit.substring(2);
-//        }
         Log.d(LOG_TAG, "deleting subreddit " + subreddit);
 
         new deleteSubredditAsyncTask(mSubredditSubmissionDao).execute(subreddit);

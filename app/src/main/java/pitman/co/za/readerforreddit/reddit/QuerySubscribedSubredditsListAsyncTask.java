@@ -48,9 +48,13 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                         submission.getTitle(),
                         submission.getScore(),
                         submission.getCommentCount(),
+                        submission.getPostHint(),
+                        submission.isSelfPost(),
+                        submission.getSelfText(),
                         submission.hasThumbnail(),
                         submission.getThumbnail());
                 subredditSubmissions.add(subredditSubmission);
+                Log.d(LOG_TAG, "posthint: " + submission.getPostHint());
             }
         }
         mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);

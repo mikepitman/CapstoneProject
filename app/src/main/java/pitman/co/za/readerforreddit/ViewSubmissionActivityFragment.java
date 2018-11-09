@@ -100,16 +100,26 @@ public class ViewSubmissionActivityFragment extends Fragment {
 
         TextView authorTextView = (TextView) rootView.findViewById(R.id.submission_author);
         TextView titleTextView = (TextView) rootView.findViewById(R.id.submission_title);
+        TextView selfPostTextView = (TextView) rootView.findViewById(R.id.submission_selfPostText);
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
 
         String formattedAuthor = "u/" + mSelectedSubmission.getAuthor();
         authorTextView.setText(formattedAuthor);
         titleTextView.setText(mSelectedSubmission.getTitle());
+
+
         if (mSelectedSubmission.isHasThumbnail()) {
             Uri imageUri = Uri.parse(mSelectedSubmission.getThumbnail());
             Picasso.get().load(imageUri).into(submissionImageView);
+        } else {
+            submissionImageView.setVisibility(View.INVISIBLE);
         }
-//        submissionImageView.setVisibility(View.INVISIBLE);
+
+        if (mSelectedSubmission.isSelfPost()) {
+            selfPostTextView.setText(mSelectedSubmission.getSelfPost());
+        } else {
+            selfPostTextView.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void populateSubmissionCommentsAdapterWithData(ArrayList<SubmissionComment> retrievedSubmissionComments) {
@@ -168,7 +178,7 @@ public class ViewSubmissionActivityFragment extends Fragment {
     private class SubmissionCommentViewHolder extends RecyclerView.ViewHolder {
 
         private SubmissionComment mSubmissionComment;
-//        private TextView commentSpacer;
+        //        private TextView commentSpacer;
         private TextView commentAuthor;
         private TextView commentPoints;
         private TextView commentAge;

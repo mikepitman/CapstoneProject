@@ -22,5 +22,7 @@
     <string name="subreddit_already_in_list">Subreddit already selected!</string>
     <string name="subreddit_nsfw">Subreddit is marked \'NSFW\'!</string>
     <string name="subreddit_nonexistent">Subreddit not found!</string>
+    <string name="subreddit_added_to_list">Your selection has been added!</string>
+
 
 </resources>

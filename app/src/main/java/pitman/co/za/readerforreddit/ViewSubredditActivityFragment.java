@@ -187,17 +187,17 @@ public class ViewSubredditActivityFragment extends Fragment {
             String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
             this.subredditPostAuthorTextView.setText(formattedAuthor);
 
-            if (mSubredditSubmission.isHasThumbnail()) {
+//            if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());
                 Picasso.get().load(imageUri).into(this.subredditPostThumbnailImageView);
-            } else {
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        0f);
-                subredditThumbnailLayout.setLayoutParams(param);
-                this.subredditPostThumbnailImageView.setVisibility(View.GONE);
-            }
+//            } else {
+//                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+//                        LinearLayout.LayoutParams.MATCH_PARENT,
+//                        LinearLayout.LayoutParams.MATCH_PARENT,
+//                        0f);
+//                subredditThumbnailLayout.setLayoutParams(param);
+//                this.subredditPostThumbnailImageView.setVisibility(View.GONE);
+//            }
         }
     }
 }

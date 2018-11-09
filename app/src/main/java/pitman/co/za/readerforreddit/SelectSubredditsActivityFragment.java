@@ -42,6 +42,8 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Set<String> selectedSubreddits;
     private String submittedSubreddit;
     private boolean isSubredditListEmpty = false;
+    private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
+    private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -66,9 +68,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
 //            }
 //        }
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
-            selectedSubreddits = preferences.getStringSet("sharedPreferences_subredditsKey", null);
+            selectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
             Log.d(LOG_TAG, "preferences retrieved");
             if (selectedSubreddits == null) {
                 selectedSubreddits = new HashSet<>();
@@ -142,6 +144,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
             showSnackbar(R.string.subreddit_nonexistent);
             clearUserInputView();
         } else {
+            showSnackbar(R.string.subreddit_nonexistent);
             selectedSubreddits.add(submittedSubreddit);
             updateSharedPrefs();
         }
@@ -170,9 +173,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
     }
 
     private void updateSharedPrefs() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putStringSet("sharedPreferences_subredditsKey", selectedSubreddits);
+        editor.putStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, selectedSubreddits);
         editor.apply();
 
         mAdapter.swapData(new ArrayList<>(selectedSubreddits));

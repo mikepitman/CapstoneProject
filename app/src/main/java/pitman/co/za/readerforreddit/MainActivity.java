@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private FirebaseAnalytics mFirebaseAnalytics;
     private Set<String> mSelectedSubreddits;
+    private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
+    private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @LayoutRes
     protected int getLayoutResId() {
@@ -46,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SharedPreferences preferences = this.getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
-            mSelectedSubreddits = preferences.getStringSet("sharedPreferences_subredditsKey", null);
+            mSelectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 // launch intent for action to select subreddits
                 Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);

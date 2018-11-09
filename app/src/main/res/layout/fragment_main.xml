@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--&lt;!&ndash;https://www.androidauthority.com/using-coordinatorlayout-android-apps-703720/&ndash;&gt;-->
-<!--<android.support.design.widget.CoordinatorLayout-->
-<!--android:id="@+id/fragment_main_coordinatorLayout"-->
-<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="match_parent"-->
-<!--android:orientation="vertical"-->
-<!--android:background="@color/black">-->
 
 <FrameLayout android:id="@+id/main_fragment_container"
              xmlns:android="http://schemas.android.com/apk/res/android"

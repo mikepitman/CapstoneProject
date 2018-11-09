@@ -22,6 +22,11 @@ public class SubredditSubmission implements Parcelable {
     private String title;
     private Integer submissionScore;
     private Integer commentCount;
+    private String postHint;
+
+    // Text-only posts indicated with flag below, content for post in String below
+    private boolean isSelfPost;
+    private String selfPost;
 
     private boolean hasThumbnail;
     private String thumbnail;
@@ -36,6 +41,11 @@ public class SubredditSubmission implements Parcelable {
                                String title,
                                Integer submissionScore,
                                Integer commentCount,
+                               String postHint,
+
+                               boolean isSelfPost,
+                               String selfPost,
+
                                boolean hasThumbnail,
                                String thumbnail) {
         this.redditId = redditId;
@@ -44,6 +54,11 @@ public class SubredditSubmission implements Parcelable {
         this.title = title;
         this.submissionScore = submissionScore;
         this.commentCount = commentCount;
+        this.postHint = postHint;
+
+        this.isSelfPost = isSelfPost;
+        this.selfPost = selfPost;
+
         this.hasThumbnail = hasThumbnail;
         this.thumbnail = thumbnail;
     }
@@ -74,6 +89,18 @@ public class SubredditSubmission implements Parcelable {
         return commentCount;
     }
 
+    public String getPostHint() {
+        return postHint;
+    }
+
+    public boolean isSelfPost() {
+        return isSelfPost;
+    }
+
+    public String getSelfPost() {
+        return selfPost;
+    }
+
     public boolean isHasThumbnail() {
         return hasThumbnail;
     }
@@ -95,6 +122,9 @@ public class SubredditSubmission implements Parcelable {
         parcel.writeString(this.title);
         parcel.writeInt(this.submissionScore);
         parcel.writeInt(this.commentCount);
+        parcel.writeString(this.postHint);
+        parcel.writeInt(this.isSelfPost ? 1 : 0);
+        parcel.writeString(this.selfPost);
         parcel.writeInt(this.hasThumbnail ? 1 : 0);
         parcel.writeString(this.thumbnail);
     }
@@ -106,6 +136,9 @@ public class SubredditSubmission implements Parcelable {
         this.title = in.readString();
         this.submissionScore = in.readInt();
         this.commentCount = in.readInt();
+        this.postHint = in.readString();
+        this.isSelfPost = (in.readInt() == 1);
+        this.selfPost = in.readString();
         this.hasThumbnail = (in.readInt() == 1);
         this.thumbnail = in.readString();
     }
