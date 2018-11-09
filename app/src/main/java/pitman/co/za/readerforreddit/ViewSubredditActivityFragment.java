@@ -56,7 +56,7 @@ public class ViewSubredditActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("selectedSubreddit", mSelectedSubreddit);
+        outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
         super.onSaveInstanceState(outState);
     }
 
@@ -67,13 +67,13 @@ public class ViewSubredditActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
 
         if (savedInstanceState != null) {
-            mSelectedSubreddit = savedInstanceState.getString("selectedSubreddit");
+            mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
             Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
 
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
-                mSelectedSubreddit = bundle.getString("selectedSubreddit");
+                mSelectedSubreddit = bundle.getString("selectedSubredditBundleForFragment");
                 Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddit);
             }
         }
@@ -93,14 +93,6 @@ public class ViewSubredditActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "3. onCreateView()");
-
-
-        // Get bundle arguments from MainActivity
-//        boolean isTablet = false;
-//        Bundle arguments = this.getArguments();
-//        if (arguments != null) {
-//            isTablet = arguments.getBoolean("isTablet");
-//        }
 
         rootView = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_view_subreddit_card_recyclerview);

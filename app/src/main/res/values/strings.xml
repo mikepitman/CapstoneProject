@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Reader for Reddit</string>
+    <string name="subreddit_prefix">r/</string>
+    <string name="user_prefix">u/</string>
+    <string name="toolbar_select_subreddits">Select Subreddits</string>
+
+    <string name="shared_preferences_selected_subreddits">SharedPreferencesSelectedSubreddits</string>
+
     <string name="subreddit_submission_thumbnail">Subreddit post thumbnail</string>
     <string name="title_activity_view_submission">ViewSubmissionActivity</string>
     <!--<string name="action_settings">Settings</string>-->

@@ -41,6 +41,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private EditText mEditTextView;
     private Set<String> selectedSubreddits;
     private String submittedSubreddit;
+    private boolean isSubredditListEmpty = false;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -65,15 +66,15 @@ public class SelectSubredditsActivityFragment extends Fragment {
 //            }
 //        }
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences preferences = getActivity().getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
         if (preferences != null) {
-            selectedSubreddits = preferences.getStringSet("subreddits", null);
+            selectedSubreddits = preferences.getStringSet("sharedPreferences_subredditsKey", null);
             Log.d(LOG_TAG, "preferences retrieved");
             if (selectedSubreddits == null) {
                 selectedSubreddits = new HashSet<>();
                 Log.d(LOG_TAG, "generating list of preferences");
                 selectedSubreddits.add("Android");
-                showSnackbar(R.string.supply_default_subreddit);
+                isSubredditListEmpty = true;
             }
         }
 
@@ -94,6 +95,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
 
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_select_subreddits_coordinatorLayout);
+//        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_select_subreddits_container);
 
         mEditTextView = (EditText) rootView.findViewById(R.id.add_subreddit_text_input);
         Button submitSubredditButton = (Button) rootView.findViewById(R.id.add_subreddit_submit_button);
@@ -104,12 +106,16 @@ public class SelectSubredditsActivityFragment extends Fragment {
             }
         });
 
+        // snackBar needs the coordinatorLayout to be initialised, but isSubredditListEmpty is determined before that occurs.
+        if (isSubredditListEmpty) {
+            showSnackbar(R.string.supply_default_subreddit);
+        }
+
         return rootView;
     }
 
     public void verifySubredditAddition(View view) {
         submittedSubreddit = mEditTextView.getText().toString();
-        Log.d(LOG_TAG, "button to add subreddit clicked: " + submittedSubreddit);
 
         if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0,1).equals("r/")) {
             submittedSubreddit = submittedSubreddit.substring(2);
@@ -130,11 +136,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
     public void subredditVerified(SubredditExistenceQueryResult queryResult) {
         if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
-            Log.d(LOG_TAG, "subreddit NSFW: " + submittedSubreddit);
             showSnackbar(R.string.subreddit_nsfw);
             clearUserInputView();
         } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
-            Log.d(LOG_TAG, "subreddit nonexistent: " + submittedSubreddit);
             showSnackbar(R.string.subreddit_nonexistent);
             clearUserInputView();
         } else {
@@ -144,7 +148,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     }
 
     private void showSnackbar(int message) {
-        https://materialdoc.com/components/snackbars-and-toasts/#with-code
+//        https://materialdoc.com/components/snackbars-and-toasts/#with-code
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
@@ -160,17 +164,15 @@ public class SelectSubredditsActivityFragment extends Fragment {
     }
 
     public void removeSubredditFromList(String subredditName) {
-        Log.d(LOG_TAG, "Button clicked to remove subreddit " + subredditName);
         mSubredditsViewModel.deleteSubreddit(subredditName);
         selectedSubreddits.remove(subredditName);
         updateSharedPrefs();
     }
 
     private void updateSharedPrefs() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putStringSet("subreddits", selectedSubreddits);
-//        editor.commit();
+        editor.putStringSet("sharedPreferences_subredditsKey", selectedSubreddits);
         editor.apply();
 
         mAdapter.swapData(new ArrayList<>(selectedSubreddits));

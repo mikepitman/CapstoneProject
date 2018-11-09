@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--https://www.androidauthority.com/using-coordinatorlayout-android-apps-703720/-->
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/fragment_main_coordinatorLayout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<!--&lt;!&ndash;https://www.androidauthority.com/using-coordinatorlayout-android-apps-703720/&ndash;&gt;-->
+<!--<android.support.design.widget.CoordinatorLayout-->
+<!--android:id="@+id/fragment_main_coordinatorLayout"-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"-->
+<!--android:orientation="vertical"-->
+<!--android:background="@color/black">-->
+
+<FrameLayout android:id="@+id/main_fragment_container"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_marginTop="?android:attr/actionBarSize"
+             android:background="@color/black">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_main_subreddit_card_recyclerview"
@@ -14,4 +22,5 @@
         android:layout_height='match_parent'>
 
     </android.support.v7.widget.RecyclerView>
-</android.support.design.widget.CoordinatorLayout>
+
+</FrameLayout>

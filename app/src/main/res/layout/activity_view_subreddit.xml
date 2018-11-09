@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:id="@+id/view_subreddit_submissions_container"
-             xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ViewSubredditActivity">
-</FrameLayout>
+
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/view_subreddit_submissions_coordinator_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ViewSubredditActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_viewSubreddit"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+
+</android.support.design.widget.CoordinatorLayout>

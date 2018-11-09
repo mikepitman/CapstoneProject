@@ -1,3 +1,17 @@
 <resources>
-  <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="toolbar_elevation">4dp</dimen>
+
+    <dimen name="layout_none">0dp</dimen>
+    <dimen name="padding_none">0dp</dimen>
+    <dimen name="padding_topBottom">4dp</dimen>
+    <dimen name="padding_startEnd">8dp</dimen>
+    <dimen name="padding_startEnd_recessed">16dp</dimen>
+
+    <dimen name="card_corner_radii">4dp</dimen>
+    <dimen name="card_layout_margin">6dp</dimen>
+
+
+
 </resources>

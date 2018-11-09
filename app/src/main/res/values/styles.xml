@@ -1,20 +1,32 @@
 <resources>
 
-  <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-    <!-- Customize your theme here. -->
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
-  </style>
+<!--<style name="Theme.reader_for_reddit" parent="@style/Theme.AppCompat.Light.DarkActionBar"/>-->
+<style name="Theme.reader_for_reddit" parent="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-  <style name="AppTheme.NoActionBar">
-    <item name="windowActionBar">false</item>
-    <item name="windowNoTitle">true</item>
-  </style>
+<style name="Theme.reader_for_reddit.detail">
+    <item name="android:statusBarColor">@android:color/transparent</item>
+</style>
 
-  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+<!-- style/s for submission text -->
+<style name="submission_text">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>    <!-- Seems to be more 'bold' than Body1 -->
 
-  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <item name="android:paddingTop">@dimen/padding_topBottom</item>
+    <item name="android:paddingBottom">@dimen/padding_topBottom</item>
+    <item name="android:paddingStart">@dimen/padding_startEnd</item>
+    <item name="android:paddingEnd">@dimen/padding_startEnd</item>
+
+    <item name="android:textColor">@color/white</item>
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <!--<item name="android:ellipsize">end</item>-->
+</style>
+
+<style name="submission_text.supplementary">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+    <item name="android:textColor">@color/offWhite</item>
+    <item name="android:paddingStart">@dimen/padding_startEnd_recessed</item>
+    <item name="android:paddingEnd">@dimen/padding_startEnd_recessed</item>
+</style>
 
 </resources>

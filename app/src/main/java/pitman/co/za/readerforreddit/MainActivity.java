@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,29 +46,34 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SharedPreferences preferences = this.getSharedPreferences("selectedSubreddits", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getSharedPreferences("sharedPreferences_selectedSubreddits", Context.MODE_PRIVATE);
         if (preferences != null) {
-            mSelectedSubreddits = preferences.getStringSet("subreddits", null);
+            mSelectedSubreddits = preferences.getStringSet("sharedPreferences_subredditsKey", null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 // launch intent for action to select subreddits
                 Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);
                 startActivity(updateSubredditSelectionIntent);
             } else {
                 FragmentManager fm = getSupportFragmentManager();
-                Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
+                Fragment fragment = fm.findFragmentById(R.id.activity_main_coordinatorLayout);
 
                 if (fragment == null) {
                     fragment = new MainActivityFragment();
 
                     Bundle fragmentBundle = new Bundle();
 //            fragmentBundle.putBoolean("isTablet", mIsTablet);
-                    fragmentBundle.putStringArrayList("selectedSubreddits", new ArrayList<>(mSelectedSubreddits));
+                    fragmentBundle.putStringArrayList("selectedSubredditsBundleForFragment", new ArrayList<>(mSelectedSubreddits));
                     fragment.setArguments(fragmentBundle);
 
-                    fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
+                    fm.beginTransaction().add(R.id.activity_main_coordinatorLayout, fragment).commit();
                 }
             }
         }
+
+        Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_mainActivity);
+        setSupportActionBar(fragmentToolbar);
+        ActionBar newBar = getSupportActionBar();
+        newBar.setTitle(R.string.app_name);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
 
         Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
-        viewSubredditIntent.putExtra("selectedSubreddit", subredditSubmission.getSubreddit());
+        viewSubredditIntent.putExtra("selectedSubredditIntentExtra", subredditSubmission.getSubreddit());
         startActivity(viewSubredditIntent);
 
         // Once recipe is selected, update the widget with ingredients for the newly selected recipe

@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
@@ -22,7 +24,7 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("selectedSubreddit", mSelectedSubreddit);
+        outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
         super.onSaveInstanceState(outState);
     }
 
@@ -31,10 +33,10 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            this.mSelectedSubreddit = savedInstanceState.getString("selectedSubreddit");
+            this.mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
         } else {
             Intent intent = getIntent();
-            mSelectedSubreddit = intent.getStringExtra("selectedSubreddit");
+            mSelectedSubreddit = intent.getStringExtra("selectedSubredditIntentExtra");
             Log.d(LOG_TAG, "selected subreddit " + mSelectedSubreddit);
         }
 
@@ -49,17 +51,25 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.view_subreddit_submissions_container);
+        Fragment fragment = fm.findFragmentById(R.id.view_subreddit_submissions_coordinator_layout);
 
         if (fragment == null) {
             fragment = new ViewSubredditActivityFragment();
 
             Bundle fragmentBundle = new Bundle();
-            fragmentBundle.putString("selectedSubreddit", mSelectedSubreddit);
+            fragmentBundle.putString("selectedSubredditBundleForFragment", mSelectedSubreddit);
             fragment.setArguments(fragmentBundle);
 
-            fm.beginTransaction().add(R.id.view_subreddit_submissions_container, fragment).commit();
+            fm.beginTransaction().add(R.id.view_subreddit_submissions_coordinator_layout, fragment).commit();
         }
+
+        Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_viewSubreddit);
+        setSupportActionBar(fragmentToolbar);
+        ActionBar newBar = getSupportActionBar();
+        String formattedTitleString = "r/" + mSelectedSubreddit;
+        newBar.setTitle(formattedTitleString);
+        newBar.setDisplayShowHomeEnabled(true);
+        newBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

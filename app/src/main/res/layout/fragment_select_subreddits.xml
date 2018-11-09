@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-                                             <!--xmlns:tools="http://schemas.android.com/tools"-->
-                                             <!--android:layout_width="match_parent"-->
-                                             <!--android:layout_height="match_parent"-->
-                                             <!--tools:layout_editor_absoluteY="25dp">-->
 
 <!--https://www.androidauthority.com/using-coordinatorlayout-android-apps-703720/-->
 <android.support.design.widget.CoordinatorLayout
@@ -11,9 +6,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="?android:attr/actionBarSize">
+    <!--android:layout_below="@id/toolbar_selectSubreddits">-->
 
     <LinearLayout
+        android:id="@+id/fragment_select_subreddits_linearLayout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -37,11 +36,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
-                android:focusable="true"
-
                 android:contentDescription="@string/add_subreddit_description"
+
+                android:focusable="true"
                 android:text="@string/add_subreddit_button"/>
-            <!--android:onClick="verifySubredditAddition"-->
 
         </LinearLayout>
 
@@ -55,4 +53,3 @@
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
-<!--</android.support.constraint.ConstraintLayout>-->
