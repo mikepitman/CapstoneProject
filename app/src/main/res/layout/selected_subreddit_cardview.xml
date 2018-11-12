@@ -8,6 +8,7 @@
     android:layout_gravity="center"
     android:layout_margin="@dimen/card_layout_margin"
     android:fitsSystemWindows="true"
+    card_view:cardBackgroundColor="@color/offBlack"
     card_view:cardCornerRadius="@dimen/card_corner_radii">
 
     <LinearLayout
@@ -16,19 +17,22 @@
 
         <TextView
             android:id="@+id/selected_subreddit_name"
+            style="@style/submission_text.title"
             android:layout_width="@dimen/layout_none"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_weight="6"/>
 
         <ImageButton
             android:id="@+id/remove_selected_subreddit_button"
             android:layout_width="@dimen/layout_none"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:clickable="true"
-            android:focusable="true"
             android:contentDescription="@string/remove_subreddit"
+            android:focusable="true"
+            android:background="@color/offBlack"
             android:src="@drawable/ic_shortcut_clear"/>
     </LinearLayout>
 

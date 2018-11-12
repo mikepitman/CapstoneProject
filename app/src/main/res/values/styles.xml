@@ -22,6 +22,10 @@
     <!--<item name="android:ellipsize">end</item>-->
 </style>
 
+<style name="submission_text.title">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Title</item>
+</style>
+
 <style name="submission_text.supplementary">
     <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
     <item name="android:textColor">@color/offWhite</item>
