@@ -4,6 +4,9 @@
     <string name="user_prefix">u/</string>
     <string name="toolbar_select_subreddits">Select Subreddits</string>
 
+    <string name="no_network_connection">There\'s no network connectivity! Retrieving stored subreddits!</string>
+    <string name="no_network_connection_add_subreddits">There\'s no network connectivity! You\'ll need to be connected to add subreddits!</string>
+    <string name="no_network_connection_comment_query">There\'s no network connectivity! Unable to retrieve comments for this post!</string>
     <string name="shared_preferences_selected_subreddits">SharedPreferencesSelectedSubreddits</string>
 
     <string name="subreddit_submission_thumbnail">Subreddit post thumbnail</string>
@@ -23,6 +26,5 @@
     <string name="subreddit_nsfw">Subreddit is marked \'NSFW\'!</string>
     <string name="subreddit_nonexistent">Subreddit not found!</string>
     <string name="subreddit_added_to_list">Your selection has been added!</string>
-
 
 </resources>

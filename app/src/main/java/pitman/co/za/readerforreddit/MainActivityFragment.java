@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +41,7 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static SubredditSubmissionCardAdapter mAdapter;
     private ArrayList<String> selectedSubreddits;
+    private CoordinatorLayout mCoordinatorLayout;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -117,22 +119,20 @@ public class MainActivityFragment extends Fragment {
 //            todo: restore state
         }
 
-        // Get bundle arguments from MainActivity
-//        boolean isTablet = false;
-//        Bundle arguments = this.getArguments();
-//        if (arguments != null) {
-//            isTablet = arguments.getBoolean("isTablet");
-//        }
-
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
 
-//        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_main_coordinatorLayout);
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_main_coordinatorLayout);
 
         // Launch asyncTask to retrieve top submissions from selected subreddits
-        new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+        if (sUtilityCode.isNetworkAvailable(getActivity())) {
+            new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+        } else {
+            Log.d(LOG_TAG, "No network connectivity!");
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection);
+        }
 
         return rootView;
     }

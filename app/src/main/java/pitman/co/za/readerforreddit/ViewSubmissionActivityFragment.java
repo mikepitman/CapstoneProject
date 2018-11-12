@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,10 +34,12 @@ public class ViewSubmissionActivityFragment extends Fragment {
 
     private static String LOG_TAG = ViewSubmissionActivityFragment.class.getSimpleName();
     private SubredditSubmission mSelectedSubmission;
+    private static UtilityCode sUtilityCode;
     private SubredditSubmissionViewModel mSubmissionViewModel;
     private ArrayList<SubmissionComment> mSubmissionComments;
     private RecyclerView mSubmissionCommentsRecyclerView;
     private View rootView;
+    private CoordinatorLayout mCoordinatorLayout;
     private SubmissionCommentsAdapter mAdapter;
 
     public ViewSubmissionActivityFragment() {
@@ -52,6 +55,7 @@ public class ViewSubmissionActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sUtilityCode = new UtilityCode();
 
         if (savedInstanceState != null) {
             this.mSelectedSubmission = savedInstanceState.getParcelable("selectedSubmission");
@@ -64,8 +68,8 @@ public class ViewSubmissionActivityFragment extends Fragment {
             }
         }
 
-        // Launch asyncTask to retrieve comments for selected submission
-        new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());
+        /*// Launch asyncTask to retrieve comments for selected submission
+        new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());*/
 
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
         mSubmissionViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
@@ -83,12 +87,22 @@ public class ViewSubmissionActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_view_submission, container, false);
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_main_coordinatorLayout);
 
         mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
         mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubmissionCommentsRecyclerView.setAdapter(mAdapter);
 
         bindSubmissionViews();
+
+        if (sUtilityCode.isNetworkAvailable(getActivity())) {
+            new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());
+        } else {
+            Log.d(LOG_TAG, "No network connectivity!");
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query);
+        }
+        // Launch asyncTask to retrieve comments for selected submission
+
 
         return rootView;
     }
@@ -120,8 +134,8 @@ public class ViewSubmissionActivityFragment extends Fragment {
         // hosted:video --> video from reddit, url is in mSelectedSubmission.getVideoUrl
         // rich:video --> video hosted elsewhere(?)
         // link --> post basically contains just a link to share
-
-
+        // --> so then, simply provide the link with a preview image that they can click?
+        // --> check if it's an imgur link, and try load that gif and animate it?
 
         // Video stream hosted by reddit
         if (postHint.contains("video") && postHint.contains("hosted")) {
