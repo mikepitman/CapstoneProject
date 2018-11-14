@@ -18,13 +18,13 @@ import java.util.UUID;
 import pitman.co.za.readerforreddit.SelectSubredditsActivityFragment;
 
 /* AsyncTask to poll Reddit for subreddit using a user-supplied subreddit name
- * Reject if the subreddit classified as NSFW
  * AsyncTask to be called from Activity from where user is able to select their subreddits to track
  * */
 
 public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, SubredditExistenceQueryResult> {
 
     private static String LOG_TAG = QuerySubredditExistenceAsyncTask.class.getCanonicalName();
+
     private SelectSubredditsActivityFragment mSelectSubredditsActivityFragment;
 
     public QuerySubredditExistenceAsyncTask(SelectSubredditsActivityFragment selectSubredditsActivityFragment) {
@@ -32,11 +32,21 @@ public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, Su
     }
 
     @Override
+    protected void onPreExecute() {
+        mSelectSubredditsActivityFragment.showProgressBar();
+    }
+
+    @Override
     protected void onPostExecute(SubredditExistenceQueryResult result) {
         super.onPostExecute(result);
 
-        Log.d(LOG_TAG, "subreddit exists? " + result);
+        mSelectSubredditsActivityFragment.dismissProgressBar();
         mSelectSubredditsActivityFragment.subredditVerified(result);
+    }
+
+    protected void onProgressUpdate(Integer... progress){
+        // Update the progress bar on dialog
+        mSelectSubredditsActivityFragment.updateProgressBar(progress[0]);
     }
 
     @Override

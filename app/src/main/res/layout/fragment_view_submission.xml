@@ -28,27 +28,39 @@
             <!-- set layout_height="match_parent" because of potential webview issues -->
 
             <TextView
+                android:id="@+id/submission_title"
+                style="@style/submission_text.title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
                 android:id="@+id/submission_author"
                 style="@style/submission_text.supplementary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <!-- separator line -->
             <TextView
-                android:id="@+id/submission_title"
-                style="@style/submission_text.title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-                <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"/>-->
+                android:layout_height="2dp"
+                android:background="@color/offWhite"/>
 
+            <!-- TextView hidden if multimedia post -->
             <TextView
                 android:id="@+id/submission_selfPostText"
                 style="@style/submission_text"/>
 
+            <!-- Display image full-screen-width -->
             <ImageView
                 android:id="@+id/submission_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:elevation="4dp"/>
             <!-- contentDescription set in ViewSubmissionActivityFragment -->
+
+            <TextView
+                android:id="@+id/link_text"
+                style="@style/submission_text.link"/>
 
             <WebView
                 android:id="@+id/webview"
@@ -56,6 +68,12 @@
                 android:layout_height="match_parent">
 
             </WebView>
+
+            <!-- separator line -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/offWhite"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/submission_comment_recyclerview"

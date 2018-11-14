@@ -36,6 +36,16 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
     }
 
     @Override
+    protected void onPreExecute() {
+        mMainActivityFragment.showProgressBar();
+    }
+
+    protected void onProgressUpdate(Integer... progress){
+        // Update the progress bar on dialog
+        mMainActivityFragment.updateProgressBar(progress[0]);
+    }
+
+    @Override
     protected void onPostExecute(List<Listing<Submission>> result) {
         super.onPostExecute(result);
 
@@ -80,6 +90,8 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                 Log.d(LOG_TAG, "title: " + submission.getTitle() + "  posthint: " + submission.getPostHint());
             }
         }
+
+        mMainActivityFragment.dismissProgressBar();
         mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);
     }
 
@@ -90,7 +102,6 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
      * Top-rated posts seem most pertinent for the app and avoiding bias towards high-traffic subreddits is desirable.
      * In absence of option for single query returning n sorted posts for each of x subreddits, x queries will be sent for n sorted posts
      * */
-
     @Override
     protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 

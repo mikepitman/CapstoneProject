@@ -1,5 +1,6 @@
 package pitman.co.za.readerforreddit;
 
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
@@ -30,7 +31,7 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ViewSubmissionActivityFragment extends Fragment {
+public class ViewSubmissionActivityFragment extends Fragment implements View.OnClickListener {
 
     private static String LOG_TAG = ViewSubmissionActivityFragment.class.getSimpleName();
     private SubredditSubmission mSelectedSubmission;
@@ -41,9 +42,24 @@ public class ViewSubmissionActivityFragment extends Fragment {
     private View rootView;
     private CoordinatorLayout mCoordinatorLayout;
     private SubmissionCommentsAdapter mAdapter;
+    private ProgressDialog mProgressDialog;
 
     public ViewSubmissionActivityFragment() {
     }
+
+    //// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateProgressBar(Integer progress) {
+        mProgressDialog.setProgress(progress);
+    }
+
+    public void dismissProgressBar() {
+        mProgressDialog.dismiss();
+    }
+
+    public void showProgressBar() {
+        mProgressDialog.show();
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -68,9 +84,6 @@ public class ViewSubmissionActivityFragment extends Fragment {
             }
         }
 
-        /*// Launch asyncTask to retrieve comments for selected submission
-        new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());*/
-
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
         mSubmissionViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
         mSubmissionViewModel.getSubmissionComments(mSelectedSubmission).observe(this, new Observer<List<SubmissionComment>>() {
@@ -80,6 +93,14 @@ public class ViewSubmissionActivityFragment extends Fragment {
             }
         });
         mAdapter = new SubmissionCommentsAdapter(mSubmissionViewModel.getSubmissionComments(mSelectedSubmission).getValue());
+
+        // https://android--examples.blogspot.com/2017/02/android-asynctask-with-progress-dialog.html
+        // Initialize the progress dialog
+        mProgressDialog = new ProgressDialog(this.getActivity());
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  // Progress dialog horizontal style
+        mProgressDialog.setTitle(getString(R.string.progress_dialog_submission_title));  // Progress dialog title
+        mProgressDialog.setMessage(getString(R.string.progress_dialog_submission_message));
     }
 
     @Override
@@ -87,7 +108,7 @@ public class ViewSubmissionActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_view_submission, container, false);
-        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_main_coordinatorLayout);
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.view_submission_fragment_container);
 
         mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
         mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -101,8 +122,6 @@ public class ViewSubmissionActivityFragment extends Fragment {
             Log.d(LOG_TAG, "No network connectivity!");
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query);
         }
-        // Launch asyncTask to retrieve comments for selected submission
-
 
         return rootView;
     }
@@ -116,43 +135,64 @@ public class ViewSubmissionActivityFragment extends Fragment {
         TextView titleTextView = (TextView) rootView.findViewById(R.id.submission_title);
         TextView selfPostTextView = (TextView) rootView.findViewById(R.id.submission_selfPostText);
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
+        TextView linkTextView = (TextView) rootView.findViewById(R.id.link_text);
 
         String formattedAuthor = "u/" + mSelectedSubmission.getAuthor();
         authorTextView.setText(formattedAuthor);
         titleTextView.setText(mSelectedSubmission.getTitle());
 
-
-        // Simplest type of submission - text only, no media - this special case is complete
-        if (mSelectedSubmission.isSelfPost()) {
-            selfPostTextView.setText(mSelectedSubmission.getSelfPost());
-        } else {
-            selfPostTextView.setVisibility(View.INVISIBLE);
-        }
-
-        // Picasso doesn't handle animated gifs at all :-)
         String postHint = mSelectedSubmission.getPostHint();
-        // hosted:video --> video from reddit, url is in mSelectedSubmission.getVideoUrl
-        // rich:video --> video hosted elsewhere(?)
-        // link --> post basically contains just a link to share
-        // --> so then, simply provide the link with a preview image that they can click?
-        // --> check if it's an imgur link, and try load that gif and animate it?
+        if (mSelectedSubmission.isSelfPost()) {     // Simplest type of submission - text only, no media - this special case is complete
+            selfPostTextView.setText(mSelectedSubmission.getSelfPost());
+            submissionImageView.setVisibility(View.GONE);
+            // postHint and preview will/(should) be null
 
-        // Video stream hosted by reddit
-        if (postHint.contains("video") && postHint.contains("hosted")) {
+        } else if (postHint != null) {  // Multimedia post - either just a link, reddit-hosted video, rich:video(? video hosted elsewhere?)
+            // Remove the textView for selfPost from layout
+            selfPostTextView.setVisibility(View.GONE);
 
+            // Picasso doesn't handle animated gifs at all :-(
+            // hosted:video --> video from reddit, url is in mSelectedSubmission.getVideoUrl
+            // rich:video --> video hosted elsewhere(?)
+            // link --> post basically contains just a link to share
+            // --> so then, simply provide the link with a preview image that they can click?
+            // --> check if it's an imgur link, and try load that gif and animate it?
 
-            Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
-        }
+            // Video stream hosted by reddit
+            if (postHint.equals("hosted:video")) {
+                Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
+                // todo: use exoplayer here? DON'T load the preview image...
+            } else if (postHint.contains("link") || postHint.equals("rich:video")) {
+                // todo: is it always only 'link', or also possibly 'link:xxxx'?
+                linkTextView.setText(mSelectedSubmission.getLinkUrl());
+                linkTextView.setOnClickListener(this);
 
-        if (!mSelectedSubmission.getPreviewUrl().isEmpty()) {
-            Uri imageUri = Uri.parse(mSelectedSubmission.getPreviewUrl());
-//            Picasso.get().load(imageUri).fit().centerInside().into(submissionImageView);
-            Picasso.get().load(imageUri).resize(mSelectedSubmission.getPreviewWidth(), mSelectedSubmission.getPreviewHeight()).into(submissionImageView);
-//            Picasso.get().load(imageUri).into(submissionImageView);
-            submissionImageView.setContentDescription(mSelectedSubmission.getTitle());
+                String displayImageUrl = mSelectedSubmission.getPreviewUrl();
+                if (displayImageUrl.isEmpty() && mSelectedSubmission.isHasThumbnail()) {
+                    displayImageUrl = mSelectedSubmission.getThumbnail();
+                }
+
+                if (displayImageUrl != null && !displayImageUrl.isEmpty()) {
+                    Uri imageUri = Uri.parse(mSelectedSubmission.getPreviewUrl());
+                    Picasso.get().load(imageUri).resize(mSelectedSubmission.getPreviewWidth(), mSelectedSubmission.getPreviewHeight()).into(submissionImageView);
+                    submissionImageView.setContentDescription(mSelectedSubmission.getTitle());
+                } else {
+                    submissionImageView.setVisibility(View.GONE);
+                }
+            }
         } else {
-            submissionImageView.setVisibility(View.INVISIBLE);
+            Log.d(LOG_TAG, "postHint is NULL, this should never happen!");
+            // todo: log this to firebase
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.general_error_notification);
         }
+    }
+
+    private void loadPreviewImage() {}
+
+    @Override
+    public void onClick(View view) {
+        Log.d(LOG_TAG, "link text has been clicked!");
+        // todo: launch a broadcast intent with the linkURL to open whatever app is best for doing the link
     }
 
     public void populateSubmissionCommentsAdapterWithData(ArrayList<SubmissionComment> retrievedSubmissionComments) {

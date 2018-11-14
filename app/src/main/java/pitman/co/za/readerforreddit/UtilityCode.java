@@ -31,8 +31,8 @@ public class UtilityCode {
         return ((activeNetwork != null) && (activeNetwork.isConnectedOrConnecting()));
     }
 
+    // https://materialdoc.com/components/snackbars-and-toasts/#with-code
     public void showSnackbar(CoordinatorLayout mCoordinatorLayout, int message) {
-//        https://materialdoc.com/components/snackbars-and-toasts/#with-code
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 }

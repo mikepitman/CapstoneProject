@@ -1,6 +1,7 @@
 package pitman.co.za.readerforreddit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,14 +42,13 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private EditText mEditTextView;
     private Set<String> selectedSubreddits;
     private String submittedSubreddit;
-//    private FragmentActivity mFragmentActivity;
+    private ProgressDialog mProgressDialog;
     private boolean isSubredditListEmpty = false;
     private static final String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
     private static final String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-//        outState.putString("selectedSubreddit", mSelectedSubreddits);
         super.onSaveInstanceState(outState);
     }
 
@@ -58,21 +58,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
 
-//        if (savedInstanceState != null) {
-//            mSelectedSubreddits = savedInstanceState.getString("selectedSubreddit");
-//            Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
-
-//        } else {
-//            if (this.getArguments() != null) {
-//                Bundle bundle = this.getArguments();
-//                mSelectedSubreddits = bundle.getString("selectedSubreddit");
-//                Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddits);
-//            }
-//        }
-
-//        mFragmentActivity = getActivity();
         SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
-//        SharedPreferences preferences = mFragmentActivity.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
             selectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
             Log.d(LOG_TAG, "preferences retrieved");
@@ -87,6 +73,13 @@ public class SelectSubredditsActivityFragment extends Fragment {
         mAdapter = new SelectedSubredditCardAdapter(new ArrayList<>(selectedSubreddits));
 
         mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
+
+        // https://android--examples.blogspot.com/2017/02/android-asynctask-with-progress-dialog.html
+        // Initialize the progress dialog
+        mProgressDialog = new ProgressDialog(this.getActivity());
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  // Progress dialog horizontal style
+        mProgressDialog.setTitle(getString(R.string.progress_dialog_selectSubreddit_title));  // Progress dialog title
     }
 
     @Override
@@ -98,11 +91,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         mSelectedSubredditsRecyclerView = (RecyclerView) rootView.findViewById(R.id.selected_subreddits_recycler_view);
         mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(mFragmentActivity));
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
 
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_select_subreddits_coordinatorLayout);
-//        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_select_subreddits_container);
 
         mEditTextView = (EditText) rootView.findViewById(R.id.add_subreddit_text_input);
         Button submitSubredditButton = (Button) rootView.findViewById(R.id.add_subreddit_submit_button);
@@ -124,7 +115,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     public void verifySubredditAddition(View view) {
         submittedSubreddit = mEditTextView.getText().toString();
 
-        if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0,1).equals("r/")) {
+        if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0, 1).equals("r/")) {
             submittedSubreddit = submittedSubreddit.substring(2);
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_includes_prefix);
         }
@@ -135,10 +126,15 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         } else if (!selectedSubreddits.contains(submittedSubreddit)) {
             if (sUtilityCode.isNetworkAvailable(getActivity())) {
+                String dialogMessage =
+                        getString(R.string.progress_dialog_selectSubreddit_if) +
+                        submittedSubreddit +
+                        getString(R.string.progress_dialog_selectSubreddit_has_a_subreddit);
+                mProgressDialog.setMessage(dialogMessage);
+
                 new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
             } else {
                 Log.d(LOG_TAG, "No network connectivity, SelectSubredditsActivityFragment!");
-                // todo: put in a snackbar notification
                 sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_add_subreddits);
             }
             hideKeyboard();
@@ -155,16 +151,22 @@ public class SelectSubredditsActivityFragment extends Fragment {
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nonexistent);
             clearUserInputView();
         } else {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nonexistent);
             selectedSubreddits.add(submittedSubreddit);
             updateSharedPrefs();
         }
     }
 
-//    private void showSnackbar(int message) {
-//        https://materialdoc.com/components/snackbars-and-toasts/#with-code
-//        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
-//    }
+    public void showProgressBar() {
+        mProgressDialog.show();
+    }
+
+    public void updateProgressBar(Integer progress) {
+        mProgressDialog.setProgress(progress);
+    }
+
+    public void dismissProgressBar() {
+        mProgressDialog.dismiss();
+    }
 
     private void clearUserInputView() {
         mEditTextView.setText("");
@@ -174,7 +176,6 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private void hideKeyboard() {
         // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-//        InputMethodManager imm = (InputMethodManager) mFragmentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
     }
 
@@ -186,7 +187,6 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
     private void updateSharedPrefs() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
-//        SharedPreferences sharedPref = mFragmentActivity.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, selectedSubreddits);
         editor.apply();

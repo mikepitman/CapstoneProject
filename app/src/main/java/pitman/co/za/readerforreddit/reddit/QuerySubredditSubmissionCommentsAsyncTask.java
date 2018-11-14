@@ -31,10 +31,21 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
     }
 
     @Override
+    protected void onPreExecute() {
+        mViewSubmissionActivityFragment.showProgressBar();
+    }
+
+    protected void onProgressUpdate(Integer... progress){
+        // Update the progress bar on dialog
+        mViewSubmissionActivityFragment.updateProgressBar(progress[0]);
+    }
+
+    @Override
     protected void onPostExecute(ArrayList<SubmissionComment> result) {
         super.onPostExecute(result);
 
         Log.d(LOG_TAG, "number of comments: " + result.size());
+        mViewSubmissionActivityFragment.dismissProgressBar();
         mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
     }
 

@@ -1,6 +1,7 @@
 package pitman.co.za.readerforreddit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
@@ -42,6 +43,7 @@ public class MainActivityFragment extends Fragment {
     private static SubredditSubmissionCardAdapter mAdapter;
     private ArrayList<String> selectedSubreddits;
     private CoordinatorLayout mCoordinatorLayout;
+    private ProgressDialog mProgressDialog;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -57,7 +59,16 @@ public class MainActivityFragment extends Fragment {
         super.onDetach();
         mCallbacks = null;
     }
-//// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateProgressBar(Integer progress) { mProgressDialog.setProgress(progress); }
+
+    public void dismissProgressBar() { mProgressDialog.dismiss(); }
+
+    public void showProgressBar() {
+        mProgressDialog.show();
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -86,6 +97,48 @@ public class MainActivityFragment extends Fragment {
         });
         List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).getValue());
         mAdapter = new SubredditSubmissionCardAdapter(topSubredditSubmissions);
+
+        // https://android--examples.blogspot.com/2017/02/android-asynctask-with-progress-dialog.html
+        // Initialize the progress dialog
+        mProgressDialog = new ProgressDialog(this.getActivity());
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  // Progress dialog horizontal style
+        mProgressDialog.setTitle(getString(R.string.progress_dialog_mainFragment_title));  // Progress dialog title
+        mProgressDialog.setMessage(getString(R.string.progress_dialog_mainFragment_message));
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "3. onCreateView()");
+
+        if (savedInstanceState != null) {
+//            recipesUpdated = savedInstanceState.getBoolean("recipesUpdated");
+//            todo: restore state
+        }
+
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.main_fragment_container);
+
+        mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
+        mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
+
+        // Launch asyncTask to retrieve top submissions from selected subreddits
+        if (sUtilityCode.isNetworkAvailable(getActivity())) {
+            new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+        } else {
+            Log.d(LOG_TAG, "No network connectivity!");
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection);
+        }
+
+        return rootView;
+    }
+
+    public void generateSubredditSubmissionsAdapterWithData(ArrayList<SubredditSubmission> retrievedSubredditSubmissions) {
+        if (retrievedSubredditSubmissions != null) {
+            mSubredditsViewModel.insert(retrievedSubredditSubmissions);
+        }
     }
 
     // Collect the top-scored submissions for each subreddit for display on 'home screen' from list of all returned subreddit submissions
@@ -107,40 +160,6 @@ public class MainActivityFragment extends Fragment {
             }
         }
         return topSubredditSubmissions;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "3. onCreateView()");
-
-        if (savedInstanceState != null) {
-//            recipesUpdated = savedInstanceState.getBoolean("recipesUpdated");
-//            todo: restore state
-        }
-
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
-        mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
-
-        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.activity_main_coordinatorLayout);
-
-        // Launch asyncTask to retrieve top submissions from selected subreddits
-        if (sUtilityCode.isNetworkAvailable(getActivity())) {
-            new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
-        } else {
-            Log.d(LOG_TAG, "No network connectivity!");
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection);
-        }
-
-        return rootView;
-    }
-
-    public void generateSubredditSubmissionsAdapterWithData(ArrayList<SubredditSubmission> retrievedSubredditSubmissions) {
-        if (retrievedSubredditSubmissions != null) {
-            mSubredditsViewModel.insert(retrievedSubredditSubmissions);
-        }
     }
 
     private class SubredditSubmissionCardAdapter extends RecyclerView.Adapter<SubmissionCardViewHolder> {
