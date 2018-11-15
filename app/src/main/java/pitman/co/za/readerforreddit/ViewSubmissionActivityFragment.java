@@ -3,12 +3,14 @@ package pitman.co.za.readerforreddit;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -113,6 +115,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
         mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubmissionCommentsRecyclerView.setAdapter(mAdapter);
+        // don't want recyclerView to scroll independently of the nestedScrollView
+        ViewCompat.setNestedScrollingEnabled(mSubmissionCommentsRecyclerView, false);
 
         bindSubmissionViews();
 
@@ -183,16 +187,28 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         } else {
             Log.d(LOG_TAG, "postHint is NULL, this should never happen!");
             // todo: log this to firebase
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.general_error_notification);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general);
         }
     }
 
     private void loadPreviewImage() {}
 
+    // Link textView clicked, initiate intent to open app better suited to displaying the content
     @Override
     public void onClick(View view) {
-        Log.d(LOG_TAG, "link text has been clicked!");
-        // todo: launch a broadcast intent with the linkURL to open whatever app is best for doing the link
+
+        // https://developer.android.com/guide/components/intents-filters
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.parse(mSelectedSubmission.getLinkUrl()));
+
+        // Verify that the intent will resolve to an activity
+        if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(sendIntent);
+        } else {
+            Log.d(LOG_TAG, "intent unable to be handled by another app!");
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app);
+        }
     }
 
     public void populateSubmissionCommentsAdapterWithData(ArrayList<SubmissionComment> retrievedSubmissionComments) {

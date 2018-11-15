@@ -9,82 +9,104 @@
     android:layout_marginTop="?android:attr/actionBarSize"
     android:background="@color/black">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/view_submission_card_view"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_layout_margin"
-        android:fitsSystemWindows="true"
-        card_view:cardBackgroundColor="@color/offBlack"
-        card_view:cardCornerRadius="@dimen/card_corner_radii">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/view_submission_card_view"
             xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <!-- set layout_height="match_parent" because of potential webview issues -->
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_layout_margin"
+            android:fitsSystemWindows="true"
+            card_view:cardBackgroundColor="@color/offBlack"
+            card_view:cardCornerRadius="@dimen/card_corner_radii">
 
-            <TextView
-                android:id="@+id/submission_title"
-                style="@style/submission_text.title"
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <!-- set layout_height="match_parent" because of potential webview issues -->
 
-            <TextView
-                android:id="@+id/submission_author"
-                style="@style/submission_text.supplementary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/submission_title"
+                    style="@style/submission_text.title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- separator line -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/offWhite"/>
+                <TextView
+                    android:id="@+id/submission_author"
+                    style="@style/submission_text.supplementary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- TextView hidden if multimedia post -->
-            <TextView
-                android:id="@+id/submission_selfPostText"
-                style="@style/submission_text"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-            <!-- Display image full-screen-width -->
-            <ImageView
-                android:id="@+id/submission_image"
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/view_submission_post_card_view"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp"/>
-            <!-- contentDescription set in ViewSubmissionActivityFragment -->
+                android:layout_margin="@dimen/card_layout_margin"
+                android:fitsSystemWindows="true"
+                card_view:cardBackgroundColor="@color/offBlack"
+                card_view:cardCornerRadius="@dimen/card_corner_radii">
 
-            <TextView
-                android:id="@+id/link_text"
-                style="@style/submission_text.link"/>
+                <!-- TextView hidden if multimedia post -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <WebView
-                android:id="@+id/webview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/submission_selfPostText"
+                        style="@style/submission_text"/>
 
-            </WebView>
+                    <!-- Display image full-screen-width -->
+                    <ImageView
+                        android:id="@+id/submission_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="4dp"/>
+                    <!-- contentDescription set in ViewSubmissionActivityFragment -->
 
-            <!-- separator line -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/offWhite"/>
+                    <TextView
+                        android:id="@+id/link_text"
+                        style="@style/submission_text.link"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/submission_comment_recyclerview"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width='wrap_content'
-                android:layout_height='match_parent'>
+                    <!--<WebView-->
+                    <!--android:id="@+id/webview"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent">-->
+                    <!--</WebView>-->
 
-            </android.support.v7.widget.RecyclerView>
-        </LinearLayout>
+                    <!-- separator line -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/offWhite"/>
 
-    </android.support.v7.widget.CardView>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/submission_comment_recyclerview"
+                        xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width='wrap_content'
+                        android:layout_height='match_parent'>
+
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+        </android.support.v4.widget.NestedScrollView>
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
 
     <!--<android.support.design.widget.FloatingActionButton-->

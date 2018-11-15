@@ -7,7 +7,6 @@
     <string name="no_network_connection">There\'s no network connectivity! Retrieving stored subreddits!</string>
     <string name="no_network_connection_add_subreddits">There\'s no network connectivity! You\'ll need to be connected to add subreddits!</string>
     <string name="no_network_connection_comment_query">There\'s no network connectivity! Unable to retrieve comments for this post!</string>
-    <string name="shared_preferences_selected_subreddits">SharedPreferencesSelectedSubreddits</string>
 
     <string name="subreddit_submission_thumbnail">Subreddit post thumbnail</string>
     <string name="title_activity_view_submission">ViewSubmissionActivity</string>
@@ -38,6 +37,7 @@
     <string name="progress_dialog_submission_title">Retrieving the comments&#8230;</string>
     <string name="progress_dialog_submission_message">for this post!</string>
 
-    <string name="general_error_notification">We\'ve run into a snag - sorry!</string>
+    <string name="error_notification_general">We\'ve run into a snag - sorry!</string>
+    <string name="error_notification_no_implicit_intent_app">You don\'t have an app capable of opening this content!</string>
 
 </resources>
