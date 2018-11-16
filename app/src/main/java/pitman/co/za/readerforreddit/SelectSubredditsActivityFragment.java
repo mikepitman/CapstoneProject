@@ -43,6 +43,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Set<String> selectedSubreddits;
     private String submittedSubreddit;
     private ProgressDialog mProgressDialog;
+    private Context mContext;
     private boolean isSubredditListEmpty = false;
     private static final String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
     private static final String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
@@ -57,6 +58,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
+        mContext = this.getContext();
 
         SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
@@ -106,7 +108,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         // snackBar needs the coordinatorLayout to be initialised, but isSubredditListEmpty is determined before that occurs.
         if (isSubredditListEmpty) {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.supply_default_subreddit);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.supply_default_subreddit, mContext);
         }
 
         return rootView;
@@ -117,38 +119,38 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
         if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0, 1).equals("r/")) {
             submittedSubreddit = submittedSubreddit.substring(2);
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_includes_prefix);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_includes_prefix, mContext);
         }
 
         // length must be longer than 3 (excl '/r') and less than 20
         if (submittedSubreddit.length() < 3 || submittedSubreddit.length() > 20) {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_incorrect_length);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_incorrect_length, mContext);
 
         } else if (!selectedSubreddits.contains(submittedSubreddit)) {
             if (sUtilityCode.isNetworkAvailable(getActivity())) {
                 String dialogMessage =
                         getString(R.string.progress_dialog_selectSubreddit_if) +
-                        submittedSubreddit +
+                        " '" + submittedSubreddit + "' " +
                         getString(R.string.progress_dialog_selectSubreddit_has_a_subreddit);
                 mProgressDialog.setMessage(dialogMessage);
 
                 new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
             } else {
                 Log.d(LOG_TAG, "No network connectivity, SelectSubredditsActivityFragment!");
-                sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_add_subreddits);
+                sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_add_subreddits, mContext);
             }
             hideKeyboard();
         } else {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_already_in_list);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_already_in_list, mContext);
         }
     }
 
     public void subredditVerified(SubredditExistenceQueryResult queryResult) {
         if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nsfw);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nsfw, mContext);
             clearUserInputView();
         } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nonexistent);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nonexistent, mContext);
             clearUserInputView();
         } else {
             selectedSubreddits.add(submittedSubreddit);

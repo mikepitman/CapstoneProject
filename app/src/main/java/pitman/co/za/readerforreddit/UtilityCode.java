@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
 
 public class UtilityCode {
 
@@ -32,7 +34,11 @@ public class UtilityCode {
     }
 
     // https://materialdoc.com/components/snackbars-and-toasts/#with-code
-    public void showSnackbar(CoordinatorLayout mCoordinatorLayout, int message) {
-        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
+    public void showSnackbar(CoordinatorLayout mCoordinatorLayout, int message, Context context) {
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG);
+        View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(ContextCompat.getColor(context, R.color.furtherOffWhite));
+        snackBarView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbar.show();
     }
 }

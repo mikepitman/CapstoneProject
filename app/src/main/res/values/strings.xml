@@ -27,9 +27,9 @@
     <string name="subreddit_added_to_list">Your selection has been added!</string>
 
     <!-- Progress dialog messages -->
-    <string name="progress_dialog_selectSubreddit_title">Checking&#8230;</string>
-    <string name="progress_dialog_selectSubreddit_if">if </string>
-    <string name="progress_dialog_selectSubreddit_has_a_subreddit"> has a subreddit!</string>
+    <string name="progress_dialog_selectSubreddit_title">Checking&#8230;</string>       <!-- &#8230; is decimal HTML entity for '...' (ellipsis) -->
+    <string name="progress_dialog_selectSubreddit_if">if</string>                  <!-- &#32; is decimal HTML entity for 'space' -->
+    <string name="progress_dialog_selectSubreddit_has_a_subreddit">has a subreddit!</string>
 
     <string name="progress_dialog_mainFragment_title">Getting any updates&#8230;</string>
     <string name="progress_dialog_mainFragment_message">since your last check-in</string>

@@ -50,15 +50,4 @@
         <item name="android:paddingEnd">@dimen/padding_comment_supplementary</item>
     </style>
 
-    <!--<style name="card_view">-->
-        <!--<item name="xmlns:android">http://schemas.android.com/apk/res/android</item>-->
-        <!--<item name="xmlns:card_view">http://schemas.android.com/apk/res-auto</item>-->
-        <!--<item name="android:layout_width">match_parent</item>-->
-        <!--<item name="android:layout_height">wrap_content</item>-->
-        <!--<item name="android:layout_margin">@dimen/card_layout_margin</item>-->
-        <!--<item name="android:fitsSystemWindows">true</item>-->
-        <!--<item name="card_view:cardBackgroundColor">@color/offBlack</item>-->
-        <!--<item name="card_view:cardCornerRadius">@dimen/card_corner_radii</item>-->
-    <!--</style>-->
-
 </resources>

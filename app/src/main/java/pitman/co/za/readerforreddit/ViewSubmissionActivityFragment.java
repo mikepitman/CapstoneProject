@@ -3,6 +3,7 @@ package pitman.co.za.readerforreddit;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,11 +46,12 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     private CoordinatorLayout mCoordinatorLayout;
     private SubmissionCommentsAdapter mAdapter;
     private ProgressDialog mProgressDialog;
+    private Context mContext;
 
     public ViewSubmissionActivityFragment() {
     }
 
-    //// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateProgressBar(Integer progress) {
         mProgressDialog.setProgress(progress);
     }
@@ -74,6 +76,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sUtilityCode = new UtilityCode();
+        mContext = this.getContext();
 
         if (savedInstanceState != null) {
             this.mSelectedSubmission = savedInstanceState.getParcelable("selectedSubmission");
@@ -124,7 +127,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());
         } else {
             Log.d(LOG_TAG, "No network connectivity!");
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query, mContext);
         }
 
         return rootView;
@@ -187,7 +190,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         } else {
             Log.d(LOG_TAG, "postHint is NULL, this should never happen!");
             // todo: log this to firebase
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general, mContext);
         }
     }
 
@@ -207,7 +210,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             startActivity(sendIntent);
         } else {
             Log.d(LOG_TAG, "intent unable to be handled by another app!");
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app, mContext);
         }
     }
 

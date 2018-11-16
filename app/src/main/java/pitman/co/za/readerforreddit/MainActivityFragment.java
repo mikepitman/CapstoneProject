@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,6 +45,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<String> selectedSubreddits;
     private CoordinatorLayout mCoordinatorLayout;
     private ProgressDialog mProgressDialog;
+    private Context mContext;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -81,6 +83,7 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
+        mContext = this.getContext();
 
         Bundle activityArguments = this.getArguments();
         if (activityArguments != null) {
@@ -129,7 +132,7 @@ public class MainActivityFragment extends Fragment {
             new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
         } else {
             Log.d(LOG_TAG, "No network connectivity!");
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection);
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection, mContext);
         }
 
         return rootView;
