@@ -45,6 +45,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<String> selectedSubreddits;
     private CoordinatorLayout mCoordinatorLayout;
     private ProgressDialog mProgressDialog;
+    private boolean mIsTablet;
     private Context mContext;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,9 +86,14 @@ public class MainActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
 
+        // todo: something screwed up going on here, in tablet version the full arrayList isn't coming through, only a single string, and
+        // it's not assigning an arrayList<String> to selectedSubreddits class variable
+
+
         Bundle activityArguments = this.getArguments();
         if (activityArguments != null) {
-            selectedSubreddits = activityArguments.getStringArrayList("selectedSubredditsBundleForFragment");
+            mIsTablet = activityArguments.getBoolean("isTablet");
+            selectedSubreddits = activityArguments.getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
         }
 
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13

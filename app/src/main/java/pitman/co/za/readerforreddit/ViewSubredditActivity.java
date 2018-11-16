@@ -57,11 +57,13 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             fragment = new ViewSubredditActivityFragment();
 
             Bundle fragmentBundle = new Bundle();
-            fragmentBundle.putString("selectedSubredditBundleForFragment", mSelectedSubreddit);
+            fragmentBundle.putString(getString(R.string.bundle_key_selected_submission), mSelectedSubreddit);
             fragment.setArguments(fragmentBundle);
 
             fm.beginTransaction().add(R.id.view_subreddit_submissions_coordinator_layout, fragment).commit();
         }
+
+//      if device is tablet, initiate tablet view with subreddit submissions on the left, selected submission on the right
 
         Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_viewSubreddit);
         setSupportActionBar(fragmentToolbar);

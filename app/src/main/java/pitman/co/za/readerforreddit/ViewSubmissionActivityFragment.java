@@ -84,7 +84,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
-                mSelectedSubmission = bundle.getParcelable("selectedSubmission");
+                mSelectedSubmission = bundle.getParcelable(getString(R.string.bundle_key_selected_submission));
                 Log.d(LOG_TAG, "selected submission " + mSelectedSubmission.getTitle());
             }
         }

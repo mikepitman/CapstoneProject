@@ -21,11 +21,12 @@ import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
-public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks, ViewSubredditActivityFragment.Callbacks {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private FirebaseAnalytics mFirebaseAnalytics;
     private Set<String> mSelectedSubreddits;
+    private boolean mIsTablet;
     private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
     private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
+
         SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
             mSelectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
@@ -62,12 +65,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 if (fragment == null) {
                     fragment = new MainActivityFragment();
 
-                    Bundle fragmentBundle = new Bundle();
-//            fragmentBundle.putBoolean("isTablet", mIsTablet);
-                    fragmentBundle.putStringArrayList("selectedSubredditsBundleForFragment", new ArrayList<>(mSelectedSubreddits));
-                    fragment.setArguments(fragmentBundle);
+                    Bundle mainActivityFragmentBundle = new Bundle();
+                    mainActivityFragmentBundle.putBoolean("isTablet", mIsTablet);
+                    mainActivityFragmentBundle.putStringArrayList(getString(R.string.bundle_key_selected_subreddits_list), new ArrayList<>(mSelectedSubreddits));
+                    fragment.setArguments(mainActivityFragmentBundle);
 
                     fm.beginTransaction().add(R.id.activity_main_coordinatorLayout, fragment).commit();
+//                    fm.beginTransaction().add(R.id.activity_main_frame_layout, fragment).commit();
+                }
+
+                if (mIsTablet) {
+                    Fragment subredditFragment = new ViewSubredditActivityFragment();
+
+                    Bundle viewSubredditfragmentBundle = new Bundle();
+                    viewSubredditfragmentBundle.putString(getString(R.string.bundle_key_selected_subreddit), new ArrayList<String>(mSelectedSubreddits).get(0));
+                    subredditFragment.setArguments(viewSubredditfragmentBundle);
+
+                    fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, "SUBREDDIT_LISTING_TAG").commit();
                 }
             }
         }
@@ -99,8 +113,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         }
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Callbacks ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
+    @Override   // callback from MainActivityFragment
     public void onSubredditSelected(SubredditSubmission subredditSubmission) {
         // create intent for new activity, to display the posts of the selected subreddit
         Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
@@ -120,7 +136,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 //        this.sendBroadcast(updateWidgetIntent);
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override   // callback from ViewSubredditActivityFragment
+    public void onSubmissionSelected(SubredditSubmission subredditSubmission) {
+        Log.d(LOG_TAG, "user has selected subreddit submission, in mainActivity (tablet version): " + subredditSubmission.getTitle());
+
+        Intent viewSubmissionIntent = new Intent(this, ViewSubmissionActivity.class);
+        viewSubmissionIntent.putExtra("selectedSubmission", subredditSubmission);
+        startActivity(viewSubmissionIntent);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Activity lifecycle methods for debugging/understanding/etc //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

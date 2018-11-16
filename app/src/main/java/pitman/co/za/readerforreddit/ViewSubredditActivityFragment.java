@@ -73,7 +73,7 @@ public class ViewSubredditActivityFragment extends Fragment {
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
-                mSelectedSubreddit = bundle.getString("selectedSubredditBundleForFragment");
+                mSelectedSubreddit = bundle.getString(getString(R.string.bundle_key_selected_subreddit));
                 Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddit);
             }
         }

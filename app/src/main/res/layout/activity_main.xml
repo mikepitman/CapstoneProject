@@ -24,5 +24,4 @@
         android:elevation="@dimen/toolbar_elevation"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
-
 </android.support.design.widget.CoordinatorLayout>

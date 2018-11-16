@@ -40,4 +40,10 @@
     <string name="error_notification_general">We\'ve run into a snag - sorry!</string>
     <string name="error_notification_no_implicit_intent_app">You don\'t have an app capable of opening this content!</string>
 
+    <!-- Bundle key strings -->
+    <string name="bundle_key_selected_subreddits_list">selectedSubredditsListForFragment</string>
+    <string name="bundle_key_selected_subreddit">selectedSubredditForFragment</string>
+    <string name="bundle_key_selected_submission">selectedSubmissionForFragment</string>
+
+
 </resources>
