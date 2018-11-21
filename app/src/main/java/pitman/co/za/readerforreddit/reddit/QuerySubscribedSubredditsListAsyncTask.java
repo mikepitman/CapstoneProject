@@ -1,7 +1,6 @@
 package pitman.co.za.readerforreddit.reddit;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkAdapter;
@@ -87,7 +86,7 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                 }
 
                 subredditSubmissions.add(subredditSubmission);
-                Log.d(LOG_TAG, "title: " + submission.getTitle() + "  posthint: " + submission.getPostHint());
+//           todo:     Log.d(LOG_TAG, "title: " + submission.getTitle() + "  posthint: " + submission.getPostHint());
             }
         }
 

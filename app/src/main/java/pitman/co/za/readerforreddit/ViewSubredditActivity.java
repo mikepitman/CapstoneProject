@@ -16,6 +16,8 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
     private static String LOG_TAG = ViewSubredditActivity.class.getSimpleName();
     private String mSelectedSubreddit;
+    private SubredditSubmission mSelectedSubmission;
+    private boolean mIsTablet;
 
     @LayoutRes
     protected int getLayoutResId() {
@@ -25,6 +27,7 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
+        outState.putBoolean("isTabletSaveInstanceState", mIsTablet);
         super.onSaveInstanceState(outState);
     }
 
@@ -34,10 +37,15 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
         if (savedInstanceState != null) {
             this.mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
+            this.mIsTablet = savedInstanceState.getBoolean("isTabletSaveInstanceState");
         } else {
             Intent intent = getIntent();
-            mSelectedSubreddit = intent.getStringExtra("selectedSubredditIntentExtra");
+            mSelectedSubmission = intent.getParcelableExtra(getString(R.string.intent_extra_key_selected_submission));
+            mIsTablet = intent.getBooleanExtra(getString(R.string.intent_extra_key_is_tablet), false);
+            mSelectedSubreddit = mSelectedSubmission.getSubreddit();
+
             Log.d(LOG_TAG, "selected subreddit " + mSelectedSubreddit);
+            Log.d(LOG_TAG, "is device a tablet?: " + mIsTablet);
         }
 
         setContentView(getLayoutResId());
@@ -56,14 +64,23 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
         if (fragment == null) {
             fragment = new ViewSubredditActivityFragment();
 
-            Bundle fragmentBundle = new Bundle();
-            fragmentBundle.putString(getString(R.string.bundle_key_selected_submission), mSelectedSubreddit);
-            fragment.setArguments(fragmentBundle);
+            Bundle viewSubredditsListFragmentBundle = new Bundle();
+            viewSubredditsListFragmentBundle.putString(getString(R.string.bundle_key_selected_subreddit), mSelectedSubreddit);
+            fragment.setArguments(viewSubredditsListFragmentBundle);
 
             fm.beginTransaction().add(R.id.view_subreddit_submissions_coordinator_layout, fragment).commit();
         }
 
 //      if device is tablet, initiate tablet view with subreddit submissions on the left, selected submission on the right
+        if (mIsTablet) {
+            Fragment submissionFragment = new ViewSubmissionActivityFragment();
+
+            Bundle viewSubmissionFragmentBundle = new Bundle();
+            viewSubmissionFragmentBundle.putParcelable(getString(R.string.bundle_key_selected_submission), mSelectedSubmission);
+            submissionFragment.setArguments(viewSubmissionFragmentBundle);
+
+            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_LISTING_TAG").commit();
+        }
 
         Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_viewSubreddit);
         setSupportActionBar(fragmentToolbar);
@@ -76,11 +93,20 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
     @Override
     public void onSubmissionSelected(SubredditSubmission subredditSubmission) {
-        Log.d(LOG_TAG, "user has selected subreddit submission: " + subredditSubmission.getTitle());
+        if (mIsTablet) {
+            Fragment submissionFragment = new ViewSubmissionActivityFragment();
 
-        Intent viewSubmissionIntent = new Intent(this, ViewSubmissionActivity.class);
-        viewSubmissionIntent.putExtra("selectedSubmission", subredditSubmission);
-        startActivity(viewSubmissionIntent);
+            Bundle viewSubmissionFragmentBundle = new Bundle();
+            viewSubmissionFragmentBundle.putParcelable(getString(R.string.bundle_key_selected_submission), subredditSubmission);
+            submissionFragment.setArguments(viewSubmissionFragmentBundle);
+
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_LISTING_TAG").commit();
+        } else {
+            Intent viewSubmissionIntent = new Intent(this, ViewSubmissionActivity.class);
+            viewSubmissionIntent.putExtra(getString(R.string.intent_extra_key_selected_submission), subredditSubmission);
+            startActivity(viewSubmissionIntent);
+        }
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

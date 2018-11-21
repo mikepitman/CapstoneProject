@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     fragment = new MainActivityFragment();
 
                     Bundle mainActivityFragmentBundle = new Bundle();
-                    mainActivityFragmentBundle.putBoolean("isTablet", mIsTablet);
+                    mainActivityFragmentBundle.putBoolean(getString(R.string.bundle_key_is_tablet), mIsTablet);
                     mainActivityFragmentBundle.putStringArrayList(getString(R.string.bundle_key_selected_subreddits_list), new ArrayList<>(mSelectedSubreddits));
                     fragment.setArguments(mainActivityFragmentBundle);
 
@@ -118,12 +118,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override   // callback from MainActivityFragment
     public void onSubredditSelected(SubredditSubmission subredditSubmission) {
-        // create intent for new activity, to display the posts of the selected subreddit
         Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
 
-        Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
-        viewSubredditIntent.putExtra("selectedSubredditIntentExtra", subredditSubmission.getSubreddit());
-        startActivity(viewSubredditIntent);
+        if (mIsTablet) {
+            Fragment subredditFragment = new ViewSubredditActivityFragment();
+
+            Bundle viewSubredditfragmentBundle = new Bundle();
+            viewSubredditfragmentBundle.putString(getString(R.string.bundle_key_selected_subreddit), subredditSubmission.getSubreddit());
+            subredditFragment.setArguments(viewSubredditfragmentBundle);
+
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, "SUBREDDIT_LISTING_TAG").commit();
+            // todo: highlight selected subreddit card
+
+        } else {
+            Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
+            viewSubredditIntent.putExtra(getString(R.string.intent_extra_key_selected_submission), subredditSubmission);
+            viewSubredditIntent.putExtra(getString(R.string.intent_extra_key_is_tablet), mIsTablet);
+            startActivity(viewSubredditIntent);
+        }
 
         // Once recipe is selected, update the widget with ingredients for the newly selected recipe
         // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
@@ -140,9 +153,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     public void onSubmissionSelected(SubredditSubmission subredditSubmission) {
         Log.d(LOG_TAG, "user has selected subreddit submission, in mainActivity (tablet version): " + subredditSubmission.getTitle());
 
-        Intent viewSubmissionIntent = new Intent(this, ViewSubmissionActivity.class);
-        viewSubmissionIntent.putExtra("selectedSubmission", subredditSubmission);
-        startActivity(viewSubmissionIntent);
+/* Display the list of subreddit submissions on left pane, and the selected submission on the right pane
+* Hence, create an intent to ViewSubredditActivity, with the mIsTablet parameter passed in as true
+* */
+        Intent viewSubredditIntent = new Intent(this, ViewSubredditActivity.class);
+        viewSubredditIntent.putExtra(getString(R.string.intent_extra_key_selected_submission), subredditSubmission);
+        viewSubredditIntent.putExtra(getString(R.string.intent_extra_key_is_tablet), mIsTablet);
+        startActivity(viewSubredditIntent);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

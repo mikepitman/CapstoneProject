@@ -44,6 +44,10 @@
     <string name="bundle_key_selected_subreddits_list">selectedSubredditsListForFragment</string>
     <string name="bundle_key_selected_subreddit">selectedSubredditForFragment</string>
     <string name="bundle_key_selected_submission">selectedSubmissionForFragment</string>
+    <string name="bundle_key_is_tablet">isDeviceTablet</string>
+
+    <string name="intent_extra_key_is_tablet">mIsTablet</string>
+    <string name="intent_extra_key_selected_submission">intentExtraSelectedSubreddit</string>
 
 
 </resources>
