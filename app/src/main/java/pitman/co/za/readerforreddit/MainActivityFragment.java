@@ -45,7 +45,6 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<String> selectedSubreddits;
     private CoordinatorLayout mCoordinatorLayout;
     private ProgressDialog mProgressDialog;
-    private boolean mIsTablet;
     private Context mContext;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +91,6 @@ public class MainActivityFragment extends Fragment {
 
         Bundle activityArguments = this.getArguments();
         if (activityArguments != null) {
-            mIsTablet = activityArguments.getBoolean("isTablet");
             selectedSubreddits = activityArguments.getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
         }
 

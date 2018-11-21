@@ -128,7 +128,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             subredditFragment.setArguments(viewSubredditfragmentBundle);
 
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, "SUBREDDIT_LISTING_TAG").commit();
+//            fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, "SUBREDDIT_LISTING_TAG").commit();
+            fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment).commit();
             // todo: highlight selected subreddit card
 
         } else {

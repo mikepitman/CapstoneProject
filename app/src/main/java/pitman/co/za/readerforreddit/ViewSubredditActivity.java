@@ -27,21 +27,24 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
-        outState.putBoolean("isTabletSaveInstanceState", mIsTablet);
+        outState.putParcelable("submission", mSelectedSubmission);
+//        outState.putBoolean("isTabletSaveInstanceState", mIsTablet);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
 
         if (savedInstanceState != null) {
             this.mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
-            this.mIsTablet = savedInstanceState.getBoolean("isTabletSaveInstanceState");
+            this.mSelectedSubmission = savedInstanceState.getParcelable("submission");
+//            this.mIsTablet = savedInstanceState.getBoolean("isTabletSaveInstanceState");
         } else {
             Intent intent = getIntent();
             mSelectedSubmission = intent.getParcelableExtra(getString(R.string.intent_extra_key_selected_submission));
-            mIsTablet = intent.getBooleanExtra(getString(R.string.intent_extra_key_is_tablet), false);
+//            mIsTablet = intent.getBooleanExtra(getString(R.string.intent_extra_key_is_tablet), false);
             mSelectedSubreddit = mSelectedSubmission.getSubreddit();
 
             Log.d(LOG_TAG, "selected subreddit " + mSelectedSubreddit);
@@ -79,7 +82,14 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             viewSubmissionFragmentBundle.putParcelable(getString(R.string.bundle_key_selected_submission), mSelectedSubmission);
             submissionFragment.setArguments(viewSubmissionFragmentBundle);
 
-            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_LISTING_TAG").commit();
+            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_SUBMISSION_TAG").commit();
+        } else {
+            // https://stackoverflow.com/questions/46313949/detail-fragment-re-starts-even-when-rotated-from-landscape-to-vertical-master
+            Fragment submissionFragment = fm.findFragmentByTag("SUBREDDIT_SUBMISSION_TAG");
+            if (submissionFragment != null) {
+                fm.beginTransaction().remove(submissionFragment).commit();
+                Log.d(LOG_TAG, "Removing detail fragment which should not be recreated!");
+            }
         }
 
         Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_viewSubreddit);
