@@ -1,5 +1,6 @@
 package pitman.co.za.readerforreddit;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
+import pitman.co.za.readerforreddit.widget.ReaderForRedditWidgetProvider;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks, ViewSubredditActivityFragment.Callbacks {
 
@@ -141,13 +143,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         // Once recipe is selected, update the widget with ingredients for the newly selected recipe
         // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
-//        Intent updateWidgetIntent = new Intent(this, RecipeWidgetProvider.class);
-//        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-//
+        Intent updateWidgetIntent = new Intent(this, ReaderForRedditWidgetProvider.class);
+        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
 //        SharedPreferences sharedPreferences = this.getSharedPreferences("pitman.co.za.bakingapp", Context.MODE_PRIVATE);
 //        sharedPreferences.edit().putString("selectedRecipe", recipe.getName()).apply();
-//
-//        this.sendBroadcast(updateWidgetIntent);
+
+        this.sendBroadcast(updateWidgetIntent);
     }
 
     @Override   // callback from ViewSubredditActivityFragment

@@ -25,7 +25,6 @@
     <string name="subreddit_nsfw">Subreddit is marked \'NSFW\'!</string>
     <string name="subreddit_nonexistent">No subreddit for \'%1$s\' was found!</string>
     <string name="subreddit_added_to_list">Your selection has been added!</string>
-
     <!-- Progress dialog messages -->
     <string name="progress_dialog_selectSubreddit_title">Checking&#8230;</string>       <!-- &#8230; is decimal HTML entity for '...' (ellipsis) -->
     <string name="progress_dialog_selectSubreddit_if">if</string>                  <!-- &#32; is decimal HTML entity for 'space' -->
@@ -53,4 +52,5 @@
     <string name="save_instance_state_selected_submission">save_instance_selected_submission</string>
     <string name="save_instance_state_submission_comments">save_instance_submission_comments</string>
 
+    <string name="widget_no_subreddits">No Subreddits to show!</string>
 </resources>

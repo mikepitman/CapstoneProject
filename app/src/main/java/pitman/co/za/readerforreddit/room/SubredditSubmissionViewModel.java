@@ -16,7 +16,6 @@ public class SubredditSubmissionViewModel extends AndroidViewModel {
     private LiveData<List<SubredditSubmission>> mAllSubredditSubmissions;
     private SubredditSubmission selectedSubredditSubmission;
 
-    // Constructor never called in examples I could find, hence second setting of the mAllRecipes attribute in getAllRecipes() method
     public SubredditSubmissionViewModel(Application application) {
         super(application);
         mRepository = new SubredditSubmissionRepository(application);

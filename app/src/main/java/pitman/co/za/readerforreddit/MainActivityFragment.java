@@ -85,10 +85,6 @@ public class MainActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
 
-        // todo: something screwed up going on here, in tablet version the full arrayList isn't coming through, only a single string, and
-        // it's not assigning an arrayList<String> to selectedSubreddits class variable
-
-
         Bundle activityArguments = this.getArguments();
         if (activityArguments != null) {
             selectedSubreddits = activityArguments.getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
@@ -119,10 +115,9 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "3. onCreateView()");
 
-        if (savedInstanceState != null) {
-//            recipesUpdated = savedInstanceState.getBoolean("recipesUpdated");
+//        if (savedInstanceState != null) {
 //            todo: restore state
-        }
+//        }
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.main_fragment_container);

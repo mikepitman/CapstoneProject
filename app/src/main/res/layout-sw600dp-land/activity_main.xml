@@ -1,51 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:baselineAligned="false"
-              android:orientation="horizontal"
-              android:showDividers="middle">
-    <!--android:divider="?android:attr/dividerHorizontal"-->
 
-    <!-- This layout is a two-pane layout for the Items master/detail flow. -->
-
-    <!--<fragment
-    android:id="@+id/activity_main_coordinatorLayout"
-    android:name="pitman.co.za.readerforreddit.MainActivityFragment"
-    android:layout_width="0dp"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1"
-    tools:layout="@android:layout/list_content"/>
+    android:background="@color/black"
+    android:orientation="horizontal">
 
-    <FrameLayout
-    android:id="@+id/activity_main_coordinatorLayout"
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
-    android:layout_weight="1"/>-->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_mainActivity"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/activity_main_coordinatorLayout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:background="@color/black"
-        android:orientation="vertical">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:baselineAligned="false"
+                  android:orientation="horizontal"
+                  android:showDividers="middle">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_mainActivity"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="@dimen/toolbar_elevation"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
-    </android.support.design.widget.CoordinatorLayout>
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/activity_main_coordinatorLayout"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:orientation="vertical"/>
 
-    <FrameLayout
-        android:id="@+id/selected_subreddits_frame"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        <FrameLayout
+            android:id="@+id/selected_subreddits_frame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

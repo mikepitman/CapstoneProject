@@ -51,7 +51,20 @@
           android:value="pitman.co.za.readerforreddit.MainActivity"/>
     </activity>
     <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <receiver android:name=".widget.ReaderForRedditWidgetProvider">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
 
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/reddit_reader_widget_provider_info"/>
+    </receiver>
+    <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <service
+        android:name=".widget.ReaderForRedditWidgetRemoteViewsService"
+        android:exported="false"
+        android:permission="android.permission.BIND_REMOTEVIEWS"/>
   </application>
 
 </manifest>
