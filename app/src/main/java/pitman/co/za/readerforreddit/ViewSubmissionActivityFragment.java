@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,6 +48,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     private SubmissionCommentsAdapter mAdapter;
     private ProgressDialog mProgressDialog;
     private Context mContext;
+    private QuerySubredditSubmissionCommentsAsyncTask task;
 
     public ViewSubmissionActivityFragment() {
     }
@@ -67,8 +69,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("selectedSubmission", mSelectedSubmission);
-        outState.putParcelableArrayList("submissionComments", mSubmissionComments);
+        outState.putParcelable(getString(R.string.save_instance_state_selected_submission), mSelectedSubmission);
+        outState.putParcelableArrayList(getString(R.string.save_instance_state_submission_comments), mSubmissionComments);
         super.onSaveInstanceState(outState);
     }
 
@@ -79,8 +81,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         mContext = this.getContext();
 
         if (savedInstanceState != null) {
-            this.mSelectedSubmission = savedInstanceState.getParcelable("selectedSubmission");
-            this.mSubmissionComments = savedInstanceState.getParcelableArrayList("submissionComments");
+            this.mSelectedSubmission = savedInstanceState.getParcelable(getString(R.string.save_instance_state_selected_submission));
+            this.mSubmissionComments = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_state_submission_comments));
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
@@ -124,7 +126,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         bindSubmissionViews();
 
         if (sUtilityCode.isNetworkAvailable(getActivity())) {
-            new QuerySubredditSubmissionCommentsAsyncTask(this).execute(mSelectedSubmission.getRedditId());
+            task = new QuerySubredditSubmissionCommentsAsyncTask(this);
+            task.execute(mSelectedSubmission.getRedditId());
         } else {
             Log.d(LOG_TAG, "No network connectivity!");
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query, mContext);
@@ -323,5 +326,15 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy()");
+
+        if (task != null && task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            task.cancel(true);
+        }
+
+        // Prevent window leaks from Dialog remaining open after fragment is removed
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 }

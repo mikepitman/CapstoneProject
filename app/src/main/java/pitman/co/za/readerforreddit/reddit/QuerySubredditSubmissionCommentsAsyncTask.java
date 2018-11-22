@@ -37,16 +37,22 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
 
     protected void onProgressUpdate(Integer... progress){
         // Update the progress bar on dialog
-        mViewSubmissionActivityFragment.updateProgressBar(progress[0]);
+        if (!isCancelled()) {
+            mViewSubmissionActivityFragment.updateProgressBar(progress[0]);
+        } else {
+            mViewSubmissionActivityFragment.dismissProgressBar();
+        }
     }
 
     @Override
     protected void onPostExecute(ArrayList<SubmissionComment> result) {
         super.onPostExecute(result);
 
-        Log.d(LOG_TAG, "number of comments: " + result.size());
-        mViewSubmissionActivityFragment.dismissProgressBar();
-        mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
+        if (!isCancelled()) {
+            Log.d(LOG_TAG, "number of comments: " + result.size());
+            mViewSubmissionActivityFragment.dismissProgressBar();
+            mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
+        }
     }
 
     @Override
@@ -59,7 +65,14 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         String submissionId = strings[0];
-        RootCommentNode rootCommentNode = redditClient.submission(submissionId).comments();
+        RootCommentNode rootCommentNode;
+
+        if (!isCancelled()) {
+            rootCommentNode = redditClient.submission(submissionId).comments();
+        } else {
+            mViewSubmissionActivityFragment.dismissProgressBar();
+            return null;
+        }
 
         return unpackCommentNode(rootCommentNode, submissionId);
     }

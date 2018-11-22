@@ -49,5 +49,8 @@
     <string name="intent_extra_key_is_tablet">mIsTablet</string>
     <string name="intent_extra_key_selected_submission">intentExtraSelectedSubreddit</string>
 
+    <string name="save_instance_state_selected_subreddit_title">save_instance_selected_subreddit_title</string>
+    <string name="save_instance_state_selected_submission">save_instance_selected_submission</string>
+    <string name="save_instance_state_submission_comments">save_instance_submission_comments</string>
 
 </resources>

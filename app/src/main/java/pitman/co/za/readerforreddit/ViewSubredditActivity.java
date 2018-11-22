@@ -26,9 +26,8 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
-        outState.putParcelable("submission", mSelectedSubmission);
-//        outState.putBoolean("isTabletSaveInstanceState", mIsTablet);
+        outState.putString(getString(R.string.save_instance_state_selected_subreddit_title), mSelectedSubreddit);
+        outState.putParcelable(getString(R.string.save_instance_state_selected_submission), mSelectedSubmission);
         super.onSaveInstanceState(outState);
     }
 
@@ -38,17 +37,12 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
 
         if (savedInstanceState != null) {
-            this.mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
-            this.mSelectedSubmission = savedInstanceState.getParcelable("submission");
-//            this.mIsTablet = savedInstanceState.getBoolean("isTabletSaveInstanceState");
+            this.mSelectedSubreddit = savedInstanceState.getString(getString(R.string.save_instance_state_selected_subreddit_title));
+            this.mSelectedSubmission = savedInstanceState.getParcelable(getString(R.string.save_instance_state_selected_submission));
         } else {
             Intent intent = getIntent();
             mSelectedSubmission = intent.getParcelableExtra(getString(R.string.intent_extra_key_selected_submission));
-//            mIsTablet = intent.getBooleanExtra(getString(R.string.intent_extra_key_is_tablet), false);
             mSelectedSubreddit = mSelectedSubmission.getSubreddit();
-
-            Log.d(LOG_TAG, "selected subreddit " + mSelectedSubreddit);
-            Log.d(LOG_TAG, "is device a tablet?: " + mIsTablet);
         }
 
         setContentView(getLayoutResId());
@@ -104,6 +98,7 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
     @Override
     public void onSubmissionSelected(SubredditSubmission subredditSubmission) {
         if (mIsTablet) {
+            mSelectedSubmission = subredditSubmission;
             Fragment submissionFragment = new ViewSubmissionActivityFragment();
 
             Bundle viewSubmissionFragmentBundle = new Bundle();
