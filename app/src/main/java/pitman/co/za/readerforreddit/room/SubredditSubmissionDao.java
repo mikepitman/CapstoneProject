@@ -31,6 +31,9 @@ public interface SubredditSubmissionDao {
     @Query("select * from subreddit_submission where subreddit in (:subreddits) order by subreddit, commentCount")
     LiveData<List<SubredditSubmission>> getSubredditSubmissions(String[] subreddits);
 
+    @Query("select * from subreddit_submission where subreddit in (:subreddits) order by subreddit, commentCount")
+    List<SubredditSubmission> getStaticSubredditSubmissions(String[] subreddits);
+
     @Transaction
     @Query("select * from subreddit_submission where subreddit = :subreddit")
     LiveData<List<SubredditSubmission>> getSubmissionsForSubreddit(String subreddit);

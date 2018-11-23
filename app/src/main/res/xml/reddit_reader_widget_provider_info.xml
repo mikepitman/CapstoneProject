@@ -3,10 +3,11 @@
                     android:initialKeyguardLayout="@layout/widget_provider"
                     android:initialLayout="@layout/widget_provider"
                     android:minHeight="40dp"
-                    android:minWidth="200dp"
+                    android:minWidth="250dp"
 
                     android:resizeMode="vertical|horizontal"
                     android:updatePeriodMillis="1800000"
                     android:widgetCategory="home_screen">
     <!--android:previewImage="@drawable/baking_app_preview"-->
+
 </appwidget-provider>

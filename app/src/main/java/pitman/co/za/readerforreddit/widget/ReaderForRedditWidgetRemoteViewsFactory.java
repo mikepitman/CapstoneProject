@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import pitman.co.za.readerforreddit.R;
+import pitman.co.za.readerforreddit.UtilityCode;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDao;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDatabase;
@@ -20,6 +21,7 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFactory {
 
     private static final String LOG_TAG = ReaderForRedditWidgetRemoteViewsFactory.class.getSimpleName();
+    private static UtilityCode sUtilityCode;
     private List<SubredditSubmission> mSubmissionsList;
     private SubredditSubmissionViewModel mSubredditSubmissionViewModel;
     private Context context;
@@ -33,6 +35,7 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
         appWidgetId = intent.getIntExtra(
                 AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
+        sUtilityCode = new UtilityCode();
     }
 
     @Override
@@ -52,7 +55,8 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 mSubmissionsList = new ArrayList<SubredditSubmission>();
             } else {
-                mSubmissionsList = dao.getSubredditSubmissions(mSelectedSubreddits.toArray(new String[mSelectedSubreddits.size()])).getValue();
+                mSubmissionsList = dao.getStaticSubredditSubmissions(mSelectedSubreddits.toArray(new String[mSelectedSubreddits.size()]));
+                mSubmissionsList = sUtilityCode.parseTopSubredditSubmissions(mSubmissionsList);
             }
         }
     }
@@ -68,10 +72,10 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
         // create view
         final RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_list_item);
         SubredditSubmission submission = mSubmissionsList.get(position);
-        remoteView.setTextViewText(R.id.widget_list_item_score, submission.getSubmissionScore().toString());
-        remoteView.setTextViewText(R.id.widget_list_item_subreddit, submission.getSubreddit());
+        remoteView.setTextViewText(R.id.widget_list_item_score, submission.getFormattedSubmissionScore());
+        remoteView.setTextViewText(R.id.widget_list_item_subreddit, submission.getFormattedSubreddit());
         remoteView.setTextViewText(R.id.widget_list_item_title, submission.getTitle());
-        remoteView.setTextViewText(R.id.widget_list_item_author, submission.getAuthor());
+        remoteView.setTextViewText(R.id.widget_list_item_author, submission.getFormattedAuthor());
 
         return remoteView;
     }

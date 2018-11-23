@@ -6,6 +6,18 @@
               android:orientation="vertical"
               android:background="@color/black">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/offBlack"
+        android:text="@string/app_name"
+        android:textColor="@color/colorAccent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:paddingStart="@dimen/padding_startEnd_recessed"
+        android:paddingEnd="@dimen/padding_startEnd_recessed"
+        android:paddingTop="@dimen/padding_topBottom"
+        android:paddingBottom="@dimen/padding_topBottom"/>
+
     <ListView
         android:id="@+id/subredditWidgetListView"
         android:layout_width="match_parent"

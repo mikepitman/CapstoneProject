@@ -2,9 +2,11 @@ package pitman.co.za.readerforreddit;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,13 +27,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 import pitman.co.za.readerforreddit.reddit.QuerySubscribedSubredditsListAsyncTask;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
+import pitman.co.za.readerforreddit.widget.ReaderForRedditWidgetProvider;
 
 public class MainActivityFragment extends Fragment {
 
@@ -95,10 +96,10 @@ public class MainActivityFragment extends Fragment {
         mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).observe(this, new Observer<List<SubredditSubmission>>() {
             @Override
             public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
-                mAdapter.swapData(parseTopSubredditSubmissions(subreddits));
+                mAdapter.swapData(sUtilityCode.parseTopSubredditSubmissions(subreddits));
             }
         });
-        List<SubredditSubmission> topSubredditSubmissions = parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).getValue());
+        List<SubredditSubmission> topSubredditSubmissions = sUtilityCode.parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).getValue());
         mAdapter = new SubredditSubmissionCardAdapter(topSubredditSubmissions);
 
         // https://android--examples.blogspot.com/2017/02/android-asynctask-with-progress-dialog.html
@@ -140,28 +141,14 @@ public class MainActivityFragment extends Fragment {
     public void generateSubredditSubmissionsAdapterWithData(ArrayList<SubredditSubmission> retrievedSubredditSubmissions) {
         if (retrievedSubredditSubmissions != null) {
             mSubredditsViewModel.insert(retrievedSubredditSubmissions);
-        }
-    }
 
-    // Collect the top-scored submissions for each subreddit for display on 'home screen' from list of all returned subreddit submissions
-    private List<SubredditSubmission> parseTopSubredditSubmissions(List<SubredditSubmission> subredditSubmissions) {
-        List<SubredditSubmission> topSubredditSubmissions = new ArrayList<>();
-        if (subredditSubmissions != null) {     // NPE results if code is executed before the asyncTask returns
-            Set<String> subredditsParsed = new HashSet<>();
-            SubredditSubmission topSubmissionForSubreddit = null;
-            for (SubredditSubmission submission : subredditSubmissions) {
-                if (!subredditsParsed.contains(submission.getSubreddit())) {
-                    subredditsParsed.add(submission.getSubreddit());
-                    topSubmissionForSubreddit = submission;
-                    topSubredditSubmissions.add(topSubmissionForSubreddit);
-                } else {
-                    if (submission.getSubmissionScore() > topSubmissionForSubreddit.getSubmissionScore()) {
-                        topSubmissionForSubreddit = submission;
-                    }
-                }
-            }
+            // Update the widget with retrieved data
+            // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
+            Intent updateWidgetIntent = new Intent(this.mContext, ReaderForRedditWidgetProvider.class);
+            updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+            this.mContext.sendBroadcast(updateWidgetIntent);
         }
-        return topSubredditSubmissions;
     }
 
     private class SubredditSubmissionCardAdapter extends RecyclerView.Adapter<SubmissionCardViewHolder> {
@@ -240,8 +227,8 @@ public class MainActivityFragment extends Fragment {
             this.mSubredditSubmission = subredditSubmission;
 
             if (mSubredditSubmission.getSubmissionScore() != null) {
-                this.subredditPostScoreTextView.setText(
-                        sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
+                this.subredditPostScoreTextView.setText(mSubredditSubmission.getFormattedSubmissionScore());
+//                        sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getFormattedSubmissionScore()));
             }
 
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());

@@ -177,15 +177,15 @@ public class ViewSubredditActivityFragment extends Fragment {
         public void bindSubredditSubmission(SubredditSubmission subredditSubmission) {
             this.mSubredditSubmission = subredditSubmission;
 
-            this.subredditPostScoreTextView.setText(
-                    sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
+            this.subredditPostScoreTextView.setText(mSubredditSubmission.getFormattedSubmissionScore());
+//                    sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
 
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
-            String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
-            this.subredditPostSubredditTextView.setText(formattedSubreddit);
+//            String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
+            this.subredditPostSubredditTextView.setText(mSubredditSubmission.getFormattedSubreddit());
 
-            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
-            this.subredditPostAuthorTextView.setText(formattedAuthor);
+//            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
+            this.subredditPostAuthorTextView.setText(mSubredditSubmission.getFormattedAuthor());
 
 //            if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());

@@ -1,87 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    android:id="@+id/widget_list_item_card_view"
+<!--<android.support.v7.widget.CardView-->
+<!--android:id="@+id/widget_list_item_card_view"-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:layout_gravity="center"-->
+<!--android:layout_margin="@dimen/card_layout_margin"-->
+<!--android:fitsSystemWindows="true"-->
+<!--card_view:cardBackgroundColor="@color/offBlack"-->
+<!--card_view:cardCornerRadius="@dimen/card_corner_radii">-->
+
+<LinearLayout
+    android:id="@+id/widget_list_item_horiz_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:layout_margin="@dimen/card_layout_margin"
-    android:fitsSystemWindows="true"
-    card_view:cardBackgroundColor="@color/offBlack"
-    card_view:cardCornerRadius="@dimen/card_corner_radii">
+    android:orientation="horizontal">
+    <!--android:layout_marginEnd="1dp"-->
+    <!--android:layout_marginStart="1dp"-->
 
     <LinearLayout
+        android:id="@+id/widget_list_item_score_vert_layout"
+        android:layout_width="@dimen/layout_none"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        android:id="@+id/widget_list_item_horiz_layout"
-        android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/widget_list_item_score"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            android:textColor="@color/white"/>
+
+        <!-- delimiter between items-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/offBlack"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_list_item_details_vert_layout"
+        android:layout_width="@dimen/layout_none"
         android:layout_height="wrap_content"
 
-        android:baselineAligned="false"
-        android:orientation="horizontal">
-        <!--android:layout_marginEnd="1dp"-->
-        <!--android:layout_marginStart="1dp"-->
+        android:layout_weight="6"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_list_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
         <LinearLayout
-            android:id="@+id/widget_list_item_score_vert_layout"
-            android:layout_width="@dimen/layout_none"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/widget_list_item_score"
-                style="@style/submission_text.supplementary"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/padding_none"
-                android:paddingEnd="@dimen/padding_none"
-                android:textAlignment="center"/>
-            <!-- layout_width and layout_height set in style, layout_height overridden here as required -->
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/widget_list_item_details_vert_layout"
-            android:layout_width="@dimen/layout_none"
-            android:layout_height="fill_parent"
-
-            android:layout_weight="6"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/widget_list_item_subreddit"
-                style="@style/submission_text.supplementary"
-                android:layout_gravity="top"/>
-
-            <TextView
-                android:id="@+id/widget_list_item_title"
-                style="@style/submission_text"
-                android:layout_gravity="center_vertical"/>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:layout_weight="2"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
                 android:id="@+id/widget_list_item_author"
-                style="@style/submission_text.supplementary"
-                android:layout_gravity="bottom"/>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_weight="3"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
         </LinearLayout>
 
-        <!--<LinearLayout-->
-            <!--android:id="@+id/subreddit_thumbnail_vert_layout"-->
-            <!--android:layout_width="@dimen/layout_none"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--android:layout_weight="2"-->
-            <!--android:gravity="center_vertical|end"-->
-            <!--android:orientation="vertical">-->
+        <!-- delimiter between items-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/offBlack"/>
 
-            <!--<ImageView-->
-                <!--android:id="@+id/thumbnail"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center_vertical|end"-->
-                <!--android:contentDescription="@string/subreddit_submission_thumbnail"-->
-                <!--android:scaleType="fitCenter"/>-->
-
-        <!--</LinearLayout>-->
     </LinearLayout>
-</android.support.v7.widget.CardView>
+</LinearLayout>
