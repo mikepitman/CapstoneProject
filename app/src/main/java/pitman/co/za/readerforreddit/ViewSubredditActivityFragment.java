@@ -178,13 +178,9 @@ public class ViewSubredditActivityFragment extends Fragment {
             this.mSubredditSubmission = subredditSubmission;
 
             this.subredditPostScoreTextView.setText(mSubredditSubmission.getFormattedSubmissionScore());
-//                    sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
-
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
-//            String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
             this.subredditPostSubredditTextView.setText(mSubredditSubmission.getFormattedSubreddit());
 
-//            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
             this.subredditPostAuthorTextView.setText(mSubredditSubmission.getFormattedAuthor());
 
 //            if (mSubredditSubmission.isHasThumbnail()) {

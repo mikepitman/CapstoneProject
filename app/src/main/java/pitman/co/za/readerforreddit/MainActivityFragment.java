@@ -116,10 +116,6 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "3. onCreateView()");
 
-//        if (savedInstanceState != null) {
-//            todo: restore state
-//        }
-
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.main_fragment_container);
 
@@ -228,30 +224,18 @@ public class MainActivityFragment extends Fragment {
 
             if (mSubredditSubmission.getSubmissionScore() != null) {
                 this.subredditPostScoreTextView.setText(mSubredditSubmission.getFormattedSubmissionScore());
-//                        sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getFormattedSubmissionScore()));
             }
 
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
             this.subredditPostTitleTextView.setMaxLines(3);
             this.subredditPostTitleTextView.setEllipsize(TextUtils.TruncateAt.END);
+            this.subredditPostSubredditTextView.setText(mSubredditSubmission.getFormattedSubreddit());
+            this.subredditPostAuthorTextView.setText(mSubredditSubmission.getFormattedAuthor());
 
-            String formattedSubreddit = "r/" + mSubredditSubmission.getSubreddit();
-            this.subredditPostSubredditTextView.setText(formattedSubreddit);
-
-            String formattedAuthor = "u/" + mSubredditSubmission.getAuthor();
-            this.subredditPostAuthorTextView.setText(formattedAuthor);
-
-//            if (mSubredditSubmission.isHasThumbnail()) {
+            if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());
                 Picasso.get().load(imageUri).into(this.subredditPostThumbnailImageView);
-//            } else {
-//                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-//                        LinearLayout.LayoutParams.WRAP_CONTENT,
-//                        LinearLayout.LayoutParams.WRAP_CONTENT,
-//                        0f);
-//                subredditThumbnailLayout.setLayoutParams(param);
-//                this.subredditPostThumbnailImageView.setVisibility(View.GONE);
-//            }
+            }
         }
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

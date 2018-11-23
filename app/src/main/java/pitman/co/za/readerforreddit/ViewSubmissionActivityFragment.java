@@ -147,7 +147,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
         TextView linkTextView = (TextView) rootView.findViewById(R.id.link_text);
 
-        String formattedAuthor = "u/" + mSelectedSubmission.getAuthor();
+        String formattedAuthor = getString(R.string.user_prefix) + mSelectedSubmission.getAuthor();
         authorTextView.setText(formattedAuthor);
         titleTextView.setText(mSelectedSubmission.getTitle());
 
@@ -169,11 +169,10 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             // --> check if it's an imgur link, and try load that gif and animate it?
 
             // Video stream hosted by reddit
-            if (postHint.equals("hosted:video")) {
-                Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
+//            if (postHint.equals("hosted:video")) {
+//                Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
                 // todo: use exoplayer here? DON'T load the preview image...
-            } else if (postHint.contains("link") || postHint.equals("rich:video")) {
-                // todo: is it always only 'link', or also possibly 'link:xxxx'?
+            if (postHint.contains("link") || postHint.equals("rich:video") || postHint.equals("hosted:video")) {
                 linkTextView.setText(mSelectedSubmission.getLinkUrl());
                 linkTextView.setOnClickListener(this);
 
@@ -196,8 +195,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general, mContext);
         }
     }
-
-    private void loadPreviewImage() {}
 
     // Link textView clicked, initiate intent to open app better suited to displaying the content
     @Override
