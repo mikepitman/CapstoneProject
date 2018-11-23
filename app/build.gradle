@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'udacity'
-            keyPassword 'p@55w0rd'
-            storeFile file('C:/Users/Michael/Work/Code/android/ReaderforReddit/keystore.jks')
-            storePassword 'p@55w0rd'
+            keyAlias 'readerKey'
+            keyPassword 'readerKey2'
+            storeFile file('C:/Users/Michael/Work/Code/android/ReaderforReddit/readerkeystore.jks')
+            storePassword 'readerKey1'
         }
     }
     compileSdkVersion 28
@@ -29,6 +29,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
             signingConfig signingConfigs.config
         }
     }
@@ -56,8 +59,16 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
     implementation 'joda-time:joda-time:2.10'
     /* If there are versioning clashes between what's specified in gradle and what's imported by a package,
-               exclude the package imports if they're older. */
-    implementation('com.google.firebase:firebase-core:16.0.1') {
+                           exclude the package imports if they're older. */
+    implementation('com.google.firebase:firebase-core:16.0.5') {
+        exclude group: 'com.android.support', module: 'support-media-compat'
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    implementation('com.google.firebase:firebase-auth:16.0.5') {
+        exclude group: 'com.android.support', module: 'support-media-compat'
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    implementation('com.google.android.gms:play-services-auth:16.0.1') {
         exclude group: 'com.android.support', module: 'support-media-compat'
         exclude group: 'com.android.support', module: 'support-v4'
     }

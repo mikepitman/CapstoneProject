@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private FirebaseAnalytics mFirebaseAnalytics;
+//    private FirebaseAuth mAuth;
     private Set<String> mSelectedSubreddits;
     private boolean mIsTablet;
     private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
