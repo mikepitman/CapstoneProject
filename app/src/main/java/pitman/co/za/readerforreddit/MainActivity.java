@@ -43,10 +43,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        Bundle firebaseBundle = new Bundle();
-        firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "Nokia7plus");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
@@ -107,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             case R.id.select_subreddits:
                 Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);
                 startActivity(updateSubredditSelectionIntent);
+
+                Bundle firebaseBundle = new Bundle();
+                firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "SELECT_SUBREDDITS");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -136,13 +136,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             viewSubredditIntent.putExtra(getString(R.string.intent_extra_key_is_tablet), mIsTablet);
             startActivity(viewSubredditIntent);
         }
-
-//        // Once recipe is selected, update the widget with ingredients for the newly selected recipe
-//        // https://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity-service-receiver
-//        Intent updateWidgetIntent = new Intent(this, ReaderForRedditWidgetProvider.class);
-//        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-//
-//        this.sendBroadcast(updateWidgetIntent);
     }
 
     @Override   // callback from ViewSubredditActivityFragment

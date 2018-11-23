@@ -30,7 +30,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:inputType="text"
-                android:textColor="@color/offWhite"/>
+                android:textColor="@color/offWhite"
+                android:nextFocusRight="@id/add_subreddit_submit_button"
+                android:nextFocusDown="@id/add_subreddit_submit_button"/>
 
             <Button
                 android:id="@+id/add_subreddit_submit_button"
@@ -40,14 +42,17 @@
                 android:clickable="true"
                 android:contentDescription="@string/add_subreddit_description"
                 android:focusable="true"
-                android:text="@string/add_subreddit_button"/>
+                android:text="@string/add_subreddit_button"
+                android:nextFocusLeft="@id/add_subreddit_text_input"
+                android:nextFocusUp="@id/add_subreddit_text_input"/>
 
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/selected_subreddits_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:focusable="true">
 
         </android.support.v7.widget.RecyclerView>
 

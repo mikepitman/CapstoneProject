@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +35,7 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 public class SelectSubredditsActivityFragment extends Fragment {
 
     private static String LOG_TAG = SelectSubredditsActivityFragment.class.getSimpleName();
+    private FirebaseAnalytics mFirebaseAnalytics;
     private static SelectedSubredditCardAdapter mAdapter;
     private static UtilityCode sUtilityCode;
     private RecyclerView mSelectedSubredditsRecyclerView;
@@ -59,6 +62,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
         SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
         if (preferences != null) {
@@ -69,6 +73,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "generating list of preferences");
                 selectedSubreddits.add("Android");
                 isSubredditListEmpty = true;
+                updateSharedPrefs();
             }
         }
 
@@ -155,6 +160,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
         } else {
             selectedSubreddits.add(submittedSubreddit);
             updateSharedPrefs();
+
+            Bundle firebaseBundle = new Bundle();
+            firebaseBundle.putString(FirebaseAnalytics.Param.SUCCESS, submittedSubreddit);
         }
     }
 

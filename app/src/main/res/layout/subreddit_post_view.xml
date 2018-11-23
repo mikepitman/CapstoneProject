@@ -9,7 +9,8 @@
     android:layout_margin="@dimen/card_layout_margin"
     android:fitsSystemWindows="true"
     card_view:cardBackgroundColor="@color/offBlack"
-    card_view:cardCornerRadius="@dimen/card_corner_radii">
+    card_view:cardCornerRadius="@dimen/card_corner_radii"
+    android:focusable="true">
 
     <LinearLayout
         android:id="@+id/subreddit_post_horiz_layout"

@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 public class ViewSubmissionActivityFragment extends Fragment implements View.OnClickListener {
 
     private static String LOG_TAG = ViewSubmissionActivityFragment.class.getSimpleName();
+    private FirebaseAnalytics mFirebaseAnalytics;
     private SubredditSubmission mSelectedSubmission;
     private static UtilityCode sUtilityCode;
     private SubredditSubmissionViewModel mSubmissionViewModel;
@@ -79,6 +81,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         super.onCreate(savedInstanceState);
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
         if (savedInstanceState != null) {
             this.mSelectedSubmission = savedInstanceState.getParcelable(getString(R.string.save_instance_state_selected_submission));
@@ -147,8 +151,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
         TextView linkTextView = (TextView) rootView.findViewById(R.id.link_text);
 
-        String formattedAuthor = getString(R.string.user_prefix) + mSelectedSubmission.getAuthor();
-        authorTextView.setText(formattedAuthor);
+        authorTextView.setText(mSelectedSubmission.getFormattedAuthor());
         titleTextView.setText(mSelectedSubmission.getTitle());
 
         String postHint = mSelectedSubmission.getPostHint();
@@ -168,10 +171,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             // --> so then, simply provide the link with a preview image that they can click?
             // --> check if it's an imgur link, and try load that gif and animate it?
 
-            // Video stream hosted by reddit
-//            if (postHint.equals("hosted:video")) {
-//                Log.d(LOG_TAG, "video url loaded: " + mSelectedSubmission.getVideoUrl());
-                // todo: use exoplayer here? DON'T load the preview image...
             if (postHint.contains("link") || postHint.equals("rich:video") || postHint.equals("hosted:video")) {
                 linkTextView.setText(mSelectedSubmission.getLinkUrl());
                 linkTextView.setOnClickListener(this);
@@ -190,8 +189,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
                 }
             }
         } else {
-            Log.d(LOG_TAG, "postHint is NULL, this should never happen!");
-            // todo: log this to firebase
+            Log.e(LOG_TAG, "postHint is NULL, this should never happen!");
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general, mContext);
         }
     }
@@ -205,12 +203,19 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         sendIntent.setAction(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse(mSelectedSubmission.getLinkUrl()));
 
+        Bundle firebaseBundle = new Bundle();
         // Verify that the intent will resolve to an activity
         if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(sendIntent);
+
+            firebaseBundle.putString(FirebaseAnalytics.Param.LOCATION, mSelectedSubmission.getLinkUrl());
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, firebaseBundle);
         } else {
             Log.d(LOG_TAG, "intent unable to be handled by another app!");
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app, mContext);
+
+            firebaseBundle.putString("APP_UNAVAILABLE", mSelectedSubmission.getLinkUrl());
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, firebaseBundle);
         }
     }
 
