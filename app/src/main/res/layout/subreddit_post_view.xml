@@ -12,15 +12,12 @@
     card_view:cardCornerRadius="@dimen/card_corner_radii">
 
     <LinearLayout
-
         android:id="@+id/subreddit_post_horiz_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
         android:baselineAligned="false"
         android:orientation="horizontal">
-        <!--android:layout_marginEnd="1dp"-->
-        <!--android:layout_marginStart="1dp"-->
 
         <LinearLayout
             android:id="@+id/subreddit_post_score_vert_layout"
@@ -58,7 +55,8 @@
             <TextView
                 android:id="@+id/subreddit_post_title"
                 style="@style/submission_text"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:elevation="@dimen/image_view_elevation"/>
 
             <TextView
                 android:id="@+id/subreddit_post_author"
@@ -82,6 +80,7 @@
                 android:contentDescription="@string/subreddit_submission_thumbnail"
                 android:scaleType="fitCenter"
 
+                android:elevation="@dimen/image_view_elevation"
                 android:layout_marginStart="@dimen/padding_startEnd"
                 android:layout_marginEnd="@dimen/padding_startEnd"
                 android:layout_marginTop="@dimen/padding_topBottom"

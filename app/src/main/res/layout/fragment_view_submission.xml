@@ -84,12 +84,6 @@
                         android:id="@+id/link_text"
                         style="@style/submission_text.link"/>
 
-                    <!--<WebView-->
-                    <!--android:id="@+id/webview"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent">-->
-                    <!--</WebView>-->
-
                     <!-- separator line -->
                     <TextView
                         android:layout_width="match_parent"

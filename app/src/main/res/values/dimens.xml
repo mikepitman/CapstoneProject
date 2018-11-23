@@ -2,6 +2,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="toolbar_elevation">4dp</dimen>
+    <dimen name="image_view_elevation">8dp</dimen>
 
     <dimen name="layout_none">0dp</dimen>
     <dimen name="padding_none">0dp</dimen>
