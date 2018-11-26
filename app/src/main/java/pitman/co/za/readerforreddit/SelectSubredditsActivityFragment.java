@@ -47,6 +47,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private String submittedSubreddit;
     private ProgressDialog mProgressDialog;
     private Context mContext;
+    private boolean failedToReadFirebaseFile = false;
     private boolean isSubredditListEmpty = false;
     private static final String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
     private static final String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
@@ -68,12 +69,11 @@ public class SelectSubredditsActivityFragment extends Fragment {
         if (preferences != null) {
             selectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
             Log.d(LOG_TAG, "preferences retrieved");
-            if (selectedSubreddits == null) {
+            if (selectedSubreddits == null || selectedSubreddits.isEmpty()) {
                 selectedSubreddits = new HashSet<>();
                 Log.d(LOG_TAG, "generating list of preferences");
                 selectedSubreddits.add("Android");
                 isSubredditListEmpty = true;
-                updateSharedPrefs();
             }
         }
 
@@ -111,12 +111,30 @@ public class SelectSubredditsActivityFragment extends Fragment {
             }
         });
 
+        if (failedToReadFirebaseFile) {
+            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.firebase_file_read_failure, mContext);
+        }
         // snackBar needs the coordinatorLayout to be initialised, but isSubredditListEmpty is determined before that occurs.
         if (isSubredditListEmpty) {
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.supply_default_subreddit, mContext);
+            updateSharedPrefs();
         }
 
         return rootView;
+    }
+
+    // Called from SelectSubredditsActivity with new subreddits retrieved from FireBasex
+    public void updateCuratedSubreddits(ArrayList<String> curatedSubreddits) {
+        if (selectedSubreddits != null &&
+                selectedSubreddits.size() == 1 &&
+                (new ArrayList<>(selectedSubreddits).get(0).equals("Android"))) {
+            selectedSubreddits.clear();
+            selectedSubreddits.addAll(curatedSubreddits);
+            updateSharedPrefs();
+            if (mCoordinatorLayout != null) {
+                sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.curated_subreddits_retrieved, mContext);
+            }
+        }
     }
 
     public void verifySubredditAddition(View view) {
@@ -135,8 +153,8 @@ public class SelectSubredditsActivityFragment extends Fragment {
             if (sUtilityCode.isNetworkAvailable(getActivity())) {
                 String dialogMessage =
                         getString(R.string.progress_dialog_selectSubreddit_if) +
-                        " '" + submittedSubreddit + "' " +
-                        getString(R.string.progress_dialog_selectSubreddit_has_a_subreddit);
+                                " '" + submittedSubreddit + "' " +
+                                getString(R.string.progress_dialog_selectSubreddit_has_a_subreddit);
                 mProgressDialog.setMessage(dialogMessage);
 
                 new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);

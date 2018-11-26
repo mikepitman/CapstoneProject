@@ -12,13 +12,17 @@
     <string name="title_activity_view_submission">ViewSubmissionActivity</string>
     <!--<string name="action_settings">Settings</string>-->
 
-    <string name="select_subreddit_menu_item">Select Subreddits</string>
+    <string name="menu_item_select_subreddit">Select Subreddits</string>
+    <string name="menu_item_google_sign_in">Sign-in with Google</string>
+
     <string name="remove_subreddit">Remove from selection</string>
     <string name="add_subreddit_button">Add</string>
     <string name="add_subreddit_description">Add to selection</string>
 
     <!-- Strings used in SelectSubredditsActivityFragment -->
+    <string name="firebase_file_read_failure">Unable to retrieve suggested subreddits!</string>
     <string name="supply_default_subreddit">You don\'t have any selected subreddits yet, so check out r/Android!</string>
+    <string name="curated_subreddits_retrieved">We think you\'ll enjoy these curated subreddits!</string>
     <string name="subreddit_includes_prefix">It\'s not necessary to include the \'r/\' prefix for subreddits!</string>
     <string name="subreddit_incorrect_length">Subreddit names must be longer than 3 and less than 20 characters!</string>
     <string name="subreddit_already_in_list">Subreddit already selected!</string>
