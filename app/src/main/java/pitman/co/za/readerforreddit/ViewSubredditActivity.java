@@ -47,14 +47,6 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
 
         setContentView(getLayoutResId());
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-//
-//        Bundle firebaseBundle = new Bundle();
-//        firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "Nokia7plus");
-//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.view_subreddit_submissions_coordinator_layout);
 

@@ -72,14 +72,10 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-media-compat'
         exclude group: 'com.android.support', module: 'support-v4'
     }
-
     implementation('com.google.firebase:firebase-storage:16.0.5') {
         exclude group: 'com.android.support', module: 'support-media-compat'
         exclude group: 'com.android.support', module: 'support-v4'
     }
-
-    // https://mvnrepository.com/artifact/com.google.android.gms/play-services-drive
-//    implementation 'com.google.android.gms:play-services-drive:16.0.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
