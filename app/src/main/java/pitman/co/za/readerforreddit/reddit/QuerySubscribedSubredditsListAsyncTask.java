@@ -86,7 +86,6 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                 }
 
                 subredditSubmissions.add(subredditSubmission);
-//           todo:     Log.d(LOG_TAG, "title: " + submission.getTitle() + "  posthint: " + submission.getPostHint());
             }
         }
 

@@ -118,12 +118,12 @@ public class SelectSubredditsActivity extends AppCompatActivity {
                         // https://stackoverflow.com/questions/3585053/is-it-possible-to-check-if-a-string-only-contains-ascii
                         ArrayList<String> asciiCuratedSubreddits = new ArrayList<>();
                         for (String element : curatedSubreddits) {
-                            if (!Charset.forName("US-ASCII").newEncoder().canEncode(element)) {
+                            if (Charset.forName("US-ASCII").newEncoder().canEncode(element)) {
                                 asciiCuratedSubreddits.add(element);
                             }
                         }
                         curatedSubreddits = asciiCuratedSubreddits;
-                        updateFragmentWithCuratedReddits(true);
+                        updateFragmentWithCuratedReddits((curatedSubreddits.size() > 0));
                     } else {
                         updateFragmentWithCuratedReddits(false);
                     }

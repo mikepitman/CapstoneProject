@@ -14,11 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
@@ -29,14 +24,10 @@ import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks, ViewSubredditActivityFragment.Callbacks {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
-    private static int RC_SIGN_IN = 9999;
     private static UtilityCode sUtilityCode;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private GoogleSignInClient mGoogleSignInClient;
     private Set<String> mSelectedSubreddits;
     private boolean mIsTablet;
-//    private DriveClient mDriveClient;
-//    private DriveResourceClient mDriveResourceClient;
     private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
     private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
@@ -53,12 +44,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        // https://developers.google.com/identity/sign-in/android/sign-in?authuser=1
-        // Configure sign-in to request the user's ID, email address, and basic profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-        // Build a GoogleSignInClient with the options specified by gso.
-//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
@@ -103,22 +88,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         newBar.setTitle(R.string.app_name);
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-
-        // Check for existing Google Sign In account, if the user is already signed in the GoogleSignInAccount will be non-null.
-//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//        if (account != null) {
-//            Log.d(LOG_TAG, "User has logegd in before!");
-
-            // todo: get stored information from the account, and use it instead of stored preferences.
-            // and persist any changes to sotred preferences to this account
-//            account.get
-//        }
-//    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Initialise menu, and launch activity for changing the selection of subreddits
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,44 +109,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
                 return true;
 
-//            case R.id.google_sign_in:
-//                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//                startActivityForResult(signInIntent, RC_SIGN_IN);
-
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// Google Sign-in ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            Log.d(LOG_TAG, "logged in successfully");
-
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(LOG_TAG, "signInResult:failed code=" + e.getStatusCode());
-//            updateUI(null);
-        }
-    }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Callbacks ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

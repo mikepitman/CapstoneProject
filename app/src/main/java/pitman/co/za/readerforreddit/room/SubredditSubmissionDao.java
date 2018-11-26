@@ -46,7 +46,4 @@ public interface SubredditSubmissionDao {
 
     @Query("select * from submission_comment where submissionId = :submissionId order by submissionId desc limit 1")
     SubmissionComment getFirstComment(String submissionId);
-
-    // todo: delete all submission_comment objects not linked to subreddit submissions (based on ID) in set or newly retrieved subredditSubmissions
-    // todo: alternatively, drop all objects and insert new ones every time there's new data?
 }

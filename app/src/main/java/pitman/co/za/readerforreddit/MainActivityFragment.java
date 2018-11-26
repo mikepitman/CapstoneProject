@@ -76,7 +76,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // todo: save relevant state
     }
 
     @Override

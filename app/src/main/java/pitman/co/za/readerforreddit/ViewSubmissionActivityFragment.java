@@ -165,11 +165,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             selfPostTextView.setVisibility(View.GONE);
 
             // Picasso doesn't handle animated gifs at all :-(
-            // hosted:video --> video from reddit, url is in mSelectedSubmission.getVideoUrl
-            // rich:video --> video hosted elsewhere(?)
-            // link --> post basically contains just a link to share
-            // --> so then, simply provide the link with a preview image that they can click?
-            // --> check if it's an imgur link, and try load that gif and animate it?
 
             if (postHint.contains("link") || postHint.equals("rich:video") || postHint.equals("hosted:video")) {
                 linkTextView.setText(mSelectedSubmission.getLinkUrl());
@@ -225,7 +220,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         }
     }
 
-    /// todo: refactor the following for subreddit comments:
     private class SubmissionCommentsAdapter extends RecyclerView.Adapter<SubmissionCommentViewHolder> {
 
         private String LOG_TAG = SubmissionCommentViewHolder.class.getSimpleName();
