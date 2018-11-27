@@ -1,5 +1,6 @@
 package pitman.co.za.readerforreddit.reddit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 
 import net.dean.jraw.RedditClient;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import pitman.co.za.readerforreddit.MainActivityFragment;
+import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
 // reddit client ID: CGG1OAPhpEmzgw
@@ -81,7 +83,7 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
                             media.getRedditVideo().getWidth());
                 }
 
-                if ("link".equals(submission.getPostHint())) {
+                if (mMainActivityFragment.getString(R.string.jraw_link).equals(submission.getPostHint())) {
                     subredditSubmission.setLinkUrl(submission.getUrl());
                 }
 
@@ -104,9 +106,12 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
     protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
+        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
+                Resources.getSystem().getString(R.string.jraw_appId),
+                Resources.getSystem().getString(R.string.jraw_version),
+                Resources.getSystem().getString(R.string.jraw_username));
         NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
+        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         ArrayList<String> subreddits = strings[0];
@@ -115,11 +120,6 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
         for (String subreddit : subreddits) {
             polledSubredditData.add(pollSubreddit(redditClient, subreddit, 5));
         }
-
-//        Log.d(LOG_TAG, "Number of entries in polledSubredditData: " + polledSubredditData.size());
-//        for (Listing<Submission> listing : polledSubredditData) {
-//            Log.d(LOG_TAG, "size: " + listing.size() + ";  Subreddit: " + listing.get(0).getSubreddit());
-//        }
 
         return polledSubredditData;
     }

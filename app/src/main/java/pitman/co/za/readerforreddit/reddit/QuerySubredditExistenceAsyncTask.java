@@ -1,7 +1,7 @@
 package pitman.co.za.readerforreddit.reddit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
@@ -15,6 +15,7 @@ import net.dean.jraw.oauth.OAuthHelper;
 
 import java.util.UUID;
 
+import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.SelectSubredditsActivityFragment;
 
 /* AsyncTask to poll Reddit for subreddit using a user-supplied subreddit name
@@ -53,19 +54,20 @@ public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, Su
     protected SubredditExistenceQueryResult doInBackground(String... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
+        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
+                Resources.getSystem().getString(R.string.jraw_appId),
+                Resources.getSystem().getString(R.string.jraw_version),
+                Resources.getSystem().getString(R.string.jraw_username));
         NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
+        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         String reddit = strings[0];
-        Log.d(LOG_TAG, "reddit queried: " + reddit);
 
         try {
             Subreddit subredditDetails = redditClient.subreddit(reddit).about();
             // https://github.com/mattbdean/JRAW/issues/243
             // for some reason, NPE is occuring before ApiException can be thrown, for non-existent subreddits
-            Log.d(LOG_TAG, "comment");
             if (subredditDetails.isNsfw()) {
                 return SubredditExistenceQueryResult.NSFW;
             }

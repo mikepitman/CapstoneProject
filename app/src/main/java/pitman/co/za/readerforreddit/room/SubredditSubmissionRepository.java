@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,6 @@ public class SubredditSubmissionRepository {
     }
 
     LiveData<List<SubredditSubmission>> getSubmissionsForSubreddit(String subreddit) {
-        Log.d(LOG_TAG, "subreddit being queried: " + subreddit);
         mSubmissionsForSubreddit = mSubredditSubmissionDao.getSubmissionsForSubreddit(subreddit);
         return mSubmissionsForSubreddit;
     }
@@ -62,8 +60,6 @@ public class SubredditSubmissionRepository {
     }
 
     public void deleteSubreddit(String subreddit) {
-        Log.d(LOG_TAG, "deleting subreddit " + subreddit);
-
         new deleteSubredditAsyncTask(mSubredditSubmissionDao).execute(subreddit);
     }
 

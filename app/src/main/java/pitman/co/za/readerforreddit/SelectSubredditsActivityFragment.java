@@ -49,8 +49,6 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Context mContext;
     private boolean failedToReadFirebaseFile = false;
     private boolean isSubredditListEmpty = false;
-    private static final String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
-    private static final String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -60,19 +58,17 @@ public class SelectSubredditsActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "2. onCreate()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_create));
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
-        SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
         if (preferences != null) {
-            selectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
-            Log.d(LOG_TAG, "preferences retrieved");
+            selectedSubreddits = preferences.getStringSet(getString(R.string.shared_prefs_subreddits_list_key), null);
             if (selectedSubreddits == null || selectedSubreddits.isEmpty()) {
                 selectedSubreddits = new HashSet<>();
-                Log.d(LOG_TAG, "generating list of preferences");
-                selectedSubreddits.add("Android");
+                selectedSubreddits.add(getString(R.string.default_supplied_subreddit));
                 isSubredditListEmpty = true;
             }
         }
@@ -92,7 +88,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "3. onCreateView()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_create_view));
 
         rootView = inflater.inflate(R.layout.fragment_select_subreddits, container, false);
 
@@ -127,7 +123,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     public void updateCuratedSubreddits(ArrayList<String> curatedSubreddits) {
         if (selectedSubreddits != null &&
                 selectedSubreddits.size() == 1 &&
-                (new ArrayList<>(selectedSubreddits).get(0).equals("Android"))) {
+                (new ArrayList<>(selectedSubreddits).get(0).equals(getString(R.string.default_supplied_subreddit)))) {
             selectedSubreddits.clear();
             selectedSubreddits.addAll(curatedSubreddits);
             updateSharedPrefs();
@@ -140,7 +136,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     public void verifySubredditAddition(View view) {
         submittedSubreddit = mEditTextView.getText().toString();
 
-        if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0, 1).equals("r/")) {
+        if (submittedSubreddit.length() > 1 && submittedSubreddit.substring(0, 1).equals(getString(R.string.subreddit_prefix))) {
             submittedSubreddit = submittedSubreddit.substring(2);
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_includes_prefix, mContext);
         }
@@ -159,7 +155,6 @@ public class SelectSubredditsActivityFragment extends Fragment {
 
                 new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
             } else {
-                Log.d(LOG_TAG, "No network connectivity, SelectSubredditsActivityFragment!");
                 sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_add_subreddits, mContext);
             }
             hideKeyboard();
@@ -214,9 +209,9 @@ public class SelectSubredditsActivityFragment extends Fragment {
     }
 
     private void updateSharedPrefs() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, selectedSubreddits);
+        editor.putStringSet(getString(R.string.shared_prefs_subreddits_list_key), selectedSubreddits);
         editor.apply();
 
         mAdapter.swapData(new ArrayList<>(selectedSubreddits));
@@ -235,7 +230,6 @@ public class SelectSubredditsActivityFragment extends Fragment {
         @Override
         public int getItemCount() {
             if (mSelectedSubreddits == null) {
-                Log.d(LOG_TAG, "number of items is 0, this should not happen!");
                 return 0;
             }
             return mSelectedSubreddits.size();
@@ -289,7 +283,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         }
 
         public void bindSubredditName(String subredditName) {
-            String displayName = "r/" + subredditName;
+            String displayName = getString(R.string.subreddit_prefix) + subredditName;
             this.subredditName = subredditName;
             this.subredditNameTextView.setText(displayName);
         }

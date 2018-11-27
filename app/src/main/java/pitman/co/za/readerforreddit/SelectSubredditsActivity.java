@@ -82,12 +82,12 @@ public class SelectSubredditsActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign-in successful
                             // Get the text file of curated subreddits
-                            Log.d(LOG_TAG, "signInAnonymously:success");
+                            Log.d(LOG_TAG, getString(R.string.sign_in_anonymously) + getString(R.string.sign_in_success));
                             FirebaseUser user = mAuth.getCurrentUser();
                             getCuratedSubredditsFromFirebase();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(LOG_TAG, "signInAnonymously:failure", task.getException());
+                            Log.w(LOG_TAG, getString(R.string.sign_in_anonymously) + getString(R.string.sign_in_failure), task.getException());
                             updateFragmentWithCuratedReddits(false);
                         }
                     }
@@ -99,7 +99,7 @@ public class SelectSubredditsActivity extends AppCompatActivity {
         // https://firebase.google.com/docs/storage/android/start?authuser=2
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();       // Points to the root reference
-        String fileName = "CuratedSubreddits.txt";
+        String fileName = getString(R.string.curated_subreddits_filename);
         final StorageReference curatedSubredditsFile = storageRef.child(fileName);
 
         final long ONE_KILOBYTE = 1024;
@@ -107,8 +107,7 @@ public class SelectSubredditsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(byte[] bytes) {
                 try {
-                    String fileContent = new String(bytes, "UTF-8");
-                    Log.d(LOG_TAG, "converted string: " + fileContent);
+                    String fileContent = new String(bytes, getString(R.string.utf_8));
 
                     String[] subredditsString = fileContent.split("%");
                     List<String> subredditsList = Arrays.asList(subredditsString);
@@ -118,7 +117,7 @@ public class SelectSubredditsActivity extends AppCompatActivity {
                         // https://stackoverflow.com/questions/3585053/is-it-possible-to-check-if-a-string-only-contains-ascii
                         ArrayList<String> asciiCuratedSubreddits = new ArrayList<>();
                         for (String element : curatedSubreddits) {
-                            if (Charset.forName("US-ASCII").newEncoder().canEncode(element)) {
+                            if (Charset.forName(getString(R.string.alphabet)).newEncoder().canEncode(element)) {
                                 asciiCuratedSubreddits.add(element);
                             }
                         }
@@ -129,7 +128,7 @@ public class SelectSubredditsActivity extends AppCompatActivity {
                     }
 
                 } catch (UnsupportedEncodingException e) {
-                    Log.d(LOG_TAG, "Firebase-hosted file conversion failed - UnsupportedEncodingException");
+                    Log.e(LOG_TAG, getString(R.string.error_unsupported_encoding_exception));
                     updateFragmentWithCuratedReddits(false);
                 }
             }
@@ -154,30 +153,30 @@ public class SelectSubredditsActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(LOG_TAG, "onNewIntent()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_new_intent));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(LOG_TAG, "onResume()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(LOG_TAG, "onStop()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

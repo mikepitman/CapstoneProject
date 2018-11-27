@@ -2,7 +2,10 @@
     <string name="app_name">Reader for Reddit</string>
     <string name="subreddit_prefix">r/</string>
     <string name="user_prefix">u/</string>
+    <string name="kilo_suffix">k</string>
+    <string name="submission_score_string_format">%.1f</string>
     <string name="toolbar_select_subreddits">Select Subreddits</string>
+    <string name="select_subreddit_autofill_hint">Subreddit&#8230;</string>
 
     <string name="no_network_connection">There\'s no network connectivity! Retrieving stored subreddits!</string>
     <string name="no_network_connection_add_subreddits">There\'s no network connectivity! You\'ll need to be connected to add subreddits!</string>
@@ -10,7 +13,6 @@
 
     <string name="subreddit_submission_thumbnail">Subreddit post thumbnail</string>
     <string name="title_activity_view_submission">ViewSubmissionActivity</string>
-    <!--<string name="action_settings">Settings</string>-->
 
     <string name="menu_item_select_subreddit">Select Subreddits</string>
     <string name="menu_item_google_sign_in">Sign-in with Google</string>
@@ -19,9 +21,13 @@
     <string name="add_subreddit_button">Add</string>
     <string name="add_subreddit_description">Add to selection</string>
 
+    <string name="shared_prefs_subreddits_pref">sharedPreferences_selectedSubreddits</string>
+    <string name="shared_prefs_subreddits_list_key">sharedPreferences_subredditsKey</string>
+
     <!-- Strings used in SelectSubredditsActivityFragment -->
     <string name="firebase_file_read_failure">Unable to retrieve suggested subreddits!</string>
     <string name="supply_default_subreddit">You don\'t have any selected subreddits yet, so check out r/Android!</string>
+    <string name="default_supplied_subreddit">Android</string>
     <string name="curated_subreddits_retrieved">We think you\'ll enjoy these curated subreddits!</string>
     <string name="subreddit_includes_prefix">It\'s not necessary to include the \'r/\' prefix for subreddits!</string>
     <string name="subreddit_incorrect_length">Subreddit names must be longer than 3 and less than 20 characters!</string>
@@ -56,5 +62,60 @@
     <string name="save_instance_state_selected_submission">save_instance_selected_submission</string>
     <string name="save_instance_state_submission_comments">save_instance_submission_comments</string>
 
+    <!-- Widget strings -->
     <string name="widget_no_subreddits">No Subreddits to show!</string>
+
+    <!-- Log message strings -->
+    <string name="debug_lifecycle_on_create">onCreate()</string>
+    <string name="debug_lifecycle_on_create_view">onCreateView()</string>
+    <string name="debug_lifecycle_on_pause">onPause()</string>
+    <string name="debug_lifecycle_on_stop">onStop()</string>
+    <string name="debug_lifecycle_on_destroy">onDestroy()</string>
+    <string name="debug_lifecycle_on_resume">onResume()</string>
+    <string name="debug_lifecycle_on_new_intent">onNewIntent()</string>
+
+    <string name="debug_number_of_comments">number of comments: </string>
+
+    <string name="error_network_connectivity">No network connectivity!</string>
+    <string name="error_posthint_null">postHint is NULL, this should never happen!</string>
+    <string name="error_content_not_handled">Intent unable to be handled by another app!</string>
+    <string name="error_unsupported_encoding_exception">Firebase-hosted file conversion failed - UnsupportedEncodingException</string>
+
+    <!-- jraw strings -->
+    <string name="jraw_platform">android</string>
+    <string name="jraw_appId">za.co.pitman.readerForReddit</string>
+    <string name="jraw_version">v1.0</string>
+    <string name="jraw_username">narfice</string>
+    <string name="jraw_clientId">CGG1OAPhpEmzgw</string>
+
+    <string name="jraw_link">link</string>
+    <string name="jraw_rich_video">rich:video</string>
+    <string name="jraw_hosted_video">hosted:video</string>
+
+    <!-- Submission comment strings -->
+    <string name="submission_comment_date_format">EEE MMM dd HH:mm:ss zZZ YYYY</string>
+    <string name="submission_comment_months"> month%s ago</string>
+    <string name="submission_comment_weeks"> week%s ago</string>
+    <string name="submission_comment_days"> day%s ago</string>
+    <string name="submission_comment_hours"> hour%s ago</string>
+    <string name="submission_comment_minutes"> minute%s ago</string>
+    <string name="submission_comment_plural">s</string>
+    <string name="submission_comment_blank"></string>
+    <string name="submission_comment_score_points"> point%s</string>
+    <string name="submission_comment_indeterminate_period">A while ago&#8230;</string>
+
+    <!-- Firebase sign-in-->
+    <string name="sign_in_anonymously">signInAnonymously:</string>
+    <string name="sign_in_success">success</string>
+    <string name="sign_in_failure">failure</string>
+
+    <string name="curated_subreddits_filename">CuratedSubreddits.txt</string>
+    <string name="utf_8">UTF-8</string>
+    <string name="alphabet">US-ASCII</string>
+
+    <string name="firebase_analytics_search_term">SELECT_SUBREDDITS</string>
+
+    <!-- Fragment tags -->
+    <string name="subreddit_submission_tag">SUBREDDIT_SUBMISSION_TAG</string>
+    <string name="subreddit_listing_tag">SUBREDDIT_LISTING_TAG</string>
 </resources>

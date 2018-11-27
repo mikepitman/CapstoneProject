@@ -44,7 +44,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     private static UtilityCode sUtilityCode;
     private SubredditSubmissionViewModel mSubmissionViewModel;
     private ArrayList<SubmissionComment> mSubmissionComments;
-    private RecyclerView mSubmissionCommentsRecyclerView;
     private View rootView;
     private CoordinatorLayout mCoordinatorLayout;
     private SubmissionCommentsAdapter mAdapter;
@@ -91,7 +90,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
                 mSelectedSubmission = bundle.getParcelable(getString(R.string.bundle_key_selected_submission));
-                Log.d(LOG_TAG, "selected submission " + mSelectedSubmission.getTitle());
             }
         }
 
@@ -121,7 +119,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         rootView = inflater.inflate(R.layout.fragment_view_submission, container, false);
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.view_submission_fragment_container);
 
-        mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
+        RecyclerView mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
         mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubmissionCommentsRecyclerView.setAdapter(mAdapter);
         // don't want recyclerView to scroll independently of the nestedScrollView
@@ -133,7 +131,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             task = new QuerySubredditSubmissionCommentsAsyncTask(this);
             task.execute(mSelectedSubmission.getRedditId());
         } else {
-            Log.d(LOG_TAG, "No network connectivity!");
+            Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query, mContext);
         }
 
@@ -166,7 +164,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
 
             // Picasso doesn't handle animated gifs at all :-(
 
-            if (postHint.contains("link") || postHint.equals("rich:video") || postHint.equals("hosted:video")) {
+            if (postHint.contains(getString(R.string.jraw_link)) || postHint.equals(getString(R.string.jraw_rich_video)) || postHint.equals(getString(R.string.jraw_hosted_video))) {
                 linkTextView.setText(mSelectedSubmission.getLinkUrl());
                 linkTextView.setOnClickListener(this);
 
@@ -184,7 +182,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
                 }
             }
         } else {
-            Log.e(LOG_TAG, "postHint is NULL, this should never happen!");
+            Log.e(LOG_TAG, getString(R.string.error_posthint_null));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_general, mContext);
         }
     }
@@ -206,7 +204,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             firebaseBundle.putString(FirebaseAnalytics.Param.LOCATION, mSelectedSubmission.getLinkUrl());
             mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, firebaseBundle);
         } else {
-            Log.d(LOG_TAG, "intent unable to be handled by another app!");
+            Log.e(LOG_TAG, getString(R.string.error_content_not_handled));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app, mContext);
 
             firebaseBundle.putString("APP_UNAVAILABLE", mSelectedSubmission.getLinkUrl());
@@ -232,7 +230,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         @Override
         public int getItemCount() {
             if (mSubmissionComments == null) {
-                Log.d(LOG_TAG, "number of items is 0, this should not happen!");
                 return 0;
             }
             return mSubmissionComments.size();
@@ -289,8 +286,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
 
 //            this.commentSpacer.setText("");
             String formattedCommentPoints = String.format(
-                    String.valueOf(mSubmissionComment.getCommentScore()) + " point%s",
-                    mSubmissionComment.getCommentScore() == 1 ? "" : "s");
+                    String.valueOf(mSubmissionComment.getCommentScore()) + getString(R.string.submission_comment_score_points),
+                    mSubmissionComment.getCommentScore() == 1 ? getString(R.string.submission_comment_blank) : getString(R.string.submission_comment_plural));
 
             this.commentAuthor.setText(mSubmissionComment.getCommentAuthor());
 
@@ -303,25 +300,25 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(LOG_TAG, "onResume()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(LOG_TAG, "onStop()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
 
         if (task != null && task.getStatus().equals(AsyncTask.Status.RUNNING)) {
             task.cancel(true);

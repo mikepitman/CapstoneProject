@@ -68,20 +68,19 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             viewSubmissionFragmentBundle.putParcelable(getString(R.string.bundle_key_selected_submission), mSelectedSubmission);
             submissionFragment.setArguments(viewSubmissionFragmentBundle);
 
-            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_SUBMISSION_TAG").commit();
+            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, getString(R.string.subreddit_submission_tag)).commit();
         } else {
             // https://stackoverflow.com/questions/46313949/detail-fragment-re-starts-even-when-rotated-from-landscape-to-vertical-master
-            Fragment submissionFragment = fm.findFragmentByTag("SUBREDDIT_SUBMISSION_TAG");
+            Fragment submissionFragment = fm.findFragmentByTag(getString(R.string.subreddit_submission_tag));
             if (submissionFragment != null) {
                 fm.beginTransaction().remove(submissionFragment).commit();
-                Log.d(LOG_TAG, "Removing detail fragment which should not be recreated!");
             }
         }
 
         Toolbar fragmentToolbar = (Toolbar) findViewById(R.id.toolbar_viewSubreddit);
         setSupportActionBar(fragmentToolbar);
         ActionBar newBar = getSupportActionBar();
-        String formattedTitleString = "r/" + mSelectedSubreddit;
+        String formattedTitleString = getString(R.string.subreddit_prefix) + mSelectedSubreddit;
         newBar.setTitle(formattedTitleString);
         newBar.setDisplayShowHomeEnabled(true);
         newBar.setDisplayHomeAsUpEnabled(true);
@@ -98,7 +97,7 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             submissionFragment.setArguments(viewSubmissionFragmentBundle);
 
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, "SUBREDDIT_LISTING_TAG").commit();
+            fm.beginTransaction().replace(R.id.selected_subreddit_submission_frame, submissionFragment, getString(R.string.subreddit_listing_tag)).commit();
         } else {
             Intent viewSubmissionIntent = new Intent(this, ViewSubmissionActivity.class);
             viewSubmissionIntent.putExtra(getString(R.string.intent_extra_key_selected_submission), subredditSubmission);
@@ -113,30 +112,30 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(LOG_TAG, "onNewIntent()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_new_intent));
     }
 
     @Override
-    public void onResume () {
+    public void onResume() {
         super.onResume();
-        Log.d(LOG_TAG, "onResume()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
     }
 
     @Override
-    public void onPause () {
+    public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
     }
 
     @Override
-    public void onStop () {
+    public void onStop() {
         super.onStop();
-        Log.d(LOG_TAG, "onStop()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

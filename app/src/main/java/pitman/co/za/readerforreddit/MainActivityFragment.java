@@ -81,7 +81,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "2. onCreate()");
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
 
@@ -113,7 +112,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "3. onCreateView()");
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.main_fragment_container);
@@ -126,7 +124,7 @@ public class MainActivityFragment extends Fragment {
         if (sUtilityCode.isNetworkAvailable(getActivity())) {
             new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
         } else {
-            Log.d(LOG_TAG, "No network connectivity!");
+            Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection, mContext);
         }
 
@@ -158,7 +156,6 @@ public class MainActivityFragment extends Fragment {
         @Override
         public int getItemCount() {
             if (mSubredditSubmissions == null) {
-                Log.d(LOG_TAG, "number of items is 0, this should not happen!");
                 return 0;
             }
             return mSubredditSubmissions.size();
@@ -244,24 +241,24 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(LOG_TAG, "onResume()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(LOG_TAG, "onStop()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

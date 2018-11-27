@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
@@ -16,19 +17,14 @@ import pitman.co.za.readerforreddit.UtilityCode;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDao;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionDatabase;
-import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 
 public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFactory {
 
     private static final String LOG_TAG = ReaderForRedditWidgetRemoteViewsFactory.class.getSimpleName();
     private static UtilityCode sUtilityCode;
     private List<SubredditSubmission> mSubmissionsList;
-    private SubredditSubmissionViewModel mSubredditSubmissionViewModel;
     private Context context;
     private int appWidgetId;
-    private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
-    private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
-
 
     public ReaderForRedditWidgetRemoteViewsFactory(Context context, Intent intent) {
         this.context = context;
@@ -49,9 +45,9 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
         SubredditSubmissionDatabase db = SubredditSubmissionDatabase.getDatabase(context);
         SubredditSubmissionDao dao = db.mSubredditSubmissionDao();
 
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(Resources.getSystem().getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
         if (preferences != null) {
-            Set<String> mSelectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
+            Set<String> mSelectedSubreddits = preferences.getStringSet(Resources.getSystem().getString(R.string.shared_prefs_subreddits_list_key), null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 mSubmissionsList = new ArrayList<SubredditSubmission>();
             } else {

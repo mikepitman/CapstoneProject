@@ -2,9 +2,12 @@ package pitman.co.za.readerforreddit.domainObjects;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+
+import pitman.co.za.readerforreddit.R;
 
 /* The members of this class comprise only those attributes shown to users in this app from a Submission object returned by Reddit API
  * Check implementation of domainObject classes in BakingApp for implementation guidance
@@ -194,22 +197,22 @@ public class SubredditSubmission implements Parcelable {
     }
 
     public String getFormattedSubreddit() {
-        return "r/" + subreddit;
+        return Resources.getSystem().getString(R.string.subreddit_prefix) + subreddit;
     }
 
     public String getFormattedAuthor() {
-        return "u/" + author;
+        return Resources.getSystem().getString(R.string.user_prefix) + author;
     }
 
     public String getFormattedSubmissionScore() {
         String formattedSubmissionScore = submissionScore.toString();
         if (submissionScore > 999 && submissionScore < 10000) {
             // https://stackoverflow.com/questions/5195837/format-float-to-n-decimal-places
-            formattedSubmissionScore = String.format(java.util.Locale.US, "%.1f", (float) submissionScore / 1000);
-            formattedSubmissionScore += 'k';
+            formattedSubmissionScore = String.format(java.util.Locale.US, Resources.getSystem().getString(R.string.submission_score_string_format), (float) submissionScore / 1000);
+            formattedSubmissionScore += Resources.getSystem().getString(R.string.kilo_suffix);
         } else if (submissionScore > 9999) {
             formattedSubmissionScore = String.valueOf(submissionScore / 1000);
-            formattedSubmissionScore += 'k';
+            formattedSubmissionScore += Resources.getSystem().getString(R.string.kilo_suffix);
         }
         return formattedSubmissionScore;
     }

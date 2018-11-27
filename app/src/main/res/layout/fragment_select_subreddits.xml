@@ -32,7 +32,8 @@
                 android:inputType="text"
                 android:textColor="@color/offWhite"
                 android:nextFocusRight="@id/add_subreddit_submit_button"
-                android:nextFocusDown="@id/add_subreddit_submit_button"/>
+                android:nextFocusDown="@id/add_subreddit_submit_button"
+                android:autofillHints="@string/select_subreddit_autofill_hint"/>
 
             <Button
                 android:id="@+id/add_subreddit_submit_button"

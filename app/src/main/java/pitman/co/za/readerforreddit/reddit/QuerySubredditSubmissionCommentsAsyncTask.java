@@ -1,5 +1,6 @@
 package pitman.co.za.readerforreddit.reddit;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.ViewSubmissionActivityFragment;
 import pitman.co.za.readerforreddit.domainObjects.SubmissionComment;
 
@@ -49,7 +51,7 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
         super.onPostExecute(result);
 
         if (!isCancelled()) {
-            Log.d(LOG_TAG, "number of comments: " + result.size());
+            Log.d(LOG_TAG, mViewSubmissionActivityFragment.getString(R.string.debug_number_of_comments) + result.size());
             mViewSubmissionActivityFragment.dismissProgressBar();
             mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
         }
@@ -59,9 +61,12 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
     protected ArrayList<SubmissionComment> doInBackground(String... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent("android", "za.co.pitman.readerForReddit", "v0.1", "narfice");
+        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
+                Resources.getSystem().getString(R.string.jraw_appId),
+                Resources.getSystem().getString(R.string.jraw_version),
+                Resources.getSystem().getString(R.string.jraw_username));
         NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
+        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         String submissionId = strings[0];

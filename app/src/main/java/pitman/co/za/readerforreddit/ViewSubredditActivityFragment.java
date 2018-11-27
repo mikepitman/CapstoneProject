@@ -63,18 +63,16 @@ public class ViewSubredditActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "2. onCreate()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_create));
         sUtilityCode = new UtilityCode();
 
         if (savedInstanceState != null) {
             mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
-            Log.d(LOG_TAG, "selectedSubreddit retrieved from savedInstanceState");
 
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
                 mSelectedSubreddit = bundle.getString(getString(R.string.bundle_key_selected_subreddit));
-                Log.d(LOG_TAG, "In ViewSubredditActivityFragment, selectedSubreddit is: " + mSelectedSubreddit);
             }
         }
 
@@ -92,7 +90,7 @@ public class ViewSubredditActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "3. onCreateView()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_create_view));
 
         rootView = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
@@ -114,7 +112,6 @@ public class ViewSubredditActivityFragment extends Fragment {
         @Override
         public int getItemCount() {
             if (mSubredditSubmissions == null) {
-                Log.d(LOG_TAG, "number of items is 0, this should not happen!");
                 return 0;
             }
             return mSubredditSubmissions.size();

@@ -71,6 +71,10 @@ public class DatabaseReadWriteTest {
                 "Charles Dickens",
                 "Nicholas Nickleby",
                 100,
+                200,
+                "link",
+                false,
+                "",
                 true,
                 "thumbnail");
     }
@@ -78,7 +82,7 @@ public class DatabaseReadWriteTest {
     private SubmissionComment generateComment() {
         return new SubmissionComment(
                 "submissionId",
-                "1",
+                2,
                 0,
                 "Neil Armstrong",
                 "One small step for a man",

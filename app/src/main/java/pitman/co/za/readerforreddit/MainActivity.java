@@ -24,12 +24,8 @@ import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks, ViewSubredditActivityFragment.Callbacks {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
-    private static UtilityCode sUtilityCode;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private Set<String> mSelectedSubreddits;
     private boolean mIsTablet;
-    private static String SHARED_PREFERENCES_SUBREDDITS_PREF = "sharedPreferences_selectedSubreddits";
-    private static String SHARED_PREFERENCES_SUBREDDITS_LIST_KEY = "sharedPreferences_subredditsKey";
 
     @LayoutRes
     protected int getLayoutResId() {
@@ -48,9 +44,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
 
-        SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCES_SUBREDDITS_PREF, Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
         if (preferences != null) {
-            mSelectedSubreddits = preferences.getStringSet(SHARED_PREFERENCES_SUBREDDITS_LIST_KEY, null);
+            Set<String> mSelectedSubreddits = preferences.getStringSet(getString(R.string.shared_prefs_subreddits_list_key), null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 // launch intent for action to select subreddits
                 Intent updateSubredditSelectionIntent = new Intent(this, SelectSubredditsActivity.class);
@@ -77,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     viewSubredditfragmentBundle.putString(getString(R.string.bundle_key_selected_subreddit), new ArrayList<String>(mSelectedSubreddits).get(0));
                     subredditFragment.setArguments(viewSubredditfragmentBundle);
 
-                    fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, "SUBREDDIT_LISTING_TAG").commit();
+                    fm.beginTransaction().replace(R.id.selected_subreddits_frame, subredditFragment, getString(R.string.subreddit_listing_tag)).commit();
                 }
             }
         }
@@ -105,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 startActivity(updateSubredditSelectionIntent);
 
                 Bundle firebaseBundle = new Bundle();
-                firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, "SELECT_SUBREDDITS");
+                firebaseBundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, getString(R.string.firebase_analytics_search_term));
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, firebaseBundle);
                 return true;
 
@@ -120,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override   // callback from MainActivityFragment
     public void onSubredditSelected(SubredditSubmission subredditSubmission) {
-        Log.d(LOG_TAG, "subreddit was selected: " + subredditSubmission.getTitle());
 
         if (mIsTablet) {
             Fragment subredditFragment = new ViewSubredditActivityFragment();
@@ -142,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override   // callback from ViewSubredditActivityFragment
     public void onSubmissionSelected(SubredditSubmission subredditSubmission) {
-        Log.d(LOG_TAG, "user has selected subreddit submission, in mainActivity (tablet version): " + subredditSubmission.getTitle());
 
         /* Display the list of subreddit submissions on left pane, and the selected submission on the right pane
          * Hence, create an intent to ViewSubredditActivity, with the mIsTablet parameter passed in as true
@@ -160,30 +154,30 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(LOG_TAG, "onNewIntent()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_new_intent));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(LOG_TAG, "onResume()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(LOG_TAG, "onStop()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }
