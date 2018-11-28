@@ -56,7 +56,7 @@ public class ViewSubredditActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("selectedSubredditSaveInstanceState", mSelectedSubreddit);
+        outState.putString(getString(R.string.save_instance_state_selected_subreddit), mSelectedSubreddit);
         super.onSaveInstanceState(outState);
     }
 
@@ -67,7 +67,7 @@ public class ViewSubredditActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
 
         if (savedInstanceState != null) {
-            mSelectedSubreddit = savedInstanceState.getString("selectedSubredditSaveInstanceState");
+            mSelectedSubreddit = savedInstanceState.getString(getString(R.string.save_instance_state_selected_subreddit));
 
         } else {
             if (this.getArguments() != null) {

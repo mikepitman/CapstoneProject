@@ -60,6 +60,7 @@
 
     <string name="save_instance_state_selected_subreddit_title">save_instance_selected_subreddit_title</string>
     <string name="save_instance_state_selected_submission">save_instance_selected_submission</string>
+    <string name="save_instance_state_selected_subreddit">save_instance_selected_subreddit</string>
     <string name="save_instance_state_submission_comments">save_instance_submission_comments</string>
 
     <!-- Widget strings -->
@@ -114,6 +115,7 @@
     <string name="alphabet">US-ASCII</string>
 
     <string name="firebase_analytics_search_term">SELECT_SUBREDDITS</string>
+    <string name="firebase_analytics_app_unavailable">APP_UNAVAILABLE</string>
 
     <!-- Fragment tags -->
     <string name="subreddit_submission_tag">SUBREDDIT_SUBMISSION_TAG</string>

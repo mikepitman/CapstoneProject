@@ -46,7 +46,7 @@ public class DatabaseReadWriteTest {
     @Test
     public void saveRecipeAndRetrieve() throws Exception {
         SubredditSubmission submission = generateSubmission();
-        mSubmissionDao.saveSubmission(submission);
+        mSubmissionDao.saveSubmissions(new SubredditSubmission[]{submission});
 
         SubredditSubmission retrievedSubmission = mSubmissionDao.getSubredditSubmission("redditId");
         assertThat(retrievedSubmission.getRedditId(), equalTo(submission.getRedditId()));
@@ -56,7 +56,7 @@ public class DatabaseReadWriteTest {
     @Test
     public void saveCommentAndRetrieve() throws Exception {
         SubmissionComment comment = generateComment();
-        mSubmissionDao.saveComment(comment);
+        mSubmissionDao.saveComments(new SubmissionComment[]{comment});
 
 //        SubmissionComment retrievedComment = mSubmissionDao.getCommentsForSubredditSubmission("submissionId");
         SubmissionComment retrievedComment = mSubmissionDao.getFirstComment("submissionId");

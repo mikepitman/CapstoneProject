@@ -207,7 +207,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             Log.e(LOG_TAG, getString(R.string.error_content_not_handled));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.error_notification_no_implicit_intent_app, mContext);
 
-            firebaseBundle.putString("APP_UNAVAILABLE", mSelectedSubmission.getLinkUrl());
+            firebaseBundle.putString(getString(R.string.firebase_analytics_app_unavailable), mSelectedSubmission.getLinkUrl());
             mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, firebaseBundle);
         }
     }
