@@ -33,7 +33,8 @@
                 android:textColor="@color/offWhite"
                 android:nextFocusRight="@id/add_subreddit_submit_button"
                 android:nextFocusDown="@id/add_subreddit_submit_button"
-                android:autofillHints="@string/select_subreddit_autofill_hint"/>
+                android:autofillHints="@string/select_subreddit_autofill_hint"
+                android:freezesText="true"/>
 
             <Button
                 android:id="@+id/add_subreddit_submit_button"

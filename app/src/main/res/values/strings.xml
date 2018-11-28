@@ -62,6 +62,8 @@
     <string name="save_instance_state_selected_submission">save_instance_selected_submission</string>
     <string name="save_instance_state_selected_subreddit">save_instance_selected_subreddit</string>
     <string name="save_instance_state_submission_comments">save_instance_submission_comments</string>
+    <string name="save_instance_state_subreddits_arraylist">save_instance_selected_subreddits</string>
+    <string name="save_instance_state_recyclerview_first_visible_item_position">save_instance_recyclerView_firstVisibleItemPosition</string>
 
     <!-- Widget strings -->
     <string name="widget_no_subreddits">No Subreddits to show!</string>

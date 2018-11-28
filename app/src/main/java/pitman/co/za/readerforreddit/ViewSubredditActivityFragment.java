@@ -36,7 +36,7 @@ public class ViewSubredditActivityFragment extends Fragment {
     private RecyclerView mSubredditSubmissionRecyclerView;
     private SubredditSubmissionViewModel mSubredditsViewModel;
     private static SubredditSubmissionCardAdapter mAdapter;
-
+    private int recyclerViewFirstCompletelyVisibleItemPosition = 0;
 
     //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -57,6 +57,8 @@ public class ViewSubredditActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(getString(R.string.save_instance_state_selected_subreddit), mSelectedSubreddit);
+        outState.putInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position),
+                ((LinearLayoutManager) mSubredditSubmissionRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
         super.onSaveInstanceState(outState);
     }
 
@@ -68,7 +70,8 @@ public class ViewSubredditActivityFragment extends Fragment {
 
         if (savedInstanceState != null) {
             mSelectedSubreddit = savedInstanceState.getString(getString(R.string.save_instance_state_selected_subreddit));
-
+            recyclerViewFirstCompletelyVisibleItemPosition =
+                    savedInstanceState.getInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position));
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
@@ -96,6 +99,11 @@ public class ViewSubredditActivityFragment extends Fragment {
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
+        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+        if (recyclerViewFirstCompletelyVisibleItemPosition != 0) {
+            mSubredditSubmissionRecyclerView.getLayoutManager().scrollToPosition(recyclerViewFirstCompletelyVisibleItemPosition);
+            recyclerViewFirstCompletelyVisibleItemPosition = 0;
+        }
 
         return rootView;
     }

@@ -1,6 +1,5 @@
 package pitman.co.za.readerforreddit.reddit;
 
-import android.content.res.Resources;
 import android.os.AsyncTask;
 
 import net.dean.jraw.RedditClient;
@@ -106,12 +105,18 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
     protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 
         // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
+        /*UserAgent userAgent = new UserAgent(
+                Resources.getSystem().getString(R.string.jraw_platform),
                 Resources.getSystem().getString(R.string.jraw_appId),
                 Resources.getSystem().getString(R.string.jraw_version),
-                Resources.getSystem().getString(R.string.jraw_username));
+                Resources.getSystem().getString(R.string.jraw_username));*/
+        UserAgent userAgent = new UserAgent(
+                "android",
+                "za.co.pitman.readerForReddit",
+                "v1.0",
+                "narfice");
         NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
+        Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
         RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
 
         ArrayList<String> subreddits = strings[0];

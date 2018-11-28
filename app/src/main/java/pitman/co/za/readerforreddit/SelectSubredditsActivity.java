@@ -74,7 +74,6 @@ public class SelectSubredditsActivity extends AppCompatActivity {
     private void firebaseAnonymousSignIn() {
         // https://firebase.google.com/docs/auth/android/anonymous-auth#authenticate-with-firebase-anonymously
         mAuth = FirebaseAuth.getInstance();
-//        mAuth.getCurrentUser();
         mAuth.signInAnonymously()
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

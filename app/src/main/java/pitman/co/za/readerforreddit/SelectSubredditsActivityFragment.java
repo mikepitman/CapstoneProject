@@ -49,9 +49,15 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Context mContext;
     private boolean failedToReadFirebaseFile = false;
     private boolean isSubredditListEmpty = false;
+    private int recyclerViewFirstCompletelyVisibleItemPosition = 0;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist), new ArrayList<>(selectedSubreddits));
+        outState.putString(getString(R.string.save_instance_state_selected_subreddit), submittedSubreddit);
+        outState.putInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position),
+                ((LinearLayoutManager) mSelectedSubredditsRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+
         super.onSaveInstanceState(outState);
     }
 
@@ -63,8 +69,14 @@ public class SelectSubredditsActivityFragment extends Fragment {
         mContext = this.getContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
-        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
-        if (preferences != null) {
+        if (savedInstanceState != null) {
+            selectedSubreddits = new HashSet<>(savedInstanceState.getStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist)));
+            submittedSubreddit = savedInstanceState.getString(getString(R.string.save_instance_state_selected_subreddit));
+            recyclerViewFirstCompletelyVisibleItemPosition =
+                    savedInstanceState.getInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position));
+
+        } else if (getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE) != null) {
+            SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
             selectedSubreddits = preferences.getStringSet(getString(R.string.shared_prefs_subreddits_list_key), null);
             if (selectedSubreddits == null || selectedSubreddits.isEmpty()) {
                 selectedSubreddits = new HashSet<>();
@@ -72,8 +84,8 @@ public class SelectSubredditsActivityFragment extends Fragment {
                 isSubredditListEmpty = true;
             }
         }
-
         mAdapter = new SelectedSubredditCardAdapter(new ArrayList<>(selectedSubreddits));
+
 
         mSubredditsViewModel = ViewModelProviders.of(this).get(SubredditSubmissionViewModel.class);
 
@@ -95,6 +107,10 @@ public class SelectSubredditsActivityFragment extends Fragment {
         mSelectedSubredditsRecyclerView = (RecyclerView) rootView.findViewById(R.id.selected_subreddits_recycler_view);
         mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
+        if (recyclerViewFirstCompletelyVisibleItemPosition != 0) {
+            mSelectedSubredditsRecyclerView.getLayoutManager().scrollToPosition(recyclerViewFirstCompletelyVisibleItemPosition);
+            recyclerViewFirstCompletelyVisibleItemPosition = 0;
+        }
 
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_select_subreddits_coordinatorLayout);
 
@@ -119,7 +135,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
         return rootView;
     }
 
-    // Called from SelectSubredditsActivity with new subreddits retrieved from FireBasex
+    // Called from SelectSubredditsActivity with new subreddits retrieved from FireBase
     public void updateCuratedSubreddits(ArrayList<String> curatedSubreddits) {
         if (selectedSubreddits != null &&
                 selectedSubreddits.size() == 1 &&

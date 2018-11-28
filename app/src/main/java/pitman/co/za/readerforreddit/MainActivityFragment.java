@@ -47,6 +47,8 @@ public class MainActivityFragment extends Fragment {
     private CoordinatorLayout mCoordinatorLayout;
     private ProgressDialog mProgressDialog;
     private Context mContext;
+    private int recyclerViewFirstCompletelyVisibleItemPosition = 0;
+    private boolean queryRedditApi = false;
 
 //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -75,6 +77,10 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist), selectedSubreddits);
+        outState.putInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position),
+                ((LinearLayoutManager) mSubredditSubmissionRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+
         super.onSaveInstanceState(outState);
     }
 
@@ -84,9 +90,13 @@ public class MainActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
 
-        Bundle activityArguments = this.getArguments();
-        if (activityArguments != null) {
-            selectedSubreddits = activityArguments.getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
+        if (savedInstanceState != null) {
+            selectedSubreddits = savedInstanceState.getStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist));
+            recyclerViewFirstCompletelyVisibleItemPosition = savedInstanceState.getInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position));
+
+        } else if (this.getArguments() != null) {
+            selectedSubreddits = this.getArguments().getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
+            queryRedditApi = true;
         }
 
         // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#13
@@ -119,10 +129,16 @@ public class MainActivityFragment extends Fragment {
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
+        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+        if (recyclerViewFirstCompletelyVisibleItemPosition != 0) {
+            mSubredditSubmissionRecyclerView.getLayoutManager().scrollToPosition(recyclerViewFirstCompletelyVisibleItemPosition);
+            recyclerViewFirstCompletelyVisibleItemPosition = 0;
+        }
 
-        // Launch asyncTask to retrieve top submissions from selected subreddits
-        if (sUtilityCode.isNetworkAvailable(getActivity())) {
+        // Launch asyncTask to retrieve top submissions from selected subreddits - only if required
+        if (queryRedditApi && sUtilityCode.isNetworkAvailable(getActivity())) {
             new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+            queryRedditApi = false;
         } else {
             Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection, mContext);
