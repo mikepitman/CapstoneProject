@@ -3,6 +3,7 @@
     <style name="Theme.reader_for_reddit" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActivityTransitions">true</item>
 
+        <!-- https://stackoverflow.com/questions/10243557/how-to-apply-slide-animation-between-two-activities-in-android -->
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
