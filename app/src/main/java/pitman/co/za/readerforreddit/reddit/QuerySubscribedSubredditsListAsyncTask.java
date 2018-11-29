@@ -3,22 +3,16 @@ package pitman.co.za.readerforreddit.reddit;
 import android.os.AsyncTask;
 
 import net.dean.jraw.RedditClient;
-import net.dean.jraw.http.NetworkAdapter;
-import net.dean.jraw.http.OkHttpNetworkAdapter;
-import net.dean.jraw.http.UserAgent;
 import net.dean.jraw.models.EmbeddedMedia;
 import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubmissionPreview;
 import net.dean.jraw.models.SubredditSort;
 import net.dean.jraw.models.TimePeriod;
-import net.dean.jraw.oauth.Credentials;
-import net.dean.jraw.oauth.OAuthHelper;
 import net.dean.jraw.pagination.DefaultPaginator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import pitman.co.za.readerforreddit.MainActivityFragment;
 import pitman.co.za.readerforreddit.R;
@@ -104,26 +98,13 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
     @Override
     protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 
-        // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        /*UserAgent userAgent = new UserAgent(
-                Resources.getSystem().getString(R.string.jraw_platform),
-                Resources.getSystem().getString(R.string.jraw_appId),
-                Resources.getSystem().getString(R.string.jraw_version),
-                Resources.getSystem().getString(R.string.jraw_username));*/
-        UserAgent userAgent = new UserAgent(
-                "android",
-                "za.co.pitman.readerForReddit",
-                "v1.0",
-                "narfice");
-        NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp("CGG1OAPhpEmzgw", UUID.randomUUID());
-        RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
+        RedditClient redditClient = new RedditClientCreator().getRedditClient();
 
         ArrayList<String> subreddits = strings[0];
 
         List<Listing<Submission>> polledSubredditData = new ArrayList<>();
         for (String subreddit : subreddits) {
-            polledSubredditData.add(pollSubreddit(redditClient, subreddit, 5));
+            polledSubredditData.add(pollSubreddit(redditClient, subreddit, 15));
         }
 
         return polledSubredditData;

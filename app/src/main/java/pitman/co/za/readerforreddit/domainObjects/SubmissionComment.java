@@ -7,13 +7,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import pitman.co.za.readerforreddit.R;
-
 
 @Entity(tableName = "submission_comment",
         primaryKeys = {"submissionId", "commentNumber"})
@@ -61,36 +54,6 @@ public class SubmissionComment implements Parcelable {
 
     public String getWhenLogged() {
         return whenLogged;
-    }
-
-    @Ignore
-    public String getCommentAge() {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.submission_comment_date_format));    // reddit timestamp format is painful!
-        LocalDateTime timestamp = formatter.parseLocalDateTime(whenLogged);
-        Period commentAge = Period.fieldDifference(timestamp, new LocalDateTime());
-
-        if (commentAge.getMonths() > 0) {
-            return String.format(commentAge.getMonths() + getString(R.string.submission_comment_months), 
-                    commentAge.getMonths() > 1 ? getString(R.string.submission_comment_plural) : getString(R.string.submission_comment_blank));
-
-        } else if (commentAge.getWeeks() > 0) {
-            return String.format(commentAge.getWeeks() + getString(R.string.submission_comment_weeks), 
-                    commentAge.getWeeks() > 1 ? getString(R.string.submission_comment_plural) : getString(R.string.submission_comment_blank));
-
-        } else if (commentAge.getDays() > 0) {
-            return String.format(commentAge.getDays() + getString(R.string.submission_comment_days), 
-                    commentAge.getDays() > 1 ? getString(R.string.submission_comment_plural) : getString(R.string.submission_comment_blank));
-
-        } else if (commentAge.getHours() > 0) {
-            return String.format(commentAge.getHours() + getString(R.string.submission_comment_hours), 
-                    commentAge.getHours() > 1 ? getString(R.string.submission_comment_plural) : getString(R.string.submission_comment_blank));
-
-        } else if (commentAge.getMinutes() > 0) {
-            return String.format(commentAge.getMinutes() + getString(R.string.submission_comment_minutes), 
-                    commentAge.getMinutes() > 1 ? getString(R.string.submission_comment_plural) : getString(R.string.submission_comment_blank));
-        }
-
-        return getString(R.string.submission_comment_indeterminate_period);
     }
 
     private String getString(int id) {

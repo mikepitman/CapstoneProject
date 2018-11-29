@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -47,10 +48,11 @@ public class MainActivityFragment extends Fragment {
     private CoordinatorLayout mCoordinatorLayout;
     private ProgressDialog mProgressDialog;
     private Context mContext;
-    private int recyclerViewFirstCompletelyVisibleItemPosition = 0;
     private boolean queryRedditApi = false;
+    private Parcelable state;
+    private LinearLayoutManager mLinearLayoutManager;
 
-//// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
         void onSubredditSelected(SubredditSubmission subredditSubmission);
     }
@@ -65,10 +67,14 @@ public class MainActivityFragment extends Fragment {
         mCallbacks = null;
     }
 
-//// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void updateProgressBar(Integer progress) { mProgressDialog.setProgress(progress); }
+    //// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void updateProgressBar(Integer progress) {
+        mProgressDialog.setProgress(progress);
+    }
 
-    public void dismissProgressBar() { mProgressDialog.dismiss(); }
+    public void dismissProgressBar() {
+        mProgressDialog.dismiss();
+    }
 
     public void showProgressBar() {
         mProgressDialog.show();
@@ -78,8 +84,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist), selectedSubreddits);
-        outState.putInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position),
-                ((LinearLayoutManager) mSubredditSubmissionRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+        outState.putParcelable(getString(R.string.save_instance_state_recyclerview_state), state);
 
         super.onSaveInstanceState(outState);
     }
@@ -89,10 +94,11 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
         if (savedInstanceState != null) {
             selectedSubreddits = savedInstanceState.getStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist));
-            recyclerViewFirstCompletelyVisibleItemPosition = savedInstanceState.getInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position));
+            state = savedInstanceState.getParcelable(getString(R.string.save_instance_state_recyclerview_state));
 
         } else if (this.getArguments() != null) {
             selectedSubreddits = this.getArguments().getStringArrayList(getString(R.string.bundle_key_selected_subreddits_list));
@@ -127,23 +133,23 @@ public class MainActivityFragment extends Fragment {
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.main_fragment_container);
 
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
-        mSubredditSubmissionRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSubredditSubmissionRecyclerView.setLayoutManager(mLinearLayoutManager);
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
         // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
-        if (recyclerViewFirstCompletelyVisibleItemPosition != 0) {
-            mSubredditSubmissionRecyclerView.getLayoutManager().scrollToPosition(recyclerViewFirstCompletelyVisibleItemPosition);
-            recyclerViewFirstCompletelyVisibleItemPosition = 0;
+        if (state != null) {
+            mSubredditSubmissionRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
 
         // Launch asyncTask to retrieve top submissions from selected subreddits - only if required
-        if (queryRedditApi && sUtilityCode.isNetworkAvailable(getActivity())) {
-            new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
-            queryRedditApi = false;
-        } else {
-            Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection, mContext);
+        if (queryRedditApi) {
+            if (sUtilityCode.isNetworkAvailable(getActivity())) {
+                new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+                queryRedditApi = false;
+            } else {
+                Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
+                sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection, mContext);
+            }
         }
-
         return rootView;
     }
 
@@ -235,14 +241,16 @@ public class MainActivityFragment extends Fragment {
             this.mSubredditSubmission = subredditSubmission;
 
             if (mSubredditSubmission.getSubmissionScore() != null) {
-                this.subredditPostScoreTextView.setText(mSubredditSubmission.getFormattedSubmissionScore());
+                this.subredditPostScoreTextView.setText(sUtilityCode.formatSubredditSubmissionsScore(mSubredditSubmission.getSubmissionScore()));
             }
 
             this.subredditPostTitleTextView.setText(mSubredditSubmission.getTitle());
             this.subredditPostTitleTextView.setMaxLines(3);
             this.subredditPostTitleTextView.setEllipsize(TextUtils.TruncateAt.END);
-            this.subredditPostSubredditTextView.setText(mSubredditSubmission.getFormattedSubreddit());
-            this.subredditPostAuthorTextView.setText(mSubredditSubmission.getFormattedAuthor());
+            String formattedSubreddit = getString(R.string.subreddit_prefix) + mSubredditSubmission.getSubreddit();
+            this.subredditPostSubredditTextView.setText(formattedSubreddit);
+            String formattedAuthor = getString(R.string.user_prefix) + mSubredditSubmission.getAuthor();
+            this.subredditPostAuthorTextView.setText(formattedAuthor);
 
             if (mSubredditSubmission.isHasThumbnail()) {
                 Uri imageUri = Uri.parse(mSubredditSubmission.getThumbnail());
@@ -264,6 +272,13 @@ public class MainActivityFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
+        // https://github.com/googlesamples/google-services/issues/200
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+        state = mLinearLayoutManager.onSaveInstanceState();
     }
 
     @Override

@@ -1,22 +1,15 @@
 package pitman.co.za.readerforreddit.reddit;
 
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import net.dean.jraw.RedditClient;
-import net.dean.jraw.http.NetworkAdapter;
-import net.dean.jraw.http.OkHttpNetworkAdapter;
-import net.dean.jraw.http.UserAgent;
 import net.dean.jraw.models.PublicContribution;
-import net.dean.jraw.oauth.Credentials;
-import net.dean.jraw.oauth.OAuthHelper;
 import net.dean.jraw.tree.CommentNode;
 import net.dean.jraw.tree.RootCommentNode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.UUID;
 
 import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.ViewSubmissionActivityFragment;
@@ -60,14 +53,7 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
     @Override
     protected ArrayList<SubmissionComment> doInBackground(String... strings) {
 
-        // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
-                Resources.getSystem().getString(R.string.jraw_appId),
-                Resources.getSystem().getString(R.string.jraw_version),
-                Resources.getSystem().getString(R.string.jraw_username));
-        NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
-        RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
+        RedditClient redditClient = new RedditClientCreator().getRedditClient();
 
         String submissionId = strings[0];
         RootCommentNode rootCommentNode;

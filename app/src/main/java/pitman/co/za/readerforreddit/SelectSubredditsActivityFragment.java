@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -49,14 +50,14 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private Context mContext;
     private boolean failedToReadFirebaseFile = false;
     private boolean isSubredditListEmpty = false;
-    private int recyclerViewFirstCompletelyVisibleItemPosition = 0;
+    private Parcelable state;
+    private LinearLayoutManager mLinearLayoutManager;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist), new ArrayList<>(selectedSubreddits));
         outState.putString(getString(R.string.save_instance_state_selected_subreddit), submittedSubreddit);
-        outState.putInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position),
-                ((LinearLayoutManager) mSelectedSubredditsRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+        outState.putParcelable(getString(R.string.save_instance_state_recyclerview_state), state);
 
         super.onSaveInstanceState(outState);
     }
@@ -68,12 +69,12 @@ public class SelectSubredditsActivityFragment extends Fragment {
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
         if (savedInstanceState != null) {
             selectedSubreddits = new HashSet<>(savedInstanceState.getStringArrayList(getString(R.string.save_instance_state_subreddits_arraylist)));
             submittedSubreddit = savedInstanceState.getString(getString(R.string.save_instance_state_selected_subreddit));
-            recyclerViewFirstCompletelyVisibleItemPosition =
-                    savedInstanceState.getInt(getString(R.string.save_instance_state_recyclerview_first_visible_item_position));
+            state = savedInstanceState.getParcelable(getString(R.string.save_instance_state_recyclerview_state));
 
         } else if (getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE) != null) {
             SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
@@ -105,11 +106,11 @@ public class SelectSubredditsActivityFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_select_subreddits, container, false);
 
         mSelectedSubredditsRecyclerView = (RecyclerView) rootView.findViewById(R.id.selected_subreddits_recycler_view);
-        mSelectedSubredditsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSelectedSubredditsRecyclerView.setLayoutManager(mLinearLayoutManager);
         mSelectedSubredditsRecyclerView.setAdapter(mAdapter);
-        if (recyclerViewFirstCompletelyVisibleItemPosition != 0) {
-            mSelectedSubredditsRecyclerView.getLayoutManager().scrollToPosition(recyclerViewFirstCompletelyVisibleItemPosition);
-            recyclerViewFirstCompletelyVisibleItemPosition = 0;
+        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+        if (state != null) {
+            mSelectedSubredditsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
 
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.fragment_select_subreddits_coordinatorLayout);
@@ -304,4 +305,40 @@ public class SelectSubredditsActivityFragment extends Fragment {
             this.subredditNameTextView.setText(displayName);
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// Activity lifecycle methods for debugging/understanding/etc //////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
+        // https://github.com/googlesamples/google-services/issues/200
+        if(mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+        state = mLinearLayoutManager.onSaveInstanceState();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
+    }
+
 }

@@ -1,21 +1,12 @@
 package pitman.co.za.readerforreddit.reddit;
 
-import android.content.res.Resources;
 import android.os.AsyncTask;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
-import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.NetworkException;
-import net.dean.jraw.http.OkHttpNetworkAdapter;
-import net.dean.jraw.http.UserAgent;
 import net.dean.jraw.models.Subreddit;
-import net.dean.jraw.oauth.Credentials;
-import net.dean.jraw.oauth.OAuthHelper;
 
-import java.util.UUID;
-
-import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.SelectSubredditsActivityFragment;
 
 /* AsyncTask to poll Reddit for subreddit using a user-supplied subreddit name
@@ -53,14 +44,7 @@ public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, Su
     @Override
     protected SubredditExistenceQueryResult doInBackground(String... strings) {
 
-        // https://mattbdean.gitbooks.io/jraw/quickstart.html
-        UserAgent userAgent = new UserAgent(Resources.getSystem().getString(R.string.jraw_platform),
-                Resources.getSystem().getString(R.string.jraw_appId),
-                Resources.getSystem().getString(R.string.jraw_version),
-                Resources.getSystem().getString(R.string.jraw_username));
-        NetworkAdapter adapter = new OkHttpNetworkAdapter(userAgent);
-        Credentials credentials = Credentials.userlessApp(Resources.getSystem().getString(R.string.jraw_clientId), UUID.randomUUID());
-        RedditClient redditClient = OAuthHelper.automatic(adapter, credentials);
+        RedditClient redditClient = new RedditClientCreator().getRedditClient();
 
         String reddit = strings[0];
 

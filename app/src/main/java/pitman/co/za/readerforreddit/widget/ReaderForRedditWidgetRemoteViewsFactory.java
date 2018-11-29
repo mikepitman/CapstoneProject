@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
@@ -45,9 +44,9 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
         SubredditSubmissionDatabase db = SubredditSubmissionDatabase.getDatabase(context);
         SubredditSubmissionDao dao = db.mSubredditSubmissionDao();
 
-        SharedPreferences preferences = context.getSharedPreferences(Resources.getSystem().getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.shared_prefs_subreddits_pref), Context.MODE_PRIVATE);
         if (preferences != null) {
-            Set<String> mSelectedSubreddits = preferences.getStringSet(Resources.getSystem().getString(R.string.shared_prefs_subreddits_list_key), null);
+            Set<String> mSelectedSubreddits = preferences.getStringSet(context.getString(R.string.shared_prefs_subreddits_list_key), null);
             if (mSelectedSubreddits == null || mSelectedSubreddits.isEmpty()) {
                 mSubmissionsList = new ArrayList<SubredditSubmission>();
             } else {
@@ -68,10 +67,13 @@ public class ReaderForRedditWidgetRemoteViewsFactory implements RemoteViewsFacto
         // create view
         final RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.widget_list_item);
         SubredditSubmission submission = mSubmissionsList.get(position);
-        remoteView.setTextViewText(R.id.widget_list_item_score, submission.getFormattedSubmissionScore());
-        remoteView.setTextViewText(R.id.widget_list_item_subreddit, submission.getFormattedSubreddit());
+        String formattedSubreddit = context.getString(R.string.subreddit_prefix) + submission.getSubreddit();
+        String formattedAuthor = context.getString(R.string.user_prefix) + submission.getAuthor();
+
+        remoteView.setTextViewText(R.id.widget_list_item_score, sUtilityCode.formatSubredditSubmissionsScore(submission.getSubmissionScore()));
+        remoteView.setTextViewText(R.id.widget_list_item_subreddit, formattedSubreddit);
         remoteView.setTextViewText(R.id.widget_list_item_title, submission.getTitle());
-        remoteView.setTextViewText(R.id.widget_list_item_author, submission.getFormattedAuthor());
+        remoteView.setTextViewText(R.id.widget_list_item_author, formattedAuthor);
 
         return remoteView;
     }

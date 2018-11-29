@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -50,11 +51,15 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     private ProgressDialog mProgressDialog;
     private Context mContext;
     private QuerySubredditSubmissionCommentsAsyncTask task;
+    private Parcelable state;
+    private LinearLayoutManager mLinearLayoutManager;
+    boolean queryRedditApi = false;
+
 
     public ViewSubmissionActivityFragment() {
     }
 
-//// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateProgressBar(Integer progress) {
         mProgressDialog.setProgress(progress);
     }
@@ -72,6 +77,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(getString(R.string.save_instance_state_selected_submission), mSelectedSubmission);
         outState.putParcelableArrayList(getString(R.string.save_instance_state_submission_comments), mSubmissionComments);
+        outState.putParcelable(getString(R.string.save_instance_state_recyclerview_state), state);
         super.onSaveInstanceState(outState);
     }
 
@@ -80,16 +86,19 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         super.onCreate(savedInstanceState);
         sUtilityCode = new UtilityCode();
         mContext = this.getContext();
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(mContext);
 
         if (savedInstanceState != null) {
             this.mSelectedSubmission = savedInstanceState.getParcelable(getString(R.string.save_instance_state_selected_submission));
             this.mSubmissionComments = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_state_submission_comments));
+            this.state = savedInstanceState.getParcelable(getString(R.string.save_instance_state_recyclerview_state));
         } else {
             if (this.getArguments() != null) {
                 Bundle bundle = this.getArguments();
                 mSelectedSubmission = bundle.getParcelable(getString(R.string.bundle_key_selected_submission));
+                queryRedditApi = true;
             }
         }
 
@@ -122,17 +131,23 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         RecyclerView mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
         mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSubmissionCommentsRecyclerView.setAdapter(mAdapter);
+        if (state != null) {
+            mSubmissionCommentsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
+        }
         // don't want recyclerView to scroll independently of the nestedScrollView
         ViewCompat.setNestedScrollingEnabled(mSubmissionCommentsRecyclerView, false);
 
         bindSubmissionViews();
 
-        if (sUtilityCode.isNetworkAvailable(getActivity())) {
-            task = new QuerySubredditSubmissionCommentsAsyncTask(this);
-            task.execute(mSelectedSubmission.getRedditId());
-        } else {
-            Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
-            sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query, mContext);
+        if (queryRedditApi) {
+            if (sUtilityCode.isNetworkAvailable(getActivity())) {
+                task = new QuerySubredditSubmissionCommentsAsyncTask(this);
+                task.execute(mSelectedSubmission.getRedditId());
+                queryRedditApi = false;
+            } else {
+                Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
+                sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_comment_query, mContext);
+            }
         }
 
         return rootView;
@@ -149,7 +164,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         ImageView submissionImageView = (ImageView) rootView.findViewById(R.id.submission_image);
         TextView linkTextView = (TextView) rootView.findViewById(R.id.link_text);
 
-        authorTextView.setText(mSelectedSubmission.getFormattedAuthor());
+        String formattedAuthor = getString(R.string.user_prefix) + mSelectedSubmission.getAuthor();
+        authorTextView.setText(formattedAuthor);
         titleTextView.setText(mSelectedSubmission.getTitle());
 
         String postHint = mSelectedSubmission.getPostHint();
@@ -274,7 +290,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
 
         SubmissionCommentViewHolder(View itemView) {
             super(itemView);
-//            commentSpacer = (TextView) itemView.findViewById(R.id.comment_spacer);
             commentAuthor = (TextView) itemView.findViewById(R.id.comment_author);
             commentPoints = (TextView) itemView.findViewById(R.id.comment_points);
             commentAge = (TextView) itemView.findViewById(R.id.comment_age);
@@ -284,7 +299,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         public void bindSubmissionComment(SubmissionComment submissionComment) {
             this.mSubmissionComment = submissionComment;
 
-//            this.commentSpacer.setText("");
             String formattedCommentPoints = String.format(
                     String.valueOf(mSubmissionComment.getCommentScore()) + getString(R.string.submission_comment_score_points),
                     mSubmissionComment.getCommentScore() == 1 ? getString(R.string.submission_comment_blank) : getString(R.string.submission_comment_plural));
@@ -292,7 +306,8 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             this.commentAuthor.setText(mSubmissionComment.getCommentAuthor());
 
             this.commentPoints.setText(formattedCommentPoints);
-            this.commentAge.setText(mSubmissionComment.getCommentAge());
+            String commentAge = sUtilityCode.getCommentAge(mContext, mSubmissionComment.getWhenLogged());
+            this.commentAge.setText(commentAge);
             this.submissionComment.setText(mSubmissionComment.getComment());
         }
     }
@@ -307,6 +322,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
+        state = mLinearLayoutManager.onSaveInstanceState();
     }
 
     @Override

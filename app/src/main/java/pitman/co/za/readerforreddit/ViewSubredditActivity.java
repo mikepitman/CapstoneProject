@@ -41,8 +41,10 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             this.mSelectedSubmission = savedInstanceState.getParcelable(getString(R.string.save_instance_state_selected_submission));
         } else {
             Intent intent = getIntent();
-            mSelectedSubmission = intent.getParcelableExtra(getString(R.string.intent_extra_key_selected_submission));
-            mSelectedSubreddit = mSelectedSubmission.getSubreddit();
+            if (intent != null && intent.hasExtra(getString(R.string.intent_extra_key_selected_submission))) {
+                mSelectedSubmission = intent.getParcelableExtra(getString(R.string.intent_extra_key_selected_submission));
+                mSelectedSubreddit = mSelectedSubmission.getSubreddit();
+            }
         }
 
         setContentView(getLayoutResId());
