@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1087233210369",
+    "firebase_url": "https://readerforreddit-38624.firebaseio.com",
+    "project_id": "readerforreddit-38624",
+    "storage_bucket": "readerforreddit-38624.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087233210369:android:6b08478355d3c7fb",
+        "android_client_info": {
+          "package_name": "pitman.co.za.readerforreddit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1087233210369-cgb7hn0n54phq0p85pkdatbafs8rv246.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBmvaCT5Up61fR7a2MrPqCNMCbzK0ACig"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
