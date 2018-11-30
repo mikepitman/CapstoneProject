@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
@@ -105,39 +104,5 @@ public class ViewSubredditActivity extends AppCompatActivity implements ViewSubr
             viewSubmissionIntent.putExtra(getString(R.string.intent_extra_key_selected_submission), subredditSubmission);
             startActivity(viewSubmissionIntent);
         }
-    }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// Activity lifecycle methods for debugging/understanding/etc //////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_new_intent));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

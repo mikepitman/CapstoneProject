@@ -50,14 +50,10 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     private SubmissionCommentsAdapter mAdapter;
     private ProgressDialog mProgressDialog;
     private Context mContext;
-    private QuerySubredditSubmissionCommentsAsyncTask task;
+    private AsyncTask queryCommentsAsyncTask;
     private Parcelable state;
     private LinearLayoutManager mLinearLayoutManager;
     boolean queryRedditApi = false;
-
-
-    public ViewSubmissionActivityFragment() {
-    }
 
     //// Progress dialog code ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void updateProgressBar(Integer progress) {
@@ -141,8 +137,9 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
 
         if (queryRedditApi) {
             if (sUtilityCode.isNetworkAvailable(getActivity())) {
-                task = new QuerySubredditSubmissionCommentsAsyncTask(this);
-                task.execute(mSelectedSubmission.getRedditId());
+                queryCommentsAsyncTask =
+                        new QuerySubredditSubmissionCommentsAsyncTask(this)
+                                .execute(mSelectedSubmission.getRedditId());
                 queryRedditApi = false;
             } else {
                 Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
@@ -313,12 +310,6 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
@@ -326,18 +317,12 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
 
-        if (task != null && task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-            task.cancel(true);
+        if (queryCommentsAsyncTask != null && queryCommentsAsyncTask.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            queryCommentsAsyncTask.cancel(true);
         }
 
         // Prevent window leaks from Dialog remaining open after fragment is removed

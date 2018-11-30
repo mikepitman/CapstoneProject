@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -51,6 +52,7 @@ public class MainActivityFragment extends Fragment {
     private boolean queryRedditApi = false;
     private Parcelable state;
     private LinearLayoutManager mLinearLayoutManager;
+    private AsyncTask querySubredditsAsyncTask;
 
     //// Callbacks-related code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public interface Callbacks {
@@ -143,7 +145,7 @@ public class MainActivityFragment extends Fragment {
         // Launch asyncTask to retrieve top submissions from selected subreddits - only if required
         if (queryRedditApi) {
             if (sUtilityCode.isNetworkAvailable(getActivity())) {
-                new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
+                querySubredditsAsyncTask = new QuerySubscribedSubredditsListAsyncTask(this).execute(selectedSubreddits);
                 queryRedditApi = false;
             } else {
                 Log.e(LOG_TAG, getString(R.string.error_network_connectivity));
@@ -263,33 +265,26 @@ public class MainActivityFragment extends Fragment {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
-        // https://github.com/googlesamples/google-services/issues/200
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
         // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
         state = mLinearLayoutManager.onSaveInstanceState();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
+
+        if (querySubredditsAsyncTask != null && querySubredditsAsyncTask.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            querySubredditsAsyncTask.cancel(true);
+        }
+
+        // Prevent window leaks from Dialog remaining open after fragment is removed
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 }

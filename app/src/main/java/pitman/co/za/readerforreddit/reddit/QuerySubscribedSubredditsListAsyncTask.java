@@ -18,7 +18,6 @@ import pitman.co.za.readerforreddit.MainActivityFragment;
 import pitman.co.za.readerforreddit.R;
 import pitman.co.za.readerforreddit.domainObjects.SubredditSubmission;
 
-// reddit client ID: CGG1OAPhpEmzgw
 public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<String>, Void, List<Listing<Submission>>> {
 
     private MainActivityFragment mMainActivityFragment;
@@ -34,58 +33,64 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
         mMainActivityFragment.showProgressBar();
     }
 
-    protected void onProgressUpdate(Integer... progress){
+    protected void onProgressUpdate(Integer... progress) {
         // Update the progress bar on dialog
-        mMainActivityFragment.updateProgressBar(progress[0]);
+        if (!isCancelled()) {
+            mMainActivityFragment.updateProgressBar(progress[0]);
+        } else {
+            mMainActivityFragment.dismissProgressBar();
+        }
     }
 
     @Override
     protected void onPostExecute(List<Listing<Submission>> result) {
         super.onPostExecute(result);
 
-        ArrayList<SubredditSubmission> subredditSubmissions = new ArrayList<>();
-        for (Listing<Submission> submissionListing : result) {
-            for (Submission submission : submissionListing) {
-                SubredditSubmission subredditSubmission = new SubredditSubmission(
-                        submission.getId(),
-                        submission.getSubreddit(),
-                        submission.getAuthor(),
-                        submission.getTitle(),
-                        submission.getScore(),
-                        submission.getCommentCount(),
-                        submission.getPostHint(),
-                        submission.isSelfPost(),
-                        submission.getSelfText(),
-                        submission.hasThumbnail(),
-                        submission.getThumbnail());
+        if (!isCancelled()) {
+            ArrayList<SubredditSubmission> subredditSubmissions = new ArrayList<>();
+            for (Listing<Submission> submissionListing : result) {
+                for (Submission submission : submissionListing) {
+                    SubredditSubmission subredditSubmission = new SubredditSubmission(
+                            submission.getId(),
+                            submission.getSubreddit(),
+                            submission.getAuthor(),
+                            submission.getTitle(),
+                            submission.getScore(),
+                            submission.getCommentCount(),
+                            submission.getPostHint(),
+                            submission.isSelfPost(),
+                            submission.getSelfText(),
+                            submission.hasThumbnail(),
+                            submission.getThumbnail());
 
-                SubmissionPreview preview = submission.getPreview();
-                if (preview != null && preview.getImages().size() > 0) {
-                    SubmissionPreview.Variation variation = preview.getImages().get(0).getSource();
-                    subredditSubmission.addPreview(
-                            variation.getUrl(),
-                            variation.getHeight(),
-                            variation.getWidth());
+                    SubmissionPreview preview = submission.getPreview();
+                    if (preview != null && preview.getImages().size() > 0) {
+                        SubmissionPreview.Variation variation = preview.getImages().get(0).getSource();
+                        subredditSubmission.addPreview(
+                                variation.getUrl(),
+                                variation.getHeight(),
+                                variation.getWidth());
+                    }
+
+                    EmbeddedMedia media = submission.getEmbeddedMedia();
+                    if (media != null && media.getRedditVideo() != null) {
+                        subredditSubmission.addRedditVideo(
+                                media.getRedditVideo().getFallbackUrl(),
+                                media.getRedditVideo().getHeight(),
+                                media.getRedditVideo().getWidth());
+                    }
+
+                    if (mMainActivityFragment.getString(R.string.jraw_link).equals(submission.getPostHint())) {
+                        subredditSubmission.setLinkUrl(submission.getUrl());
+                    }
+
+                    subredditSubmissions.add(subredditSubmission);
                 }
-
-                EmbeddedMedia media = submission.getEmbeddedMedia();
-                if (media != null && media.getRedditVideo() != null) {
-                    subredditSubmission.addRedditVideo(
-                            media.getRedditVideo().getFallbackUrl(),
-                            media.getRedditVideo().getHeight(),
-                            media.getRedditVideo().getWidth());
-                }
-
-                if (mMainActivityFragment.getString(R.string.jraw_link).equals(submission.getPostHint())) {
-                    subredditSubmission.setLinkUrl(submission.getUrl());
-                }
-
-                subredditSubmissions.add(subredditSubmission);
             }
-        }
 
+            mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);
+        }
         mMainActivityFragment.dismissProgressBar();
-        mMainActivityFragment.generateSubredditSubmissionsAdapterWithData(subredditSubmissions);
     }
 
     /* Seems it's not possible to have a single query for multiple subreddits, where n posts are retrieved for each subreddit in accordance with
@@ -101,10 +106,15 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
         RedditClient redditClient = new RedditClientCreator().getRedditClient();
 
         ArrayList<String> subreddits = strings[0];
-
         List<Listing<Submission>> polledSubredditData = new ArrayList<>();
+
         for (String subreddit : subreddits) {
-            polledSubredditData.add(pollSubreddit(redditClient, subreddit, 15));
+            if (!isCancelled()) {
+                polledSubredditData.add(pollSubreddit(redditClient, subreddit, 15));
+            } else {
+                mMainActivityFragment.dismissProgressBar();
+                return null;
+            }
         }
 
         return polledSubredditData;

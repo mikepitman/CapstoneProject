@@ -1,6 +1,5 @@
 package pitman.co.za.readerforreddit;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -147,35 +146,5 @@ public class SelectSubredditsActivity extends AppCompatActivity {
         if (redditsRetrieved) {
             fragment.updateCuratedSubreddits(curatedSubreddits);
         }
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_new_intent));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

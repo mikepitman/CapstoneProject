@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 import pitman.co.za.readerforreddit.reddit.QuerySubredditExistenceAsyncTask;
-import pitman.co.za.readerforreddit.reddit.SubredditExistenceQueryResult;
 import pitman.co.za.readerforreddit.room.SubredditSubmissionViewModel;
 
 public class SelectSubredditsActivityFragment extends Fragment {
@@ -52,6 +52,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
     private boolean isSubredditListEmpty = false;
     private Parcelable state;
     private LinearLayoutManager mLinearLayoutManager;
+    private AsyncTask querySubredditExistsAsyncTask;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -170,7 +171,7 @@ public class SelectSubredditsActivityFragment extends Fragment {
                                 getString(R.string.progress_dialog_selectSubreddit_has_a_subreddit);
                 mProgressDialog.setMessage(dialogMessage);
 
-                new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
+                querySubredditExistsAsyncTask = new QuerySubredditExistenceAsyncTask(this).execute(submittedSubreddit);
             } else {
                 sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.no_network_connection_add_subreddits, mContext);
             }
@@ -180,11 +181,11 @@ public class SelectSubredditsActivityFragment extends Fragment {
         }
     }
 
-    public void subredditVerified(SubredditExistenceQueryResult queryResult) {
-        if (SubredditExistenceQueryResult.NSFW.equals(queryResult)) {
+    public void subredditVerified(String queryResult) {
+        if ("NSFW".equals(queryResult)) {
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nsfw, mContext);
             clearUserInputView();
-        } else if (SubredditExistenceQueryResult.NONEXISTENT.equals(queryResult)) {
+        } else if ("NONEXISTENT".equals(queryResult)) {
             sUtilityCode.showSnackbar(mCoordinatorLayout, R.string.subreddit_nonexistent, mContext);
             clearUserInputView();
         } else {
@@ -311,34 +312,28 @@ public class SelectSubredditsActivityFragment extends Fragment {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
-        // https://github.com/googlesamples/google-services/issues/200
-        if(mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
+
         // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
         state = mLinearLayoutManager.onSaveInstanceState();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
+
+        if (querySubredditExistsAsyncTask != null && querySubredditExistsAsyncTask.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            querySubredditExistsAsyncTask.cancel(true);
+        }
+
+        // https://github.com/googlesamples/google-services/issues/200
+        if(mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
 }

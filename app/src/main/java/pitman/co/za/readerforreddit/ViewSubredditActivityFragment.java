@@ -197,33 +197,11 @@ public class ViewSubredditActivityFragment extends Fragment {
 
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// Activity lifecycle methods for debugging/understanding/etc //////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_resume));
-    }
-
     @Override
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_pause));
         // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
         state = mLinearLayoutManager.onSaveInstanceState();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_stop));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, getString(R.string.debug_lifecycle_on_destroy));
     }
 }

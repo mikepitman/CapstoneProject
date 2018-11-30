@@ -13,7 +13,7 @@ import pitman.co.za.readerforreddit.SelectSubredditsActivityFragment;
  * AsyncTask to be called from Activity from where user is able to select their subreddits to track
  * */
 
-public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, SubredditExistenceQueryResult> {
+public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, String> {
 
     private static String LOG_TAG = QuerySubredditExistenceAsyncTask.class.getCanonicalName();
 
@@ -29,36 +29,47 @@ public class QuerySubredditExistenceAsyncTask extends AsyncTask<String, Void, Su
     }
 
     @Override
-    protected void onPostExecute(SubredditExistenceQueryResult result) {
+    protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
+        if (!isCancelled()) {
+            mSelectSubredditsActivityFragment.subredditVerified(result);
+        }
         mSelectSubredditsActivityFragment.dismissProgressBar();
-        mSelectSubredditsActivityFragment.subredditVerified(result);
     }
 
-    protected void onProgressUpdate(Integer... progress){
+    protected void onProgressUpdate(Integer... progress) {
         // Update the progress bar on dialog
-        mSelectSubredditsActivityFragment.updateProgressBar(progress[0]);
+        if (!isCancelled()) {
+            mSelectSubredditsActivityFragment.updateProgressBar(progress[0]);
+        } else {
+            mSelectSubredditsActivityFragment.dismissProgressBar();
+        }
     }
 
     @Override
-    protected SubredditExistenceQueryResult doInBackground(String... strings) {
+    protected String doInBackground(String... strings) {
 
         RedditClient redditClient = new RedditClientCreator().getRedditClient();
 
         String reddit = strings[0];
 
-        try {
-            Subreddit subredditDetails = redditClient.subreddit(reddit).about();
-            // https://github.com/mattbdean/JRAW/issues/243
-            // for some reason, NPE is occuring before ApiException can be thrown, for non-existent subreddits
-            if (subredditDetails.isNsfw()) {
-                return SubredditExistenceQueryResult.NSFW;
+        if (!isCancelled()) {
+            try {
+                Subreddit subredditDetails = redditClient.subreddit(reddit).about();
+                // https://github.com/mattbdean/JRAW/issues/243
+                // for some reason, NPE is occuring before ApiException can be thrown, for non-existent subreddits
+                if (subredditDetails.isNsfw()) {
+                    return "NSFW";
+                }
+            } catch (ApiException | NullPointerException | NetworkException e) {
+                return "NONEXISTENT";
             }
-        } catch (ApiException | NullPointerException | NetworkException e) {
-            return SubredditExistenceQueryResult.NONEXISTENT;
+        } else {
+            mSelectSubredditsActivityFragment.dismissProgressBar();
+            return null;
         }
 
-        return SubredditExistenceQueryResult.EXISTS;
+        return "EXISTS";
     }
 }

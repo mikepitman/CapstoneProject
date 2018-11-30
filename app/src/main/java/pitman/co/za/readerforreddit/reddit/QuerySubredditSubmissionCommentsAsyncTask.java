@@ -45,9 +45,9 @@ public class QuerySubredditSubmissionCommentsAsyncTask extends AsyncTask<String,
 
         if (!isCancelled()) {
             Log.d(LOG_TAG, mViewSubmissionActivityFragment.getString(R.string.debug_number_of_comments) + result.size());
-            mViewSubmissionActivityFragment.dismissProgressBar();
             mViewSubmissionActivityFragment.populateSubmissionCommentsAdapterWithData(result);
         }
+        mViewSubmissionActivityFragment.dismissProgressBar();
     }
 
     @Override
