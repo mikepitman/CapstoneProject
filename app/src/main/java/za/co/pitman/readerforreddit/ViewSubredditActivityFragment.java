@@ -87,6 +87,7 @@ public class ViewSubredditActivityFragment extends Fragment {
             @Override
             public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
                 mAdapter.swapData(subreddits);
+                mLinearLayoutManager.onRestoreInstanceState(state);
             }
         });
         mAdapter = new SubredditSubmissionCardAdapter(mSubredditsViewModel.getAllSubmissionsForSubreddit(mSelectedSubreddit).getValue());
@@ -99,13 +100,9 @@ public class ViewSubredditActivityFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_view_subreddit, container, false);
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_view_subreddit_card_recyclerview);
-        mSubredditSubmissionRecyclerView.setHasFixedSize(true);     // test
+        mSubredditSubmissionRecyclerView.setHasFixedSize(true);
         mSubredditSubmissionRecyclerView.setLayoutManager(mLinearLayoutManager);
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
-        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
-        if (state != null) {
-            mSubredditSubmissionRecyclerView.getLayoutManager().onRestoreInstanceState(state);
-        }
 
         return rootView;
     }

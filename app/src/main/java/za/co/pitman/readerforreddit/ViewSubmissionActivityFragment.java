@@ -125,7 +125,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
         mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.view_submission_fragment_container);
 
         RecyclerView mSubmissionCommentsRecyclerView = (RecyclerView) rootView.findViewById(R.id.submission_comment_recyclerview);
-        mSubmissionCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSubmissionCommentsRecyclerView.setLayoutManager(mLinearLayoutManager);
         mSubmissionCommentsRecyclerView.setAdapter(mAdapter);
         if (state != null) {
             mSubmissionCommentsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
