@@ -104,6 +104,7 @@ public class ViewSubmissionActivityFragment extends Fragment implements View.OnC
             @Override
             public void onChanged(@Nullable final List<SubmissionComment> comments) {
                 mAdapter.swapData(comments);
+                mLinearLayoutManager.onRestoreInstanceState(state);
             }
         });
         mAdapter = new SubmissionCommentsAdapter(mSubmissionViewModel.getSubmissionComments(mSelectedSubmission).getValue());
