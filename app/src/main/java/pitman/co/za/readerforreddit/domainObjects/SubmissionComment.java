@@ -12,11 +12,6 @@ import android.support.annotation.NonNull;
         primaryKeys = {"submissionId", "commentNumber"})
 public class SubmissionComment implements Parcelable {
 
-    /* The combination of the comment order (commentNumber, assigned consecutively when iterating through commentTree)
-     * and commentDepth should be sufficient to order comments with spacing.
-     * API docs aren't super enlightening re structure of RootCommentNode, debugger much more helpful in determining attributes worth saving
-     */
-
     @NonNull
     private String submissionId;
     @NonNull

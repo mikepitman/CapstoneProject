@@ -9,11 +9,6 @@
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
-    <!--<TextView-->
-        <!--android:id="@+id/comment_spacer"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="fill_parent"/>-->
-
     <LinearLayout
         android:id="@+id/comment_details_linear_layout"
         android:layout_width="match_parent"

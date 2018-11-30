@@ -93,13 +93,6 @@ public class QuerySubscribedSubredditsListAsyncTask extends AsyncTask<ArrayList<
         mMainActivityFragment.dismissProgressBar();
     }
 
-    /* Seems it's not possible to have a single query for multiple subreddits, where n posts are retrieved for each subreddit in accordance with
-     * criteria, from the API, and using the JRAW wrapper
-     * eg if given 3 subreddits and limit of 5 posts sorted by 'top', it'll be the top 5 posts out of all 3 subreddits, rather than 5 from each
-     * eg if given 3 subreddits and limit of 5 posts sorted by 'new', it'll be the 5 newest posts from all 3 subreddits, rather than 5 from each
-     * Top-rated posts seem most pertinent for the app and avoiding bias towards high-traffic subreddits is desirable.
-     * In absence of option for single query returning n sorted posts for each of x subreddits, x queries will be sent for n sorted posts
-     * */
     @Override
     protected List<Listing<Submission>> doInBackground(ArrayList<String>... strings) {
 
