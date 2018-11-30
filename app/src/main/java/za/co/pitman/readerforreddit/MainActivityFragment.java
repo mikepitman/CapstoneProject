@@ -113,6 +113,7 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onChanged(@Nullable final List<SubredditSubmission> subreddits) {
                 mAdapter.swapData(sUtilityCode.parseTopSubredditSubmissions(subreddits));
+                mLinearLayoutManager.onRestoreInstanceState(state);
             }
         });
         List<SubredditSubmission> topSubredditSubmissions = sUtilityCode.parseTopSubredditSubmissions(mSubredditsViewModel.getAllSubredditSubmissions(selectedSubreddits).getValue());
@@ -137,10 +138,6 @@ public class MainActivityFragment extends Fragment {
         mSubredditSubmissionRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_subreddit_card_recyclerview);
         mSubredditSubmissionRecyclerView.setLayoutManager(mLinearLayoutManager);
         mSubredditSubmissionRecyclerView.setAdapter(mAdapter);
-        // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
-        if (state != null) {
-            mSubredditSubmissionRecyclerView.getLayoutManager().onRestoreInstanceState(state);
-        }
 
         // Launch asyncTask to retrieve top submissions from selected subreddits - only if required
         if (queryRedditApi) {
